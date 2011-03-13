@@ -15,3 +15,8 @@ Story Editor:
   * Detects unimplemented steps, ie invalid step syntax
   * Detects ambiguous steps, ie entry that is match by several implementation
 
+Package
+========================
+
+1.0.0.SNAPSHOT:
+  https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar

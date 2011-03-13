@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Technbolts-jbehave-eclipse-plugin
 Bundle-SymbolicName: technbolts-jbehave-eclipse-plugin; singleton:=true
-Bundle-Version: 1.0.0.SNAPSHOT
+Bundle-Version: 1.0.1.SNAPSHOT
 Bundle-Activator: org.technbolts.jbehave.eclipse.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

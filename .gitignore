@@ -10,6 +10,7 @@ syntax: glob
 
 # lib'n misc
 lib/
+file/
 
 # eclipse conf file
 .settings
