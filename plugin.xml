@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="JBehave Story Editor"
+            extensions="story"
+            icon="icons/editor.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="org.technbolts.jbehave.eclipse.editors.story.StoryEditor"
+            id="org.technbolts.jbehave.eclipse.editors.story.StoryEditor">
+      </editor>
+   </extension>
+   
+   <extension
+	   id="storyMarker"
+	   point="org.eclipse.core.resources.markers"
+	   name="JBehave error">
+	   <super type="org.eclipse.core.resources.problemmarker"/>
+	   <super type="org.eclipse.core.resources.textmarker"/>
+	   <persistent value="true"/>
+	   <attribute name="errorCode"/>
+	</extension>
+	
+	<extension point="org.eclipse.ui.ide.markerResolution"> 
+		<markerResolutionGenerator 
+			markerType="technbolts-jbehave-eclipse-plugin.storyMarker" 
+			class="org.technbolts.jbehave.eclipse.editors.story.MarkerResolutionGenerator"> 
+		</markerResolutionGenerator>
+	</extension>
+
+</plugin>
