@@ -30,7 +30,7 @@ public class StoryParserRule extends StoryParser implements IRule {
     
     public IToken nextToken(BidirectionalReader scanner) {
         JBKeyword keyword = nextKeyword(scanner);
-        if(scanner.eof())
+        if(scanner.eof() && keyword==null)
             return Token.EOF;
         return tokenOf(keyword);
     }

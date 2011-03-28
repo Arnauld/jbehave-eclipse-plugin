@@ -14,8 +14,8 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.custom.StyledText;
 import org.technbolts.eclipse.util.EditorUtils;
+import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
-import org.technbolts.jbehave.eclipse.util.StepLocator.PotentialStep;
 
 public class StepContentAssistProcessor implements IContentAssistProcessor {
 
@@ -40,7 +40,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             final String stepStart = partitionText.substring(0, index);
             
             IProject project = EditorUtils.findProject(viewer);
-            List<StepLocator.PotentialStep> candidates = new StepLocator().findCandidatesStartingWith(stepStart, project);
+            List<PotentialStep> candidates = StepLocator.getStepLocator(project).findCandidatesStartingWith(stepStart);
             ICompletionProposal[] result = new ICompletionProposal[candidates.size()];
             for(int i=0;i<candidates.size();i++) {
                 PotentialStep potentialStep = candidates.get(i);

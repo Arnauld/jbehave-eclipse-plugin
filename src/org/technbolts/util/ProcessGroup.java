@@ -48,9 +48,19 @@ public class ProcessGroup<T> {
         lock.lock();
         try {
             comodifier.incrementAndGet();
-            taskSpawnedOrDone.signal();
+            taskSpawnedOrDone.signalAll();
         }
         finally {
+            lock.unlock();
+        }
+    }
+    
+    private int getComodifier() {
+        lock.lock();
+        try {
+            return comodifier.get();
+        }
+        finally{
             lock.unlock();
         }
     }
@@ -59,7 +69,8 @@ public class ProcessGroup<T> {
         boolean done = false;
         try {
             do {
-                int comod = comodifier.get();
+                int comod = getComodifier();
+                    
                 for (int i = futures.size() - 1; i >= 0; i--) {
                     FutureTask<T> f = futures.get(i);
                     if (!f.isDone()) {
@@ -71,12 +82,17 @@ public class ProcessGroup<T> {
                 
                 lock.lock();
                 try {
-                    futures.addAll(spawned);
-                    spawned.clear();
-                    
-                    // not empty and tasks still runnings
-                    if(!futures.isEmpty() && comod==comodifier.get()) {
-                        taskSpawnedOrDone.await();
+                    boolean noSpawned = spawned.isEmpty();
+                    if(!noSpawned) {
+                        futures.addAll(spawned);
+                        spawned.clear();
+                    }
+                    else {
+                        // not empty: tasks are still runnings 
+                        // and comod doesn't change in the meanwhile: thus no termination nor spawned
+                        if(!futures.isEmpty() && comod==comodifier.get()) {
+                            taskSpawnedOrDone.await();
+                        }
                     }
                 }
                 finally{
@@ -87,13 +103,23 @@ public class ProcessGroup<T> {
 
             done = true;
         } finally {
-            if (!done)
-                for (Future<T> f : futures)
-                    f.cancel(true);
+            if (!done) {
+                cancelAll(futures);
+                cancelAll(spawned);
+            }
         }
     }
+
+    private void cancelAll(Iterable<? extends Future<T>> futures) {
+        for (Future<T> f : futures)
+            f.cancel(true);
+    }
     
+    /**
+     * Internal task that trigger job done.
+     */
     class InternalFutureTask extends FutureTask<T> {
+        private AtomicInteger done = new AtomicInteger();
         
         private InternalFutureTask(Callable<T> callable) {
             super(callable);
@@ -106,7 +132,13 @@ public class ProcessGroup<T> {
         @Override
         protected void done() {
             super.done();
+            done.incrementAndGet();
             taskSpawnedOrDone();
+        }
+        
+        @Override
+        public String toString() {
+            return "InternalFutureTask[done: " + done.get() +"]@" + System.identityHashCode(this);
         }
     }
 

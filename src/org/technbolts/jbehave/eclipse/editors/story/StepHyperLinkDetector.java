@@ -59,7 +59,7 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
                         return;
                     }
 
-                    IJavaElement methodToJump = new StepLocator().findMethod(step, project);
+                    IJavaElement methodToJump = StepLocator.getStepLocator(project).findMethod(step);
                     // jump to method
                     if (methodToJump != null) {
                         JavaUI.openInEditor(methodToJump);

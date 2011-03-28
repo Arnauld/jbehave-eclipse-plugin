@@ -9,6 +9,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.technbolts.eclipse.util.ColorManager;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.Activator;
 
 public class StoryEditor extends TextEditor {
 
@@ -52,7 +53,7 @@ public class StoryEditor extends TextEditor {
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            Activator.logError("Failed to validate content", e);
         }
     }
 

@@ -60,6 +60,6 @@ public class StoryParser {
         if(partition)
             return partitionOf(keyword) != partitionOf(keywordRead);
         else 
-            return keyword != keywordRead;
+            return true;
     }
 }

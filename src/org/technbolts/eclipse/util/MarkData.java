@@ -8,6 +8,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.ui.texteditor.MarkerUtilities;
+import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.util.New;
 
 public class MarkData {
@@ -72,7 +73,7 @@ public class MarkData {
             Map<String, Object> map = createAttributes(file, document);
             MarkerUtilities.createMarker(file, map, markerId);
         } catch (Exception ee) {
-            ee.printStackTrace();
+            Activator.logError("Unable to apply marks on <" + file + ">", ee);
         }
     }
     

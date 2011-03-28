@@ -2,7 +2,9 @@ package org.technbolts.jbehave.eclipse;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -63,9 +65,29 @@ public class Activator extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 	
-	private ExecutorService executor = Executors.newFixedThreadPool(4);
+	private ExecutorService executor = Executors.newFixedThreadPool(4, new ThreadFactory() {
+	    private ThreadGroup group = new ThreadGroup("AsyncExecutor") {
+	        @Override
+	        public void uncaughtException(Thread t, Throwable e) {
+	            logError("Uncaught exception in asynchronous executor", e);
+	            super.uncaughtException(t, e);
+	        }
+	    };
+	    @Override
+	    public Thread newThread(Runnable r) {
+	        Thread thr = new Thread (group, r);
+	        return thr;
+	    }
+	});
     public <T> ProcessGroup<T> newProcessGroup () {
         return new ProcessGroup<T>(executor);
     }
 	
+    public static void logInfo(String message) {
+        getDefault().getLog().log(new Status(Status.INFO, PLUGIN_ID, message));
+    }
+
+    public static void logError(String message, Throwable e) {
+        getDefault().getLog().log(new Status(Status.ERROR, PLUGIN_ID, message, e));        
+    }
 }

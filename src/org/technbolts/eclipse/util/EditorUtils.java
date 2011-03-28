@@ -5,6 +5,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.ITypedRegion;
+import org.technbolts.jbehave.eclipse.Activator;
 
 public class EditorUtils {
 
@@ -26,7 +27,7 @@ public class EditorUtils {
         try {
             return new Integer(document.getLineOffset(lineNumber - 1) + columnNumber);
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            Activator.logError("Unable to calculate charEnd at " + lineNumber +", " + columnNumber, e);
             return null;
         }
     }
@@ -42,7 +43,7 @@ public class EditorUtils {
             } else
                 return new Integer(lineStartChar);
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            Activator.logError("Unable to calculate charStart at " + lineNumber +", " + columnNumber, e);
             return null;
         }
     }

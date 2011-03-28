@@ -6,6 +6,7 @@ import static org.technbolts.util.Lists.filterTransformed;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -19,10 +20,10 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
+import org.technbolts.jbehave.eclipse.PotentialStep;
+import org.technbolts.jbehave.eclipse.Visitor;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
-import org.technbolts.jbehave.eclipse.util.StepLocator.PotentialStep;
-import org.technbolts.jbehave.eclipse.util.StepLocator.Visitor;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.jbehave.support.StoryParser;
 import org.technbolts.util.BidirectionalReader;
@@ -50,12 +51,13 @@ public class MarkingStoryValidator {
         try {
             file.deleteMarkers(MARKER_ID, true, IResource.DEPTH_ZERO);
         } catch (CoreException e1) {
-            e1.printStackTrace();
+            Activator.logError("MarkingStoryValidator:Error while deleting existing marks", e1);
         }
     }
 
     public void validate() {
         List<Part> parts = extractParts();
+        Activator.logInfo("MarkingStoryValidator:Validate parts found: " + StringUtils.join(parts, "\n\t"));
         analyzeParts(parts);
     }
 
@@ -84,9 +86,11 @@ public class MarkingStoryValidator {
         group.spawn(new Runnable() {
             public void run() {
                 try {
+                    Activator.logInfo("MarkingStoryValidator:Checking steps");
                     checkSteps(parts);
-                } catch (JavaModelException e) {
-                    e.printStackTrace();
+                    Activator.logInfo("MarkingStoryValidator:Steps checked");
+                } catch (Throwable e) {
+                    Activator.logError("MarkingStoryValidator:Error while checking steps for parts: " + parts, e);
                 }
             }
         });
@@ -94,7 +98,7 @@ public class MarkingStoryValidator {
         try {
             group.awaitTermination();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Activator.logError("MarkingStoryValidator:Error while checking steps for parts: " + parts, e);
         }
 
         IWorkspaceRunnable r = new IWorkspaceRunnable() {
@@ -106,7 +110,7 @@ public class MarkingStoryValidator {
         try {
             file.getWorkspace().run(r, null, IWorkspace.AVOID_UPDATE, null);
         } catch (CoreException e) {
-            e.printStackTrace();
+            Activator.logError("MarkingStoryValidator:Error while applying marks on <" + file + ">", e);
         }
     }
 
@@ -118,10 +122,11 @@ public class MarkingStoryValidator {
             potentials.put(extractStepSentenceAndRemoveTrailingNewlines(part), list);
         }
 
-        StepLocator locator = new StepLocator();
-        locator.traverseSteps(project, new Visitor() {
+        Activator.logInfo("MarkingStoryValidator:checkSteps:Initializing locator");
+        StepLocator locator = StepLocator.getStepLocator(project);
+        locator.traverseSteps(new Visitor() {
             @Override
-            protected void visit(PotentialStep candidate) {
+            public void visit(PotentialStep candidate) {
                 for (String searched : potentials.keySet()) {
                     if (candidate.matches(searched)) {
                         potentials.get(searched).add(candidate);
@@ -130,15 +135,18 @@ public class MarkingStoryValidator {
             }
         });
 
+        Activator.logInfo("MarkingStoryValidator:checkSteps:Analysing potentials on #" + steps.size() +" part(s)");
         for (Part part : steps) {
             String key = extractStepSentenceAndRemoveTrailingNewlines(part);
             List<PotentialStep> candidates = potentials.get(key);
             int count = candidates.size();
             if (count == 0)
-                part.addMark(Marks.NoMatchingStep, "No step is matching");
+                part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
             else if (count > 1)
-                part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching");
+                part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: "
+                        + candidates);
         }
+        Activator.logInfo("MarkingStoryValidator:checkSteps:Analysis done!");
     }
 
     private static String extractStepSentenceAndRemoveTrailingNewlines(Part part) {
@@ -186,10 +194,8 @@ public class MarkingStoryValidator {
                     marker.setAttributes(mark.createAttributes(file, document));
                     marker.setAttribute("Keyword", keyword.name());
                 }
-            } catch (CoreException e) {
-                e.printStackTrace();
-            } catch (BadLocationException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                Activator.logError("MarkingStoryValidator:Failed to apply marks", e);
             }
         }
 
@@ -197,7 +203,7 @@ public class MarkingStoryValidator {
             try {
                 return document.get(offsetBeg, offsetEnd - offsetBeg);
             } catch (BadLocationException e) {
-                e.printStackTrace();
+                Activator.logError("MarkingStoryValidator:Unable to get text using offset range <" + offsetBeg + ", " + offsetEnd + ">", e);
             }
             return "";
         }

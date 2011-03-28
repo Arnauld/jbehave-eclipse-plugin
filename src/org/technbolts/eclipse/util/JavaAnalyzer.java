@@ -62,12 +62,25 @@ public class JavaAnalyzer {
     }
     
     public List<IMethod> getMethods() throws JavaModelException {
+        return getMethods(getTypes());
+    }
+    
+    public static List<IMethod> getMethods(List<IType> types) throws JavaModelException {
         List<IMethod> methods = new ArrayList<IMethod>();
-        for(IType type : getTypes()) {
+        for(IType type : types) {
             for(IJavaElement jElem : type.getChildren()) {
                 if(jElem instanceof IMethod)
                     methods.add((IMethod)jElem);
             }
+        }
+        return methods;
+    }
+    
+    public static List<IMethod> getMethods(IType type) throws JavaModelException {
+        List<IMethod> methods = new ArrayList<IMethod>();
+        for(IJavaElement jElem : type.getChildren()) {
+            if(jElem instanceof IMethod)
+                methods.add((IMethod)jElem);
         }
         return methods;
     }

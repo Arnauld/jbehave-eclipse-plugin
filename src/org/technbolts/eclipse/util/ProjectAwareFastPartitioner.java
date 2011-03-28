@@ -6,6 +6,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
+import org.technbolts.jbehave.eclipse.Activator;
 
 public class ProjectAwareFastPartitioner extends FastPartitioner {
     IProject project;
@@ -23,7 +24,7 @@ public class ProjectAwareFastPartitioner extends FastPartitioner {
     @Override
     public void connect(IDocument document, boolean delayInitialization) {
         super.connect(document, delayInitialization);
-        //printPartitions(document);
+        printPartitions(document);
     }
 
     public void printPartitions(IDocument document)
@@ -47,10 +48,11 @@ public class ProjectAwareFastPartitioner extends FastPartitioner {
             }
             catch (BadLocationException e)
             {
-                e.printStackTrace();
+                Activator.logError("Ooops while printing partitions", e);
             }
         }
-        System.out.print(buffer);
+        
+        Activator.logInfo(buffer.toString());
     }
 
 }
