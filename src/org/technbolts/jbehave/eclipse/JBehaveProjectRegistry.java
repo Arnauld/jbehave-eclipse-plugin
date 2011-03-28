@@ -25,6 +25,9 @@ public class JBehaveProjectRegistry {
     private AtomicBoolean listening = new AtomicBoolean();
     
     private void registerListenerIfRequired() {
+        if(!AwareOfJDTChange)
+            return;
+        
         if(listening.compareAndSet(false, true)) {
             JavaCore.addElementChangedListener(new IElementChangedListener() {
                 @Override
