@@ -132,6 +132,7 @@ public class StoryEditor extends TextEditor {
         Visitor<PotentialStep, PotentialStep> collector = new Visitor<PotentialStep, PotentialStep>() {
             @Override
             public void visit(PotentialStep step) {
+                add(step);
             }
         };
         try {
