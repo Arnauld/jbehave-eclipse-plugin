@@ -3,6 +3,13 @@ package org.technbolts.util;
 import java.util.List;
 
 public class Lists {
+    
+    public static <T> List<T> toList(Iterable<T> values) {
+        List<T> list = New.arrayList();
+        for(T value : values)
+            list.add(value);
+        return list;
+    }
 
     public static <T> List<T> filter(List<T> elems, Filter<T> filter) {
         List<T> list = New.arrayList();

@@ -16,6 +16,8 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.Activator;
+import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistProcessor;
 import org.technbolts.jbehave.support.JBPartition;
 
 public class StoryConfiguration extends SourceViewerConfiguration {
@@ -47,8 +49,17 @@ public class StoryConfiguration extends SourceViewerConfiguration {
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
 
         IContentAssistProcessor stepProcessor = new StepContentAssistProcessor(); 
-        ContentAssistant assistant = new ContentAssistant();
+        ContentAssistant assistant = new ContentAssistant() {
+            @Override
+            public IContentAssistProcessor getContentAssistProcessor(String contentType) {
+                IContentAssistProcessor processor = super.getContentAssistProcessor(contentType);
+                Activator.logInfo("StoryConfiguration.getContentAssistant(...).new ContentAssistant() {...}.getContentAssistProcessor(" + contentType + ") :: " + processor);
+                return processor;
+            }
+        };
         assistant.setContentAssistProcessor(stepProcessor, JBPartition.Step.name());
+        assistant.setContentAssistProcessor(stepProcessor, (String)TokenConstants.IGNORED.getData());
+        assistant.setContentAssistProcessor(stepProcessor, IDocument.DEFAULT_CONTENT_TYPE);
         assistant.enableAutoActivation(true);
         assistant.setAutoActivationDelay(500);
         assistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);

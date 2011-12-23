@@ -1,13 +1,21 @@
 package org.technbolts.jbehave.eclipse;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.text.templates.ContextTypeRegistry;
+import org.eclipse.jface.text.templates.persistence.TemplateStore;
+import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
+import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.util.ProcessGroup;
 
 /**
@@ -20,6 +28,14 @@ public class Activator extends AbstractUIPlugin {
 
 	// The shared instance
 	private static Activator plugin;
+
+    private ContributionContextTypeRegistry fContextTypeRegistry;
+
+    private ContributionTemplateStore fStore;
+    
+    /** Key to store custom templates. */
+    private static final String CUSTOM_TEMPLATES_KEY = "org.technbolts.jbehave.customtemplates"; //$NON-NLS-1$
+
 	
 	/**
 	 * The constructor
@@ -44,6 +60,14 @@ public class Activator extends AbstractUIPlugin {
 		plugin = null;
 		super.stop(context);
 	}
+	
+	@Override
+	protected void initializeImageRegistry(ImageRegistry registry) {
+	    super.initializeImageRegistry(registry);
+	    registry.put(ImageIds.STEP_GIVEN, getImageDescriptor("icons/bdd-g-blue.png"));
+        registry.put(ImageIds.STEP_WHEN,  getImageDescriptor("icons/bdd-w-orange.png"));
+        registry.put(ImageIds.STEP_THEN,  getImageDescriptor("icons/bdd-t-green.png"));
+	}
 
 	/**
 	 * Returns the shared instance
@@ -64,6 +88,32 @@ public class Activator extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
+	
+	public TemplateStore getTemplateStore() {
+        // this is to avoid recursive call when fContextTypeRegistry is null
+        getContextTypeRegistry();
+        if (fStore == null) {
+            fStore = new ContributionTemplateStore(
+                    getContextTypeRegistry(), getPreferenceStore(),
+                    CUSTOM_TEMPLATES_KEY);
+            try {
+                fStore.load();
+            } catch (final IOException e) {
+                getLog().log(
+                        new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "", e)); //$NON-NLS-1$
+            }
+        }
+        return fStore;
+    }
+	
+	public ContextTypeRegistry getContextTypeRegistry() {
+        if (fContextTypeRegistry == null) {
+            // create an configure the contexts available in the template editor
+            fContextTypeRegistry = new ContributionContextTypeRegistry();
+            fContextTypeRegistry.addContextType(StoryContextType.STORY_CONTEXT_TYPE_ID);
+        }
+        return fContextTypeRegistry;
+    }
 	
 	private ExecutorService executor = Executors.newFixedThreadPool(4, new ThreadFactory() {
 	    private ThreadGroup group = new ThreadGroup("AsyncExecutor") {

@@ -17,6 +17,24 @@ public class StringEnhancer {
         return underlying==null;
     }
     
+    public boolean isTheStartIgnoringCaseOfOneOf(String...values) {
+        return isTheStartOfOneOf(true, values);
+    }
+    
+    public boolean isTheStartOfOneOf(String...values) {
+        return isTheStartOfOneOf(false, values);
+    }
+    
+    public boolean isTheStartOfOneOf(boolean ignoreCase, String...values) {
+        if(isNull())
+            return false;
+        for(String value:values) {
+            if(underlying.regionMatches(ignoreCase, 0, value, 0, underlying.length()))
+                return true;
+        }
+        return false;
+    }
+    
     public boolean startsIgnoringCaseWithOneOf(String...prefixes) {
         return startsWithOneOf(true, prefixes);
     }
@@ -40,6 +58,16 @@ public class StringEnhancer {
             return false;
         for(String suffix:suffixes) {
             if(underlying.endsWith(suffix))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean equalsToOneOf(String...values) {
+        if(isNull())
+            return false;
+        for(String value:values) {
+            if(underlying.equals(value))
                 return true;
         }
         return false;

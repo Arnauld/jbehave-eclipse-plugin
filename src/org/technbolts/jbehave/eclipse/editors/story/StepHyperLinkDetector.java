@@ -1,18 +1,13 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.swt.custom.StyledText;
-import org.technbolts.eclipse.util.EditorUtils;
-import org.technbolts.eclipse.util.UIUtils;
 import org.technbolts.jbehave.eclipse.util.LineParser;
-import org.technbolts.jbehave.eclipse.util.StepLocator;
+import org.technbolts.jbehave.eclipse.util.StepUtils;
 
 public class StepHyperLinkDetector implements IHyperlinkDetector {
     
@@ -52,21 +47,7 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
             @Override
             public void open() {
                 try {
-                    // configure search
-                    IProject project = EditorUtils.findProject(viewer);
-                    if (project == null) {
-                        UIUtils.show("Step not found", "No project found.");
-                        return;
-                    }
-
-                    IJavaElement methodToJump = StepLocator.getStepLocator(project).findMethod(step);
-                    // jump to method
-                    if (methodToJump != null) {
-                        JavaUI.openInEditor(methodToJump);
-                        methodToJump = null;
-                    } else {
-                        UIUtils.show("Step not found", "There is no step matching:\n" + step);
-                    }
+                    StepUtils.jumpToDeclaration(viewer, step);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

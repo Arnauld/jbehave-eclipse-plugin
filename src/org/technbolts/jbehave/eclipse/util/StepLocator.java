@@ -1,31 +1,15 @@
 package org.technbolts.jbehave.eclipse.util;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.search.IJavaSearchConstants;
-import org.eclipse.jdt.core.search.IJavaSearchScope;
-import org.eclipse.jdt.core.search.SearchEngine;
-import org.eclipse.jdt.core.search.SearchParticipant;
-import org.eclipse.jdt.core.search.SearchPattern;
-import org.eclipse.jdt.internal.core.ResolvedSourceMethod;
-import org.jbehave.core.parsers.RegexPrefixCapturingPatternParser;
-import org.jbehave.core.parsers.StepMatcher;
-import org.jbehave.core.steps.StepType;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
 import org.technbolts.jbehave.eclipse.PotentialStep;
-import org.technbolts.jbehave.eclipse.Visitor;
+import org.technbolts.util.Visitor;
 
-@SuppressWarnings("restriction")
 public class StepLocator {
     
     public static StepLocator getStepLocator(IProject project) {
@@ -37,6 +21,22 @@ public class StepLocator {
         this.project = project;
     }
     
+    public static class WeightedCandidateStep implements Comparable<WeightedCandidateStep> {
+        public final PotentialStep potentialStep;
+        public final float weight;
+        public WeightedCandidateStep(PotentialStep potentialStep, float weight) {
+            super();
+            this.potentialStep = potentialStep;
+            this.weight = weight;
+        }
+        @Override
+        public int compareTo(WeightedCandidateStep o) {
+            return (weight>o.weight)?1:-1;
+        }
+    }
+    
+    static boolean findCandidatesCheckStepType = true;
+    
     /*
      *  When '$who' clicks on the '$button_id' button
      *  
@@ -45,26 +45,40 @@ public class StepLocator {
      *  When 'Bo 
      * 
      */
-    
-    public List<PotentialStep> findCandidatesStartingWith(final String stepLine) {
+    public Iterable<WeightedCandidateStep> findCandidatesStartingWith(final String stepLine) {
         
         try {
             final String searchedType = LineParser.stepType(stepLine);
             final String stepEntry = LineParser.extractStepSentence(stepLine);
-            Visitor findOne = new Visitor() {
+            
+            Activator.logInfo("StepLocator.findCandidatesStartingWith(" + stepLine + "):" + searchedType + "//" + stepEntry + "<<");
+            
+            Visitor<PotentialStep, WeightedCandidateStep> findOne = new Visitor<PotentialStep, WeightedCandidateStep>() {
                 @Override
                 public void visit(PotentialStep candidate) {
-                    if(!candidate.isTypeEqualTo(searchedType))
+                    boolean sameType = candidate.isTypeEqualTo(searchedType);
+                    if(findCandidatesCheckStepType && !sameType) {
                         return;
+                    }
                     
-                    if(StringUtils.startsWithIgnoreCase(candidate.stepPattern, stepEntry)) {
-                        add(candidate);
+                    if(StringUtils.isBlank(stepEntry) && sameType) {
+                        add(new WeightedCandidateStep(candidate, 0.1f));
+                        return;
+                    }
+                    
+                    float weight = candidate.weightOf(stepEntry);
+                    if(weight>0) {
+                        add(new WeightedCandidateStep(candidate, weight));
+                    }
+                    else {
+                        Activator.logInfo(">> Step (" + weight + ") rejected: " + candidate);
                     }
                 }
             };
             traverseSteps(findOne);
             return findOne.getFounds();
         } catch (JavaModelException e) {
+            e.printStackTrace();
             Activator.logError("Failed to find candidates for step <" + stepLine + ">", e);
         }
         return null;
@@ -72,62 +86,24 @@ public class StepLocator {
     
     public IJavaElement findMethod(final String step) {
         try {
-            Visitor findOne = new Visitor() {
+            Visitor<PotentialStep, IMethod> findOne = new Visitor<PotentialStep, IMethod>() {
                 @Override
                 public void visit(PotentialStep candidate) {
                     if(candidate.matches(step)) {
-                        add(candidate);
+                        add(candidate.method);
                         done();
                     }
                 }
             };
             traverseSteps(findOne);
-            PotentialStep found = findOne.getFirst();
-            return found==null?null:found.method;
+            return findOne.getFirst();
         } catch (JavaModelException e) {
             Activator.logError("Failed to find candidates for step <" + step + ">", e);
         }
         return null;
     }
     
-    private static RegexPrefixCapturingPatternParser stepParser = new RegexPrefixCapturingPatternParser();
-    private static Map<String, StepMatcher> matcherCache = new ConcurrentHashMap<String, StepMatcher>();
-    public static StepMatcher getMatcher(StepType stepType, String stepPattern) {
-        String key = stepType.name()+"/"+stepPattern;
-        StepMatcher matcher = matcherCache.get(key);
-        if(matcher==null) {
-            matcher = stepParser.parseStep(stepType, stepPattern);
-            matcherCache.put(key, matcher);
-        }
-        return matcher;
-    }
-    
-    public void traverseSteps(Visitor visitor) throws JavaModelException {
+    public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
         JBehaveProjectRegistry.get().getProject(project).traverseSteps(visitor);
     }
-
-    @SuppressWarnings("unused")
-    private ResolvedSourceMethod findMethodUsingSearch(String step, IProject project) {
-            //TODO: this search can be tuned to search only once and return all the implementations.
-            //Then match from memory.
-            IJavaProject myJavaProject = (IJavaProject) JavaCore.create(project);
-            SearchPattern pattern = SearchPattern.createPattern(
-                    "*", 
-                    IJavaSearchConstants.ANNOTATION_TYPE, 
-                    IJavaSearchConstants.REFERENCES, 
-                    SearchPattern.R_PATTERN_MATCH | SearchPattern.R_CASE_SENSITIVE);
-            IJavaSearchScope scope = SearchEngine.createJavaSearchScope(new IJavaElement[] {myJavaProject});
-            final StepSearchRequestor requestor = new StepSearchRequestor(step);                                
-
-            //search
-            SearchEngine searchEngine = new SearchEngine();
-            try {
-                searchEngine.search(pattern, new SearchParticipant[] {SearchEngine.getDefaultSearchParticipant()}, scope, requestor, null);
-            } catch (CoreException e) {
-                throw new RuntimeException("Something went wrong when searching for Step", e);
-            }
-            
-            return requestor.methodToJump;
-    }
-
 }

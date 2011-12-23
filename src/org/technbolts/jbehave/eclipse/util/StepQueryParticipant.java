@@ -40,6 +40,7 @@ public class StepQueryParticipant implements IQueryParticipant {
             ElementQuerySpecification elementSpec = (ElementQuerySpecification) spec;
             int elementType = elementSpec.getElement().getElementType();
             if (elementType == IJavaElement.METHOD) {
+                @SuppressWarnings("restriction")
                 IAnnotation[] annotations = ((SourceMethod) elementSpec.getElement()).getAnnotations();
                 if (annotations.length > 0 && annotations[0].getElementName().equals("DomainStep")) {
                     //TODO: what if no value?

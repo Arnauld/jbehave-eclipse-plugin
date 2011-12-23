@@ -1,5 +1,8 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.IDocument;
@@ -30,10 +33,11 @@ public class StoryDocumentProvider extends FileDocumentProvider {
     }
 
     private ProjectAwareFastPartitioner createPartitioner(final IProject project) {
-        
+        List<String> names = new ArrayList<String>(JBPartition.names());
+        names.add((String)TokenConstants.IGNORED.getData());
         return new ProjectAwareFastPartitioner(
-                new StoryPartitionScanner(), //
-                Strings.toArray(JBPartition.names()), project);
+                new StoryPartitionScanner(),
+                Strings.toArray(names), project);
     }
 
 }

@@ -15,6 +15,52 @@
    </extension>
    
    <extension
+         point="org.eclipse.ui.editors.templates">
+      <include
+            file="jbehave_templates/jbehave_templates.xml">
+      </include>
+      <contextType
+            class="org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType"
+            id="org.technbolts.jbehave.story"
+            name="JBehave story">
+      </contextType>
+   </extension>
+   
+   <extension
+       point="org.eclipse.ui.commands">
+      <command
+            id="org.technbolts.jbehave.eclipse.actions.show-outline"
+            name="Show outline"/>
+      <command
+            id="org.technbolts.jbehave.eclipse.actions.jump-to-declaration"
+            name="Jump to declaration"/>
+   </extension>
+   
+   <extension
+       point="org.eclipse.ui.contexts">
+     <context
+          id="org.technbolts.jbehave.eclipse.storyEditorScope"
+          name="JBehave Story Editor"
+          parentId="org.eclipse.ui.textEditorScope"/>
+   </extension>
+   
+   <extension
+       point="org.eclipse.ui.bindings">
+       <!--  win32:  M1=CTRL,    M2=SHIFT, M3=ALT, M4=-
+            carbon: M1=COMMAND, M2=SHIFT, M3=ALT, M4=CTRL -->
+      <key
+            commandId="org.technbolts.jbehave.eclipse.actions.show-outline"
+            contextId="org.technbolts.jbehave.eclipse.storyEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+O"/>
+      <key
+            commandId="org.technbolts.jbehave.eclipse.actions.jump-to-declaration"
+            contextId="org.technbolts.jbehave.eclipse.storyEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+G"/>
+   </extension>
+   
+   <extension
 	   id="storyMarker"
 	   point="org.eclipse.core.resources.markers"
 	   name="JBehave error">

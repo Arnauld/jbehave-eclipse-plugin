@@ -60,6 +60,12 @@ public class BidirectionalReader implements BidirectionalStream {
         while(pos>newPos)
             unread();
     }
+    
+    public int peek () {
+        int read = read();
+        unread();
+        return read;
+    }
 
     public int read() {
         int read = stream.read();

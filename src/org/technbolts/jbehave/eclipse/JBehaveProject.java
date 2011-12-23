@@ -17,6 +17,7 @@ import org.technbolts.util.ArrayUtils;
 import org.technbolts.util.New;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.StringEnhancer;
+import org.technbolts.util.Visitor;
 
 public class JBehaveProject {
     private IProject project;
@@ -69,7 +70,7 @@ public class JBehaveProject {
         return ArrayUtils.copyOf(getCachedTypes());
     }
     
-    public void traverseSteps(Visitor visitor) throws JavaModelException {
+    public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
         Activator.logInfo("JBehaveProject:Traversing Steps");
         for(PotentialStep step:getCachedSteps()) {
             visitor.visit(step);

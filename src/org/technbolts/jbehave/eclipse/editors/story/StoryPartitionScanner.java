@@ -28,6 +28,8 @@ public class StoryPartitionScanner extends RuleBasedPartitionScanner {
         return new StoryPredicateRule(partition);
     }
     
+    private static boolean OnePartitionPerStep = false;
+    
     class StoryPredicateRule extends StoryParserRule implements IPredicateRule {
         
         private JBPartition partition;
@@ -64,7 +66,7 @@ public class StoryPartitionScanner extends RuleBasedPartitionScanner {
         @Override
         protected boolean isKeywordStop(JBKeyword keywordRead, JBKeyword keyword) {
             // make sure each step is in its own partition
-            if(JBKeyword.isStep(keyword))
+            if(OnePartitionPerStep && JBKeyword.isStep(keyword))
                 return true;
             return super.isKeywordStop(keywordRead, keyword);
         }

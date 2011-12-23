@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class New {
 
@@ -21,6 +22,10 @@ public class New {
 
     public static <T> LinkedList<T> linkedList() {
         return new LinkedList<T>();
+    }
+
+    public static <T> ConcurrentLinkedQueue<T> concurrentLinkedQueue() {
+        return new ConcurrentLinkedQueue<T>();
     }
 
 }

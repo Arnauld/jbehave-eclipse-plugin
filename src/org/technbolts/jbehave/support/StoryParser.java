@@ -18,9 +18,10 @@ public class StoryParser {
     public JBKeyword nextKeyword(BidirectionalReader scanner) {
         int readCount = 0;
         JBKeyword keyword = null;
+        StringBuilder line = null;
         while(!scanner.eof()) {
             int posBeforeLine = scanner.getPosition();
-            StringBuilder line = scanner.readLine();
+            line = scanner.readLine();
             
             try {
                 JBKeyword keywordRead = extractKeyword(line);
@@ -32,7 +33,7 @@ public class StoryParser {
                 if(keyword==null) {
                     // no keyword yet, if something has been read then it is undefined
                     if(readCount>0)
-                        return keyword;
+                        return null;
                     else
                         keyword = keywordRead;
                 }
@@ -52,14 +53,18 @@ public class StoryParser {
         return keyword;
     }
     
-    public JBKeyword extractKeyword(StringBuilder line) {
+    //
+    public JBKeyword extractKeyword(CharSequence line) {
         return charTree.lookup(line);
     }
     
     protected boolean isKeywordStop(JBKeyword keywordRead, JBKeyword keyword) {
-        if(partition)
+        System.out.println("StoryParser.isKeywordStop(partition:"+ partition + ", current:" + keyword + ", read:" + keywordRead + " -- " + partitionOf(keyword) + ")");
+        if(partition) {
             return partitionOf(keyword) != partitionOf(keywordRead);
+        }
         else 
             return true;
     }
+
 }

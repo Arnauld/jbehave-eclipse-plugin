@@ -21,7 +21,6 @@ import org.eclipse.jface.text.IDocument;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.PotentialStep;
-import org.technbolts.jbehave.eclipse.Visitor;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.support.JBKeyword;
@@ -32,6 +31,7 @@ import org.technbolts.util.New;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.Strings;
 import org.technbolts.util.Transform;
+import org.technbolts.util.Visitor;
 
 public class MarkingStoryValidator {
     public static final String MARKER_ID = Activator.PLUGIN_ID + ".storyMarker";
@@ -124,7 +124,7 @@ public class MarkingStoryValidator {
 
         Activator.logInfo("MarkingStoryValidator:checkSteps:Initializing locator");
         StepLocator locator = StepLocator.getStepLocator(project);
-        locator.traverseSteps(new Visitor() {
+        locator.traverseSteps(new Visitor<PotentialStep, Object>() {
             @Override
             public void visit(PotentialStep candidate) {
                 for (String searched : potentials.keySet()) {
