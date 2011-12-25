@@ -11,6 +11,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
+import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -18,18 +19,21 @@ import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistProcessor;
+import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.support.JBPartition;
 
 public class StoryConfiguration extends SourceViewerConfiguration {
 
-    private RuleBasedScanner stepScanner;
-    private RuleBasedScanner defaultScanner;
-    private RuleBasedScanner commentScanner;
-    private RuleBasedScanner scenarioScanner;
-    private RuleBasedScanner narrativeScanner;
+    private ITokenScanner stepScanner;
+    private ITokenScanner defaultScanner;
+    private ITokenScanner commentScanner;
+    private ITokenScanner scenarioScanner;
+    private ITokenScanner narrativeScanner;
     private TextAttributeProvider textAttributeProvider;
+    private StoryEditor storyEditor;
 
-    public StoryConfiguration(TextAttributeProvider textAttributeProvider) {
+    public StoryConfiguration(StoryEditor storyEditor, TextAttributeProvider textAttributeProvider) {
+        this.storyEditor = storyEditor;
         this.textAttributeProvider = textAttributeProvider;
     }
 
@@ -74,42 +78,48 @@ public class StoryConfiguration extends SourceViewerConfiguration {
         return new IHyperlinkDetector[] { new StepHyperLinkDetector() };
     }
 
-    private RuleBasedScanner getDefaultScanner() {
+    private ITokenScanner getDefaultScanner() {
         if (defaultScanner == null) {
             defaultScanner = createScanner(textAttributeProvider.get(StoryTextAttributes.Default));
         }
         return defaultScanner;
     }
 
-    protected RuleBasedScanner getStepScanner() {
+    protected ITokenScanner getStepScanner() {
         if (stepScanner == null) {
-            stepScanner = new StepScanner(textAttributeProvider);
+            stepScanner = new StepScannerStyled(new StepLocator.Provider() {
+                @Override
+                public StepLocator getStepLocator() {
+                    return StepLocator.getStepLocator(storyEditor.getProject());
+                }
+            }, textAttributeProvider);
+//            stepScanner = new StepScanner(textAttributeProvider);
         }
         return stepScanner;
     }
     
-    protected RuleBasedScanner getCommentScanner() {
+    protected ITokenScanner getCommentScanner() {
         if (commentScanner == null) {
             commentScanner = createScanner(textAttributeProvider.get(StoryTextAttributes.Comment));
         }
         return commentScanner;
     }
     
-    protected RuleBasedScanner getScenarioScanner() {
+    protected ITokenScanner getScenarioScanner() {
         if (scenarioScanner == null) {
             scenarioScanner = new ScenarioScanner(textAttributeProvider);
         }
         return scenarioScanner;
     }
     
-    protected RuleBasedScanner getNarrativeScanner() {
+    protected ITokenScanner getNarrativeScanner() {
         if (narrativeScanner == null) {
             narrativeScanner = new NarrativeScanner(textAttributeProvider);
         }
         return narrativeScanner;
     }
 
-    private RuleBasedScanner createScanner(TextAttribute textAttribute) {
+    private ITokenScanner createScanner(TextAttribute textAttribute) {
         RuleBasedScanner scanner = new RuleBasedScanner();
         scanner.setDefaultReturnToken(new Token(textAttribute));
         return scanner;

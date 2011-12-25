@@ -2,7 +2,6 @@ package org.technbolts.jbehave.eclipse.editors.story.actions;
 
 import java.util.ResourceBundle;
 
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.eclipse.ui.texteditor.TextEditorAction;
 import org.technbolts.jbehave.eclipse.editors.story.StoryEditor;

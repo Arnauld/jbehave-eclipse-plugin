@@ -56,9 +56,20 @@ public class BidirectionalReader implements BidirectionalStream {
         return pos;
     }
 
-    public void backToPosition(int newPos) {
+    public BidirectionalReader backToPosition(int newPos) {
         while(pos>newPos)
             unread();
+        return this;
+    }
+    
+    public StringBuilder readUntil(int newPos) {
+        StringBuilder builder = new StringBuilder ();
+        while(pos<newPos && !eof) {
+            int c = read();
+            if(c!=IO.EOF)
+                builder.append((char)c);
+        }
+        return builder;
     }
     
     public int peek () {
@@ -68,6 +79,9 @@ public class BidirectionalReader implements BidirectionalStream {
     }
 
     public int read() {
+        if(eof) {
+            return IO.EOF;
+        }
         int read = stream.read();
         if(read==IO.EOF)
             eof = true;
@@ -77,8 +91,10 @@ public class BidirectionalReader implements BidirectionalStream {
     }
 
     public void unread() {
-        pos--;
-        eof = false;
+        if(eof)
+            eof = false;
+        else
+            pos--;
         stream.unread();
     }
 }

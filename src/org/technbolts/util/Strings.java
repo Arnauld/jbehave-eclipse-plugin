@@ -165,4 +165,13 @@ public class Strings {
         }
         return sb.toString();
     }
+
+    public static int indexOf(CharSequence seq, char c) {
+        final int len = seq.length();
+        for(int i = 0; i < len; i++) {
+            if(seq.charAt(i) == c)
+                return i;
+        }
+        return -1;
+    }
 }

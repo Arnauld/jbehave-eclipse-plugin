@@ -34,6 +34,15 @@ public class ParametrizedStringTest {
         assertThat(tokens.get(1).value(), equalTo("name"));
         assertThat(tokens.get(2).value(), equalTo(" clicks"));
     }
+    
+    @Test
+    public void getTokens_ex1() {
+        ParametrizedString s = new ParametrizedString("a user named \"$name\"");
+        List<Token> tokens = s.getTokens();
+        assertThat(tokens.get(0).value(), equalTo("a user named \""));
+        assertThat(tokens.get(1).value(), equalTo("name"));
+        assertThat(tokens.get(2).value(), equalTo("\""));
+    }
 
     @Test
     public void acceptsInputPart_noParameter () {
@@ -246,6 +255,14 @@ public class ParametrizedStringTest {
         
         String complete = s.complete("a user named Travis clicks");
         assertThat(complete, equalTo(""));
+    }
+    
+    @Test
+    public void weightChain_ex1() {
+        ParametrizedString s = new ParametrizedString("a user named \"$name\"");
+        
+        WeightChain chain = s.calculateWeightChain("a user named \"Bob\"");
+        assertThat(chain.tokenize(), equalTo(Arrays.asList("a user named \"","Bob","\"")));
     }
     
     @Test

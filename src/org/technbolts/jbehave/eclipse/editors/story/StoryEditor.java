@@ -45,7 +45,7 @@ public class StoryEditor extends TextEditor {
 		super();
 		colorManager = new ColorManager();
 		TextAttributeProvider textAttributeProvider = new TextAttributeProvider(colorManager);
-		setSourceViewerConfiguration(new StoryConfiguration(textAttributeProvider));
+		setSourceViewerConfiguration(new StoryConfiguration(this, textAttributeProvider));
 		setDocumentProvider(new StoryDocumentProvider());
 	}
 	
@@ -178,5 +178,9 @@ public class StoryEditor extends TextEditor {
         } catch (JavaModelException e) {
             Activator.logError("Failed to jump to method", e);
         }
+    }
+
+    public IProject getProject() {
+        return getInputFile().getProject();
     }
 }

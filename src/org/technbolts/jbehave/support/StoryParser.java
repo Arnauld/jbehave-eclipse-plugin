@@ -32,8 +32,10 @@ public class StoryParser {
                 else
                 if(keyword==null) {
                     // no keyword yet, if something has been read then it is undefined
-                    if(readCount>0)
+                    if(readCount>0) {
+                        scanner.backToPosition(posBeforeLine);
                         return null;
+                    }
                     else
                         keyword = keywordRead;
                 }
@@ -59,7 +61,6 @@ public class StoryParser {
     }
     
     protected boolean isKeywordStop(JBKeyword keywordRead, JBKeyword keyword) {
-        System.out.println("StoryParser.isKeywordStop(partition:"+ partition + ", current:" + keyword + ", read:" + keywordRead + " -- " + partitionOf(keyword) + ")");
         if(partition) {
             return partitionOf(keyword) != partitionOf(keywordRead);
         }

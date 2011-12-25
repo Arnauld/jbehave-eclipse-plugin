@@ -3,7 +3,6 @@ package org.technbolts.jbehave.eclipse.util;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
@@ -11,6 +10,10 @@ import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.util.Visitor;
 
 public class StepLocator {
+    
+    public interface Provider {
+        StepLocator getStepLocator();
+    }
     
     public static StepLocator getStepLocator(IProject project) {
         return new StepLocator(project);
@@ -84,13 +87,22 @@ public class StepLocator {
         return null;
     }
     
-    public IJavaElement findMethod(final String step) {
+    /**
+     * Returns the first {@link PotentialStep} found that match the step.
+     * Be careful that there can be several other {@link PotentialStep}s that fulfill the step too.
+     * 
+     * @param step
+     * @return
+     */
+    public PotentialStep findFirstStep(final String step) {
         try {
-            Visitor<PotentialStep, IMethod> findOne = new Visitor<PotentialStep, IMethod>() {
+            Visitor<PotentialStep, PotentialStep> findOne = new Visitor<PotentialStep, PotentialStep>() {
                 @Override
                 public void visit(PotentialStep candidate) {
-                    if(candidate.matches(step)) {
-                        add(candidate.method);
+                    boolean matches = candidate.matches(step);
+                    Activator.logInfo("Is candidate [" + candidate + "] matching [" +step + "] ?" + matches);
+                    if(matches) {
+                        add(candidate);
                         done();
                     }
                 }
@@ -101,6 +113,14 @@ public class StepLocator {
             Activator.logError("Failed to find candidates for step <" + step + ">", e);
         }
         return null;
+    }
+    
+    public IJavaElement findMethod(final String step) {
+        PotentialStep pStep = findFirstStep(step);
+        if(pStep!=null)
+            return pStep.method;
+        else
+            return null;
     }
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {

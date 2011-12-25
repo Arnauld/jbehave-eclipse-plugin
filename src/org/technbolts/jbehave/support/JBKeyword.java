@@ -117,6 +117,10 @@ public enum JBKeyword {
         throw new AbstractMethodError();
     }
     
+    public boolean isStep() {
+        return isStep(this);
+    }
+    
     public static JBKeyword lookup(StringBuilder builder, Keywords keywords) {
         int len = builder.length();
         for(JBKeyword jk : values()) {

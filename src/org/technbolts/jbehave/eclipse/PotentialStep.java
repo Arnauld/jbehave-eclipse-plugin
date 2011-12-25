@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.IAnnotation;
-import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.jbehave.core.parsers.RegexPrefixCapturingPatternParser;
 import org.jbehave.core.parsers.StepMatcher;
 import org.jbehave.core.steps.StepType;
@@ -72,16 +72,16 @@ public class PotentialStep {
     
     public String toString () {
         StringBuilder builder = new StringBuilder();
-        builder.append("[").append(stepType).append("]").append(stepPattern);
+        builder.append("[").append(stepType).append("]").append(stepPattern).append(", ");
         if(method==null) {
-            builder.append(":n/a");
+            builder.append("n/a");
         }
         else {
-            IClassFile classFile = method.getClassFile();
+            IType classFile = method.getDeclaringType();
             if(classFile!=null)
                 builder.append(classFile.getElementName());
             else
-                builder.append("<classFile-unknown>");
+                builder.append("<type-unknown>");
             builder.append('#').append(method.getElementName());
         }
         return builder.toString();

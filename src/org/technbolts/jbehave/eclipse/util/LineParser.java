@@ -4,7 +4,7 @@ import static org.technbolts.util.StringEnhancer.enhanceString;
 
 public class LineParser {
     
-    public static boolean isTheStartIgnoringCaseOfOneOf(String line) {
+    public static boolean isTheStartIgnoringCaseOfStep(String line) {
         return enhanceString(line).isTheStartIgnoringCaseOfOneOf("given ", "when ", "then ", "and ");
     }
 
@@ -16,11 +16,16 @@ public class LineParser {
         return enhanceString(line).equalsToOneOf("Given ", "When ", "Then ", "And ");
     }
     
-    public static String extractStepSentence(String line) {
+    public static int stepSentenceIndex(String line) {
         if(!isStepIgnoringCase(line))
-            return null;
+            return 0;
         int indexOf = line.indexOf(' ');
-        return line.substring(indexOf+1);
+        return indexOf+1;
+    }
+    
+    public static String extractStepSentence(String line) {
+        int indexOf = stepSentenceIndex(line);
+        return line.substring(indexOf);
     }
 
     public static String stepType(String stepLine) {

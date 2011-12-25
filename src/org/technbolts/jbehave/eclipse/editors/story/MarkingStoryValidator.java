@@ -71,6 +71,8 @@ public class MarkingStoryValidator {
             int beg = bidiReader.getPosition();
             keyword = parser.nextKeyword(bidiReader);
             int end = bidiReader.getPosition();
+            if(bidiReader.eof())
+                end--;
 
             if (keyword == null)
                 continue;
@@ -203,7 +205,8 @@ public class MarkingStoryValidator {
             try {
                 return document.get(offsetBeg, offsetEnd - offsetBeg);
             } catch (BadLocationException e) {
-                Activator.logError("MarkingStoryValidator:Unable to get text using offset range <" + offsetBeg + ", " + offsetEnd + ">", e);
+                Activator.logError("MarkingStoryValidator:Unable to get text using offset range <" + offsetBeg + ", " + offsetEnd + "> " +
+                		"document length: " + document.getLength(), e);
             }
             return "";
         }

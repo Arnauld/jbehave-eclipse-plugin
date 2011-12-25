@@ -59,12 +59,12 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                             "partitionOffset...: " + partitionOffset + "\n" +
                             "Index.............: " + index + "\n" +
                             "lineStart.........:>" + lineStart + "<" + "\n" + 
-                            "isTheStartOfAStep.: " + LineParser.isTheStartIgnoringCaseOfOneOf(lineStart)
+                            "isTheStartOfAStep.: " + LineParser.isTheStartIgnoringCaseOfStep(lineStart)
                     );
             if(StringUtils.isEmpty(lineStart)) {
                 return createKeywordCompletionProposals(offset, 0);
             }
-            else if(LineParser.isTheStartIgnoringCaseOfOneOf(lineStart) && !LineParser.isStepType(lineStart)) {
+            else if(LineParser.isTheStartIgnoringCaseOfStep(lineStart) && !LineParser.isStepType(lineStart)) {
                 return createKeywordCompletionProposals(lineOffset, lineStart.length());
             }
             
