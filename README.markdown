@@ -15,6 +15,17 @@ Story Editor:
   * Detects unimplemented steps, ie invalid step syntax
   * Detects ambiguous steps, ie entry that is match by several implementation
 
+Christmas 2011 notes:
+-------------------------
+
+* Fix and *improve completion*:
+** Fix several issue on completion
+** Completion supports step with parameters, even if parameter values are already written ([Issue 4](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/4))
+** Add *template support*: is the inserted step contains variables, the eclipse template behavior is triggered, allowing to efficiently replace variable declaration with their value, and switching to the next using tab key.
+* Smarter step editor: should be able to *detect parameter values and parameter variables* within a step and apply corresponding syntax highlighting ([Issue 5](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/5))
+* *Quick search* (Ctrl+O but is is suject to change) for an quick popup display ([Issue 7](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/7)) that allows to searched for steps. Step's type (Given, When, Then) is indicated with a corresponding icon. Focus is made on the filter where `*` can be used as special character for search.
+* Jump to declaration (ctrl+mouse click) is also bind on keyboard using (Ctrl+G)
+
 
 Package
 ========================
@@ -29,3 +40,6 @@ Inspiration
 * [GivWenZen](https://bitbucket.org/szczepiq/givwenzenclipse/wiki/Home)
 * [Building an Eclipse Text Editor with JFace Text](http://www.realsolve.co.uk/site/tech/jface-text.php)
 * [Eclipse Plug-ins, Third Edition](http://www.amazon.com/Eclipse-Plug-ins-3rd-Eric-Clayberg/dp/0321553462/ref=sr_1_1?ie=UTF8&s=books&qid=1300059405&sr=8-1)
+
+Erlide for plugin usage and template proposal behavior
+* [Erlang IDE ](https://github.com/erlide/erlide)
