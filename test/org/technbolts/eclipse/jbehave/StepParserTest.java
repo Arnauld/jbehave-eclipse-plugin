@@ -112,8 +112,6 @@ public class StepParserTest {
         PotentialStep user = givenStep("a user named $username");
         PotentialStep credits = whenStep("user credits is $amount dollars");
         PotentialStep clicks = whenStep("user clicks on $button button");
-        PotentialStep titleContent = thenStep("the page title must be $content");
-        PotentialStep titleColor = thenStep("the page title must be displayed in $color");
         
         storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx03.story"));
         when(locator.findFirstStep("a user named $username")).thenReturn(user);
@@ -195,6 +193,60 @@ public class StepParserTest {
         consumeRemaining(document, scanner);
         
         assertEquals(document.getLength(), offset);
+    }
+    
+    @Test
+    public void usecase_ex4() throws Exception {
+        storyAsText = IOUtils.toString(getClass().getResourceAsStream("/domain/i_can_login_using_parameters_table.story"));
+        
+        IDocument document= new Document(storyAsText);
+        
+        offset = 0;
+        
+        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        scanner.setRange(document, offset, document.getLength());
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        consumeRemaining(document, scanner);
+        
+        assertEquals(document.getLength(), offset);
+    }
+    
+    @Test
+    public void usecase_ex5() throws Exception {
+        PotentialStep seeHomePage = thenStep("agent see the application home page");
+        when(locator.findFirstStep("agent see the application home page")).thenReturn(seeHomePage);
+        
+        storyAsText = IOUtils.toString(getClass().getResourceAsStream("/domain/i_can_login_using_parameters_table.story"));
+        IDocument document= new Document(storyAsText);
+        offset = 477;
+        
+        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        scanner.setRange(document, offset, 179);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        consumeRemaining(document, scanner);
+        
+        assertEquals(477+179, offset);
     }
 
     private void consumeRemaining(IDocument document, StepScannerStyled scanner) throws BadLocationException {

@@ -16,13 +16,9 @@ import org.technbolts.eclipse.rule.Rules;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
-import org.technbolts.jbehave.support.JBKeyword;
-import org.technbolts.jbehave.support.StoryParser;
-import org.technbolts.util.BidirectionalReader;
 import org.technbolts.util.New;
 import org.technbolts.util.ParametrizedString;
 import org.technbolts.util.ParametrizedString.WeightChain;
-import org.technbolts.util.StringEnhancer;
 import org.technbolts.util.Strings;
 
 /**
@@ -106,6 +102,7 @@ public class StepScannerStyled implements ITokenScanner {
     }
     
     private void evaluateFragments() {
+        logln("evaluateFragments()");
         ICharacterScanner scanner = createCharacterScanner();
         int read;
         int offset = range.getOffset();
@@ -116,8 +113,22 @@ public class StepScannerStyled implements ITokenScanner {
         }
         //remaining
         buffer.emitData();
+        
+        for(Fragment f : fragments) {
+            logln(f.toString());
+        }
+        
+        System.out.println(builder.toString());
     }
     
+    private StringBuilder builder = new StringBuilder();
+    private void logln(String string) {
+        builder.append(string).append('\n');
+    }
+    private void log(String string) {
+        builder.append(string);
+    }
+
     private class Buffer {
         private StringBuilder data = new StringBuilder();
         private boolean inNewLines = false;
@@ -139,18 +150,17 @@ public class StepScannerStyled implements ITokenScanner {
             return c=='\r' || c=='\n';
         }
         public void push(int offset, char c) {
-            System.out.print("StepScannerStyled.Buffer.push(" + (char) c + ", offset: " + offset +") data before #" + data.length());
+            log("Buffer#push(" + offset + ", " + c + ")");
             if(!accept(c)) {
-                System.out.println(" NOT ACCEPTED");
+                logln("...REJECTED");
                 emitData();
                 reset(offset);
-            }
-            else if(data.length()==0) {
-                System.out.println(" ACCEPTED");
-                reset(offset);
+                logln("Buffer#push(" + offset + ", " + c + ") ADDED");
             }
             else {
-                System.out.println(" ACCEPTED");
+                logln("...ACCEPTED");
+                if(data.length()==0)
+                    reset(offset);
             }
             append(c);
         }
@@ -178,7 +188,7 @@ public class StepScannerStyled implements ITokenScanner {
     }
 
     private void parseStep(String stepLine, final int initialOffset) {
-        System.out.println("StepScannerStyled.parseStep(" + stepLine + "), initialOffset: " + initialOffset);
+        logln("parseStep(" + stepLine + ", offset: " + initialOffset + ", stepLine.length: " + stepLine.length());
         int offset = initialOffset;
         int stepSep = stepLine.indexOf(' ');
          
@@ -193,10 +203,13 @@ public class StepScannerStyled implements ITokenScanner {
         PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(stepSentence);
         
         if(potentialStep==null) {
+            logln("parseStep() no step found");
             emitVariables(afterKeyword, offset);
             offset += afterKeyword.length();
         }
         else if(potentialStep.hasVariable()) {
+            logln("parseStep(" + stepLine + ") step found with variable");
+
             ParametrizedString pString = potentialStep.getParametrizedString();
             
             WeightChain chain = pString.calculateWeightChain(stepSentence);
@@ -218,8 +231,9 @@ public class StepScannerStyled implements ITokenScanner {
             }
         }
         else {
-            emit(defaultToken, offset, stepLine.length());
-            offset += stepLine.length();
+            logln("parseStep(" + stepLine + ") step found without variable");
+            emit(defaultToken, offset, afterKeyword.length());
+            offset += afterKeyword.length();
         }
         
         // insert if trailings whitespace have been removed
@@ -230,7 +244,7 @@ public class StepScannerStyled implements ITokenScanner {
     }
 
     private void emitVariables(String content, int offset) {
-        System.out.println("StepScannerStyled.emitVariables(" + content + ", " + offset + ")");
+        logln("emitVariables(offset: " + offset + ", content.length: " + content.length() + " >>" + content + "<<");
         int tokenStart = 0;
         boolean escaped = false;
         boolean inVariable = false;
@@ -269,36 +283,33 @@ public class StepScannerStyled implements ITokenScanner {
             }
             
             // emit remaining
-            emit(token, offset + tokenStart, offset + i-1);
+            emit(token, offset + tokenStart, i-tokenStart);
         }
     }
 
     private void emit(IToken token, int offset, int length) {
-        
-        System.out.println("StepScannerStyled.emit(offset: " + offset+" (range: " + range.getOffset() + "::" + range.getLength() + "), length: " + length);
-        
+        logln("emit(" + token + ", offset: " + offset + ", length: " + length + ")");
+
         // can we merge previous one?
         if(!fragments.isEmpty()) {
             Fragment previous = getLastFragment();
             
-            System.out.println("StepScannerStyled.emit():: check no hole :: " + offset + " =? " + previous);
-            
             // check no hole
             int requiredOffset = previous.offset+previous.length;
             if(offset != requiredOffset) {
-                emit(defaultToken, requiredOffset, offset-requiredOffset);
+                logln("emit() hole completion, offset: " +  offset + ", length: " + length + "; previous offset: " + previous.offset + ", length: " + previous.length);
+                emit(defaultToken, requiredOffset, requiredOffset-offset);
                 previous = getLastFragment();
             }
             
             if(previous.token==token) {
-                int before = previous.length;
                 previous.length += length;
-                System.out.println("StepScannerStyled.emit(**updated** " + token.getData() + " start: " + previous.offset + " length from " + before + " to " + previous.length);
+                logln("emit() token merged, offset: " +  previous.offset + ", length: " + previous.length);
                 return;
             }
         }
-        System.out.println("StepScannerStyled.emit(" + token.getData() + " start: " + offset + " length: " + length);
         Fragment fragment = new Fragment(token, offset, length);
+        logln("emit() >>> added, offset: " +  offset + ", length: " + length);
         fragments.add(fragment);
     }
 
@@ -317,6 +328,8 @@ public class StepScannerStyled implements ITokenScanner {
      */
     @Override
     public void setRange(IDocument document, int offset, int length) {
+        logln("setRange(offset: " +  offset + ", length: " + length);
+
         fragments = New.arrayList();
         cursor = -1;
         this.document = document;
