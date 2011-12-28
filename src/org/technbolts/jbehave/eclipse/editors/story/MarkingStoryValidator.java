@@ -1,5 +1,6 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +25,6 @@ import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.New;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.Strings;
-import org.technbolts.util.Transform;
 import org.technbolts.util.Visitor;
 
 import fj.F;
@@ -71,17 +71,8 @@ public class MarkingStoryValidator {
         });
         
         ProcessGroup<?> group = Activator.getDefault().newProcessGroup();
-        group.spawn(new Runnable() {
-            public void run() {
-                try {
-                    Activator.logInfo("MarkingStoryValidator:Checking steps");
-                    checkSteps(parts);
-                    Activator.logInfo("MarkingStoryValidator:Steps checked");
-                } catch (Throwable e) {
-                    Activator.logError("MarkingStoryValidator:Error while checking steps for parts: " + parts, e);
-                }
-            }
-        });
+        group.spawn(checkStepsAsRunnable(parts));
+        group.spawn(checkNarrativeAsRunnable(parts));
 
         try {
             group.awaitTermination();
@@ -100,6 +91,112 @@ public class MarkingStoryValidator {
         } catch (CoreException e) {
             Activator.logError("MarkingStoryValidator:Error while applying marks on <" + file + ">", e);
         }
+    }
+    
+    private Runnable checkNarrativeAsRunnable(final fj.data.List<Part> parts) {
+        return new Runnable() {
+            public void run() {
+                try {
+                    checkNarrative(parts);
+                } catch (Throwable e) {
+                    Activator.logError("MarkingStoryValidator:Error while checking narrative for parts: " + parts, e);
+                }
+            }
+        };
+    }
+    
+    private void checkNarrative(final fj.data.List<Part> parts) throws JavaModelException {
+        boolean nonNarrativeOrIgnorable = false;
+        
+        Part narrative = null;
+        Part inOrderTo = null;
+        Part asA = null;
+        Part iWantTo = null;
+        
+        Iterator<Part> iterator = parts.iterator();
+        while(iterator.hasNext()) {
+            Part part = iterator.next();
+            JBKeyword keyword = part.storyPart.getKeyword();
+            if(keyword.isNarrative()) {
+                // narrative must be the first
+                if(nonNarrativeOrIgnorable) {
+                    part.addMark(Marks.InvalidNarrativePosition, "Narrative section must be the first one");
+                }
+                else {
+                    switch(keyword) {
+                        case Narrative:
+                            if(narrative!=null)
+                                part.addMark(Marks.InvalidNarrativeSequence_multipleNarrative, "Only one 'Narrative:' element is allowed");
+                            else
+                                narrative = part;
+                            break;
+                        case InOrderTo:
+                            if(narrative==null)
+                                part.addMark(Marks.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
+                            else if(inOrderTo!=null)
+                                part.addMark(Marks.InvalidNarrativeSequence_multipleInOrderTo, "Only one 'In order to ' element is allowed");
+                            else
+                                inOrderTo = part;
+                            break;
+                        case AsA:
+                            if(narrative==null)
+                                part.addMark(Marks.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
+                            else if(inOrderTo==null)
+                                part.addMark(Marks.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
+                            else if(asA!=null)
+                                part.addMark(Marks.InvalidNarrativeSequence_multipleAsA, "Only one 'As a ' element is allowed");
+                            else
+                                asA = part;
+                            break;
+                        case IWantTo:
+                            if(narrative==null)
+                                part.addMark(Marks.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
+                            else if(inOrderTo==null)
+                                part.addMark(Marks.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
+                            else if(asA==null)
+                                part.addMark(Marks.InvalidNarrativeSequence_missingAsA, "Missing 'As a ' element");
+                            else if(iWantTo!=null)
+                                part.addMark(Marks.InvalidNarrativeSequence_multipleIWantTo, "Only one 'I want to ' element is allowed");
+                            else
+                                iWantTo = part;
+                            break;
+                    }
+                }
+            }
+            else if(keyword != JBKeyword.Ignorable) {
+                nonNarrativeOrIgnorable = true;
+            }
+        }
+        
+        // consolidation
+        if(narrative!=null) {
+            if(inOrderTo!=null) {
+                if(asA!=null) {
+                    if(iWantTo==null) {
+                      asA.addMark(Marks.InvalidNarrativeSequence_missingIWantTo, "Missing 'I want to ' element");
+                    }
+                }
+                else {
+                    inOrderTo.addMark(Marks.InvalidNarrativeSequence_missingAsA, "Missing 'As a ' element");
+                }
+            }
+            else {
+                narrative.addMark(Marks.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
+            }
+        }
+        
+    }
+    
+    private Runnable checkStepsAsRunnable(final fj.data.List<Part> parts)  {
+        return new Runnable() {
+            public void run() {
+                try {
+                    checkSteps(parts);
+                } catch (Throwable e) {
+                    Activator.logError("MarkingStoryValidator:Error while checking steps for parts: " + parts, e);
+                }
+            }
+        };
     }
 
     private void checkSteps(final fj.data.List<Part> parts) throws JavaModelException {
@@ -146,15 +243,6 @@ public class MarkingStoryValidator {
         return Strings.removeTrailingNewlines(LineParser.extractStepSentence(part.text()));
     }
 
-    public static Transform<Part, JBKeyword> partToKeyword() {
-        return new Transform<MarkingStoryValidator.Part, JBKeyword>() {
-            @Override
-            public JBKeyword transform(Part part) {
-                return part.storyPart.getKeyword();
-            }
-        };
-    }
-
     class Part {
         private List<MarkData> marks = New.arrayList();
         private StoryPart storyPart;
@@ -164,11 +252,11 @@ public class MarkingStoryValidator {
             this.storyPart = storyPart;
         }
 
-        public void addMark(int code, String message) {
+        public synchronized void addMark(int code, String message) {
             marks.add(new MarkData()//
                     .severity(IMarker.SEVERITY_ERROR)//
                     .message(message)//
-                    .offsetStart(storyPart.getOffset())//
+                    .offsetStart(storyPart.getOffsetStart())//
                     .offsetEnd(storyPart.getOffsetEnd())
                     .attribute(Marks.ERROR_CODE, code));
         }

@@ -16,6 +16,13 @@ public class ProjectAwareFastPartitioner extends FastPartitioner {
         super(scanner, legalContentTypes);
         this.project = project;
     }
+    
+    @Override
+    protected boolean isSupportedContentType(String contentType) {
+        boolean supported = super.isSupportedContentType(contentType);
+        System.out.println("ProjectAwareFastPartitioner.isSupportedContentType("+contentType+", " + supported + ")");
+        return supported;
+    }
 
     public IProject getProject() {
         return project;
@@ -26,7 +33,7 @@ public class ProjectAwareFastPartitioner extends FastPartitioner {
         super.connect(document, delayInitialization);
         printPartitions(document);
     }
-
+    
     public void printPartitions(IDocument document)
     {
         StringBuffer buffer = new StringBuffer();

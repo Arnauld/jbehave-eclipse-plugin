@@ -20,7 +20,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.technbolts.eclipse.rule.Rules;
 import org.technbolts.eclipse.util.ColorManager;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.eclipse.util.TextAttributeProvider;
@@ -34,12 +33,9 @@ import org.technbolts.jbehave.eclipse.editors.story.actions.ShowOutlineAction;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryTemplateProposal;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModel;
+import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModelBuilder;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
-import org.technbolts.jbehave.support.JBKeyword;
-import org.technbolts.jbehave.support.StoryParser;
-import org.technbolts.util.BidirectionalReader;
-import org.technbolts.util.New;
 import org.technbolts.util.Strings;
 import org.technbolts.util.Visitor;
 
@@ -65,14 +61,12 @@ public class StoryEditor extends TextEditor {
 
 	@Override
 	protected void doSetInput(IEditorInput newInput) throws CoreException {
-	    Activator.logInfo("StoryEditor.doSetInput()" + Strings.times(10, "**********\n"));
         super.doSetInput(newInput);
         validateAndMark();
     }
 
 	@Override
 	protected void setDocumentProvider(IEditorInput input) {
-	    Activator.logInfo("StoryEditor.setDocumentProvider()" + Strings.times(10, "~~~~~~~~~\n"));
 	    super.setDocumentProvider(input);
         validateAndMark();
 	}
@@ -199,40 +193,12 @@ public class StoryEditor extends TextEditor {
     }
 
     public void showRange(int offset, int length) {
-        getSourceViewer().setVisibleRegion(offset, length);
+        getSourceViewer().revealRange(offset, length);
         getSourceViewer().setRangeIndication(offset, length, true);
     }
     
     public List<OutlineModel> getOutlineModels() {
-        List<OutlineModel> models = New.arrayList();
-        
-        try {
-            IDocument document = getInputDocument();
-            BidirectionalReader reader  = Rules.createReader(document);
-            StoryParser parser = new StoryParser(false);
-            
-            while(!reader.eof()) {
-                JBKeyword keyword = parser.nextKeyword(reader);
-                if(keyword==null) {
-                    continue;
-                }
-                
-                int offset = reader.getPosition();
-                int lineNo = document.getLineOfOffset(offset);
-                int lineOffset = document.getLineOffset(lineNo);
-                int lineLength = document.getLineLength(lineNo);
-                
-                switch(keyword) {
-                    case Narrative:
-                    case Scenario:
-                        String content = Strings.removeTrailingNewlines(document.get(lineOffset,lineLength));
-                        models.add(new OutlineModel(keyword, content, offset, lineLength));
-                        break;
-                }
-            }
-        } catch (BadLocationException e) {
-            Activator.logError("Failed to generate outline models", e);
-        }
-        return models;
+        OutlineModelBuilder builder = new OutlineModelBuilder(getInputDocument());
+        return builder.build();
     }
 }

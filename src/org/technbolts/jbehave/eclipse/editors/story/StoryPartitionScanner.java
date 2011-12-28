@@ -1,81 +1,129 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import static org.technbolts.jbehave.support.JBPartition.partitionOf;
-
 import java.util.List;
 
-import org.eclipse.jface.text.rules.ICharacterScanner;
-import org.eclipse.jface.text.rules.IPredicateRule;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 import org.eclipse.jface.text.rules.Token;
-import org.technbolts.eclipse.rule.CharacterStreamAdapter;
-import org.technbolts.jbehave.support.JBKeyword;
+import org.technbolts.jbehave.parser.StoryParser;
+import org.technbolts.jbehave.parser.StoryPart;
+import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.jbehave.support.JBPartition;
-import org.technbolts.util.BidirectionalReader;
 import org.technbolts.util.New;
 
-public class StoryPartitionScanner extends RuleBasedPartitionScanner {
+public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPartitionTokenScanner {
 
+    private IDocument document;
+    //
+    private int cursor;
+    private Partition currentPartition;
+    private List<Partition> partitions;
+    
     public StoryPartitionScanner() {
-        List<IPredicateRule> rules = New.arrayList();
-        for(JBPartition partition : JBPartition.values())
-            rules.add(predicateFor(partition));
-        setPredicateRules(rules.toArray(new IPredicateRule[rules.size()]));
     }
     
-    private IPredicateRule predicateFor(JBPartition partition) {
-        return new StoryPredicateRule(partition);
+    @Override
+    public void setRange(IDocument document,
+            int offset,
+            int length) {
+        setPartialRange(document, offset, length, null, -1);
     }
     
-    private static boolean OnePartitionPerStep = false;
+    @Override
+    public void setPartialRange(IDocument document,
+            int offset,
+            int length,
+            String contentType,
+            int partitionOffset) {
+        System.out.println("\n\n==================================\nStoryPartitionScanner.setPartialRange(\n" + 
+                "offset...........: " + offset + "\n" +
+                "length...........: " + length + "\n" +
+                "contentType......: " + contentType + "\n" + 
+                "partitionOffset..: " + partitionOffset + "\n==================================\n");
+        
+        this.document = document;
+        initializePartitions();
+    }
     
-    class StoryPredicateRule extends StoryParserRule implements IPredicateRule {
-        
-        private JBPartition partition;
-        private Token token;
-        
-        private StoryPredicateRule(JBPartition partition) {
-            super(true);
-            this.partition = partition;
-            this.token = new Token(partition.name());
+    @Override
+    public int getTokenLength() {
+        return currentPartition.length;
+    }
+    
+    @Override
+    public int getTokenOffset() {
+        return currentPartition.offset;
+    }
+    
+    @Override
+    public IToken nextToken() {
+        IToken token = nextToken0();
+        System.out.println("StoryPartitionScanner.nextToken(" + token.getData() + ", currentPartition: " + currentPartition + ")");
+        return token;
+    }
+    
+    private IToken nextToken0 () {
+        if(cursor<partitions.size()) {
+            currentPartition = partitions.get(cursor++);
+            return new Token(currentPartition.keyword.name());
         }
-        @Override
-        public IToken evaluate(ICharacterScanner characterScanner) {
-            // predicate contract... one type of token...
-            // if not the good one, simply reset
-            CharacterStreamAdapter stream = new CharacterStreamAdapter(characterScanner);
-            BidirectionalReader scanner = new BidirectionalReader(stream);
-            int position = scanner.getPosition();
-            IToken token = super.nextToken(scanner);
-            if(token.isUndefined())
-                scanner.backToPosition(position);
-            return token;
-        }
-        
-        @Override
-        public IToken evaluate(ICharacterScanner characterScanner, boolean resume) {
-            return evaluate(characterScanner);
-        }
+        return Token.EOF;
+    }
 
-        @Override
-        public IToken getSuccessToken() {
-            return token;
-        }
+    private void initializePartitions() {
+        partitions = New.arrayList();
+        cursor = 0;
         
-        @Override
-        protected boolean isKeywordStop(JBKeyword keywordRead, JBKeyword keyword) {
-            // make sure each step is in its own partition
-            if(OnePartitionPerStep && JBKeyword.isStep(keyword))
-                return true;
-            return super.isKeywordStop(keywordRead, keyword);
-        }
+        String content = document.get();
+        new StoryParser().parse(content, new StoryPartVisitor() {
+            @Override
+            public void visit(StoryPart part) {
+                push(part);
+            }
+        });
         
-        @Override
-        protected IToken tokenOf(JBKeyword keyword) {
-            if(keyword!=null && partitionOf(keyword)==partition)
-                return token;
-            return Token.UNDEFINED;
+        for(Partition p : partitions) {
+            System.out.println(">> " + p.keyword + ", offset:" + p.offset + ", length: " + p.length);
         }
     }
+    
+    private void push(StoryPart part) {
+        Partition p = new Partition(
+                JBPartition.partitionOf(part.getKeyword()),
+                part.getOffset(),
+                part.getLength());
+        
+        if(partitions.isEmpty()) {
+            partitions.add(p);
+            return;
+        }
+        
+        // pick last, merge it or add it to the list
+        Partition last = partitions.get(partitions.size()-1);
+        if(!last.merge(p))
+            partitions.add(p);
+    }
+    
+    private class Partition {
+        private JBPartition keyword;
+        private int offset;
+        private int length;
+        public Partition(JBPartition keyword, int offset, int length) {
+            this.keyword = keyword;
+            this.offset = offset;
+            this.length = length;
+        }
+        public boolean merge(Partition p) {
+            if(keyword==p.keyword) {
+                this.length += p.length;
+                return true;
+            }
+            return false;
+        }
+        @Override
+        public String toString() {
+            return "P["+keyword+", offset: " + offset + ", length: " + length + "]";
+        }
+    }
+    
 }

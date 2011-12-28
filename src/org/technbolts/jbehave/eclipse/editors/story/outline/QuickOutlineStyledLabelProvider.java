@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.technbolts.jbehave.eclipse.ImageIds;
-import org.technbolts.jbehave.support.JBKeyword;
+import org.technbolts.jbehave.support.JBPartition;
 import org.technbolts.util.TextProvider;
 
 public class QuickOutlineStyledLabelProvider extends StyledCellLabelProvider implements TextProvider {
@@ -61,15 +61,19 @@ public class QuickOutlineStyledLabelProvider extends StyledCellLabelProvider imp
     private void defineImage(OutlineModel model, ViewerCell cell) {
         String key = null;
         
-        JBKeyword keyword = model.getKeyword();
-        if(keyword.isNarrative()) {
-            key = ImageIds.NARRATIVE;
-        }
-        else if(keyword.isExampleTable()) {
-            key = ImageIds.EXAMPLE_TABLE;
-        }
-        else if(keyword == JBKeyword.Scenario) {
-            key = ImageIds.SCENARIO;
+        JBPartition partition = model.getPartition();
+        switch(partition) {
+            case Narrative:
+                key = ImageIds.NARRATIVE;
+                break;
+            case ExampleTable:
+                key = ImageIds.EXAMPLE_TABLE;
+                break;
+            case Scenario:
+                key = ImageIds.SCENARIO;
+                break;
+            case Step:
+                key = ImageIds.STEP_GIVEN;
         }
 
         if (key != null) {

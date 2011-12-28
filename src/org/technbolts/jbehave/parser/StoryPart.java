@@ -45,8 +45,23 @@ public class StoryPart {
         return Constants.sharedKeywordCharTree();
     }
 
+    /**
+     * Same as {@link #getOffset()}
+     * @see #getOffset()
+     */
+    public int getOffsetStart() {
+        return getOffset();
+    }
     public int getOffsetEnd() {
         return getOffset()+getLength();
+    }
+
+    public boolean intersects(int offset, int length) {
+        int tmin = getOffset();
+        int tmax = getOffsetEnd();
+        int omin = offset;
+        int omax = offset+length;
+        return omin<=tmax && tmin<=omax;
     }
 
 }

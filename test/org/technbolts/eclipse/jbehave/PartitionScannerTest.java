@@ -8,6 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
@@ -30,19 +31,21 @@ private String storyAsText;
         IToken defaultToken= new Token("defaultToken");
         StoryPartitionScanner scanner = new StoryPartitionScanner ();
         scanner.setRange(document, 0, document.getLength());
-        scanner.setDefaultReturnToken(defaultToken);
         
-        checkNextToken(scanner, document, "Narrative");
-        checkNextToken(scanner, document, "Scenario");
-        checkNextToken(scanner, document, "Step");
+        checkNextToken(scanner, document, "Narrative", 0, 172);
+        checkNextToken(scanner, document, "Scenario", 172, 57);
+        checkNextToken(scanner, document, "Step", 229, 208);
         System.out.println(scanner.nextToken().isEOF());
     }
     
-    private void checkNextToken(RuleBasedScanner scanner, IDocument document, Object jk) throws BadLocationException {
+    private void checkNextToken(IPartitionTokenScanner scanner, IDocument document, Object jk, int offset, int length) throws BadLocationException {
         IToken token = scanner.nextToken();
         assertEquals(jk, token.getData());
-        System.out.print(jk + " > ");
-        dumpState(scanner, document);
+        //System.out.print(jk + " > ");
+        //dumpState(scanner, document);
+        assertEquals(offset, scanner.getTokenOffset());
+        assertEquals(length, scanner.getTokenLength());
+        
     }
     
     private static void dumpState(RuleBasedScanner scanner, IDocument doc) throws BadLocationException {
