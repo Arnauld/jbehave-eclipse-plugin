@@ -35,10 +35,7 @@ private String storyAsText;
         checkNextToken(scanner, document, "Narrative");
         checkNextToken(scanner, document, "Scenario");
         checkNextToken(scanner, document, "Step");
-        checkNextToken(scanner, document, "Step");
-        checkNextToken(scanner, document, "Step");
-        checkNextToken(scanner, document, "Step");
-        checkNextToken(scanner, document, "Step");
+        System.out.println(scanner.nextToken().isEOF());
     }
     
     private void checkNextToken(RuleBasedScanner scanner, IDocument document, Object jk) throws BadLocationException {

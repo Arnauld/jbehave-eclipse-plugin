@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.0 r9654"
+   sodipodi:docname="icons.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="166.43141"
+     inkscape:cy="924.68952"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1233"
+     inkscape:window-height="756"
+     inkscape:window-x="47"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff5c00;fill-opacity:1;stroke:none"
+       id="path2985"
+       sodipodi:cx="262.85715"
+       sodipodi:cy="406.64789"
+       sodipodi:rx="94.285713"
+       sodipodi:ry="94.285713"
+       d="m 357.14286,406.64789 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       transform="matrix(0.49645425,0,0,0.49645425,136.90629,194.15922)" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:997.99985886%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="231.40283"
+       y="423.04129"
+       id="text2987"
+       sodipodi:linespacing="997.99986%"><tspan
+         sodipodi:role="line"
+         id="tspan2989"
+         x="231.40283"
+         y="423.04129"
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:997.99985886%;fill:#ffffff;font-family:Silom;-inkscape-font-specification:Silom">W</tspan></text>
+    <path
+       transform="matrix(0.49645425,0,0,0.49645425,-72.700363,-143.23173)"
+       d="m 357.14286,406.64789 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       sodipodi:ry="94.285713"
+       sodipodi:rx="94.285713"
+       sodipodi:cy="406.64789"
+       sodipodi:cx="262.85715"
+       id="path3829"
+       style="fill:#000080;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-g-blue.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38" />
+    <text
+       sodipodi:linespacing="997.99986%"
+       id="text3831"
+       y="85.650345"
+       x="33.820187"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:997.99985886%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-g-blue.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38"><tspan
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:997.99985886%;fill:#ffffff;font-family:Silom;-inkscape-font-specification:Silom"
+         y="85.650345"
+         x="33.820187"
+         id="tspan3833"
+         sodipodi:role="line">G</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#ff5c00;fill-opacity:1;stroke:none"
+       id="path3835"
+       sodipodi:cx="262.85715"
+       sodipodi:cy="406.64789"
+       sodipodi:rx="94.285713"
+       sodipodi:ry="94.285713"
+       d="m 357.14286,406.64789 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       transform="matrix(0.49645425,0,0,0.49645425,30.840273,-139.6962)"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-w-orange.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:997.99985886%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="125.33681"
+       y="89.185875"
+       id="text3837"
+       sodipodi:linespacing="997.99986%"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-w-orange.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38"><tspan
+         sodipodi:role="line"
+         id="tspan3839"
+         x="125.33681"
+         y="89.185875"
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:997.99985886%;fill:#ffffff;font-family:Silom;-inkscape-font-specification:Silom">W</tspan></text>
+    <path
+       transform="matrix(0.49645425,0,0,0.49645425,130.84538,-139.6962)"
+       d="m 357.14286,406.64789 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       sodipodi:ry="94.285713"
+       sodipodi:rx="94.285713"
+       sodipodi:cy="406.64789"
+       sodipodi:cx="262.85715"
+       id="path3841"
+       style="fill:#007300;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-t-green.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38" />
+    <text
+       sodipodi:linespacing="997.99986%"
+       id="text3843"
+       y="89.185875"
+       x="243.34193"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:997.99985886%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-t-green.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38"><tspan
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:997.99985886%;fill:#ffffff;font-family:Silom;-inkscape-font-specification:Silom"
+         y="89.185875"
+         x="243.34193"
+         id="tspan3845"
+         sodipodi:role="line">T</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#800000;fill-opacity:1;stroke:none"
+       id="path3847"
+       sodipodi:cx="262.85715"
+       sodipodi:cy="406.64789"
+       sodipodi:rx="94.285713"
+       sodipodi:ry="94.285713"
+       d="m 357.14286,406.64789 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       transform="matrix(0.49645425,0,0,0.49645425,-75.730816,-42.721556)"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-n-darkred.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:997.99985886%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="27.765732"
+       y="186.16052"
+       id="text3849"
+       sodipodi:linespacing="997.99986%"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-n-darkred.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38"><tspan
+         sodipodi:role="line"
+         id="tspan3851"
+         x="27.765732"
+         y="186.16052"
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:997.99985886%;fill:#ffffff;font-family:Silom;-inkscape-font-specification:Silom">N</tspan></text>
+    <path
+       transform="matrix(0.49645425,0,0,0.49645425,30.335201,-40.196175)"
+       d="m 357.14286,406.64789 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       sodipodi:ry="94.285713"
+       sodipodi:rx="94.285713"
+       sodipodi:cy="406.64789"
+       sodipodi:cx="262.85715"
+       id="path3853"
+       style="fill:#800080;fill-opacity:1;stroke:none"
+       sodipodi:type="arc"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-s-darkpink.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38" />
+    <text
+       sodipodi:linespacing="997.99986%"
+       id="text3855"
+       y="188.6859"
+       x="139.84375"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:997.99985886%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       xml:space="preserve"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-s-darkpink.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38"><tspan
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:997.99985886%;fill:#ffffff;font-family:Silom;-inkscape-font-specification:Silom"
+         y="188.6859"
+         x="139.84375"
+         id="tspan3857"
+         sodipodi:role="line">S</tspan></text>
+    <path
+       sodipodi:type="arc"
+       style="fill:#008080;fill-opacity:1;stroke:none"
+       id="path3859"
+       sodipodi:cx="262.85715"
+       sodipodi:cy="406.64789"
+       sodipodi:rx="94.285713"
+       sodipodi:ry="94.285713"
+       d="m 357.14286,406.64789 a 94.285713,94.285713 0 1 1 -188.57143,0 94.285713,94.285713 0 1 1 188.57143,0 z"
+       transform="matrix(0.49645425,0,0,0.49645425,132.86568,-38.680946)"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-e-turquoise.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:997.99985886%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="242.37422"
+       y="190.20113"
+       id="text3861"
+       sodipodi:linespacing="997.99986%"
+       inkscape:export-filename="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/icons/bdd-e-turquoise.png"
+       inkscape:export-xdpi="15.38"
+       inkscape:export-ydpi="15.38"><tspan
+         sodipodi:role="line"
+         id="tspan3863"
+         x="242.37422"
+         y="190.20113"
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:997.99985886%;fill:#ffffff;font-family:Silom;-inkscape-font-specification:Silom">E</tspan></text>
+  </g>
+</svg>

@@ -2,24 +2,61 @@
 <templates>
 <template
 	context="org.technbolts.jbehave.story"
-	description="Erlang case block"
-	id="org.erlide.ui.editor.case"
+	description="Story sample"
+	id="org.technbolts.jbehave.story.sample1"
 	autoinsert="true"
-	name="case">case ${expr} of
-    ${value} -&gt; ${clause};
-    _ -&gt; ${default}
-end,
+	name="sample1">Scenario:  trader is not alerted below threshold
+ 
+Given a stock of symbol ${symbol} and a threshold of ${threshold:10.0f}
+When the stock is traded at ${value:5.0}
+Then the alert status should be ${status:OFF}
 </template>
 <template
 	context="org.technbolts.jbehave.story"
-	description="Erlang try/catch block"
-	id="org.erlide.ui.editor.try_catch"
+	description="Story sample with narrative and two scenario"
+	id="org.technbolts.jbehave.story.sample2"
 	autoinsert="true"
-	name="try">try
-    ${expr}
-catch
-     throw:${term} -&gt;
-         ${clause}
-end,
+	name="sample2">A story is a collection of scenarios
+ 
+Narrative:
+In order to communicate effectively to the business some functionality
+As a development team
+I want to use Behaviour-Driven Development
+     
+Scenario:  A scenario is a collection of executable steps of different type
+ 
+Given step represents a precondition to an event
+When step represents the occurrence of the event
+Then step represents the outcome of the event
+ 
+Scenario:  Another scenario exploring different combination of events
+ 
+Given a precondition
+When a negative event occurs
+Then a the outcome should be captured
+</template>
+<template
+	context="org.technbolts.jbehave.story"
+	description="Story preamble"
+	id="org.technbolts.jbehave.story.preamble"
+	autoinsert="true"
+	name="preamble">Narrative:
+In order to ${inOrderTo}
+As a ${asA}
+I want to ${iWantTo}
+</template>
+<template
+	context="org.technbolts.jbehave.story"
+	description="Simple scenario"
+	id="org.technbolts.jbehave.story.scenario"
+	autoinsert="true"
+	name="scenario">
+Scenario:  ${scenarioTitle}
+ 
+Given ${given}
+And ${givenAnd}
+When ${when}
+And ${whenAnd}
+Then ${then}
 </template>
 </templates>

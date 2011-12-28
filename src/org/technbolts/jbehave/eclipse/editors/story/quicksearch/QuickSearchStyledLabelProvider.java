@@ -1,5 +1,6 @@
-package org.technbolts.jbehave.eclipse.editors.story.outline;
+package org.technbolts.jbehave.eclipse.editors.story.quicksearch;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.eclipse.jface.resource.ImageRegistry;
@@ -7,10 +8,10 @@ import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.technbolts.jbehave.eclipse.ImageIds;
-import org.technbolts.jbehave.support.JBKeyword;
+import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.util.TextProvider;
 
-public class QuickOutlineStyledLabelProvider extends StyledCellLabelProvider implements TextProvider {
+public class QuickSearchStyledLabelProvider extends StyledCellLabelProvider implements TextProvider {
     
     private ImageRegistry imageRegistry;
     private boolean displayDecoration = false;
@@ -21,7 +22,7 @@ public class QuickOutlineStyledLabelProvider extends StyledCellLabelProvider imp
      * @see ImageIds#STEP_WHEN
      * @see ImageIds#STEP_THEN
      */
-    public QuickOutlineStyledLabelProvider(ImageRegistry imageRegistry) {
+    public QuickSearchStyledLabelProvider(ImageRegistry imageRegistry) {
         this.imageRegistry = imageRegistry;
     }
 
@@ -32,9 +33,9 @@ public class QuickOutlineStyledLabelProvider extends StyledCellLabelProvider imp
             cell.setText("/");
             return;
         }
-        OutlineModel model = (OutlineModel) element;
-        defineText(model, cell);
-        defineImage(model, cell);
+        PotentialStep pStep = (PotentialStep) element;
+        defineText(pStep, cell);
+        defineImage(pStep, cell);
         
         super.update(cell);
     }
@@ -48,28 +49,36 @@ public class QuickOutlineStyledLabelProvider extends StyledCellLabelProvider imp
     }
     
     public String textOf(Object element) {
-        return ((OutlineModel)element).getContent();
+        return ((PotentialStep)element).stepPattern;
     }
 
-    private void defineText(OutlineModel model, ViewerCell cell) {
-        StyledString styledString = new StyledString(textOf(model));
+    private void defineText(PotentialStep pStep, ViewerCell cell) {
+        StyledString styledString = new StyledString(textOf(pStep));
         
+        if(displayDecoration) {
+            String decoration = MessageFormat.format(" ({0}#{1})", new Object[] {
+                     pStep.method.getParent().getElementName(),
+                     pStep.method.getElementName()
+                    }); //$NON-NLS-1$
+            styledString.append(decoration, StyledString.QUALIFIER_STYLER);
+        }
+
         cell.setText(styledString.toString());
         cell.setStyleRanges(styledString.getStyleRanges());
     }
 
-    private void defineImage(OutlineModel model, ViewerCell cell) {
+    private void defineImage(PotentialStep pStep, ViewerCell cell) {
         String key = null;
-        
-        JBKeyword keyword = model.getKeyword();
-        if(keyword.isNarrative()) {
-            key = ImageIds.NARRATIVE;
-        }
-        else if(keyword.isExampleTable()) {
-            key = ImageIds.EXAMPLE_TABLE;
-        }
-        else if(keyword == JBKeyword.Scenario) {
-            key = ImageIds.SCENARIO;
+        switch (pStep.stepType) {
+            case GIVEN:
+                key = ImageIds.STEP_GIVEN;
+                break;
+            case WHEN:
+                key = ImageIds.STEP_WHEN;
+                break;
+            case THEN:
+                key = ImageIds.STEP_THEN;
+                break;
         }
 
         if (key != null) {

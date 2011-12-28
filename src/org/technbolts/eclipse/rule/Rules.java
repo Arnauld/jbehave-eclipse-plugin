@@ -20,6 +20,14 @@ public class Rules {
         return reader;
     }
     
+    public static BidirectionalReader createReader(IDocument document) {
+        return createReader(document, 0, document.getLength());
+    }
+    
+    public static BidirectionalReader createReader(IDocument document, int offset, int length) {
+        return createReader(createScanner(document, offset, length));
+    }
+
     public static ICharacterScanner createScanner(IDocument document, int offset, int length) {
         return new DocumentCharacterScanner(document, offset, length);
     }

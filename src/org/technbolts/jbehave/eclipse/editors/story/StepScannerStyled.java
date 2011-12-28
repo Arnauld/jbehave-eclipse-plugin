@@ -123,6 +123,7 @@ public class StepScannerStyled implements ITokenScanner {
     
     private StringBuilder builder = new StringBuilder();
     private void logln(String string) {
+        System.out.println("StepScannerStyled.logln(" + string + ")");
         builder.append(string).append('\n');
     }
     private void log(String string) {

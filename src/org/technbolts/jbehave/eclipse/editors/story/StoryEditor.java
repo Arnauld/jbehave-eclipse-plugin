@@ -1,5 +1,6 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.IFile;
@@ -19,6 +20,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.technbolts.eclipse.rule.Rules;
 import org.technbolts.eclipse.util.ColorManager;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.eclipse.util.TextAttributeProvider;
@@ -27,11 +29,17 @@ import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.EditorActionDefinitionIds;
 import org.technbolts.jbehave.eclipse.editors.EditorMessages;
 import org.technbolts.jbehave.eclipse.editors.story.actions.JumpToDeclarationAction;
+import org.technbolts.jbehave.eclipse.editors.story.actions.QuickSearchAction;
 import org.technbolts.jbehave.eclipse.editors.story.actions.ShowOutlineAction;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryTemplateProposal;
+import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModel;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
+import org.technbolts.jbehave.support.JBKeyword;
+import org.technbolts.jbehave.support.StoryParser;
+import org.technbolts.util.BidirectionalReader;
+import org.technbolts.util.New;
 import org.technbolts.util.Strings;
 import org.technbolts.util.Visitor;
 
@@ -40,6 +48,7 @@ public class StoryEditor extends TextEditor {
 	private ColorManager colorManager;
     private ShowOutlineAction showOutline;
     private JumpToDeclarationAction jumpToDeclaration;
+    private QuickSearchAction quickSearch;
 
 	public StoryEditor() {
 		super();
@@ -121,6 +130,11 @@ public class StoryEditor extends TextEditor {
         setAction(EditorActionDefinitionIds.SHOW_OUTLINE, showOutline);
         markAsContentDependentAction(EditorActionDefinitionIds.SHOW_OUTLINE, true);
         
+        quickSearch = new QuickSearchAction(bundle, "QuickSearch.", this);
+        quickSearch.setActionDefinitionId(EditorActionDefinitionIds.QUICK_SEARCH);
+        setAction(EditorActionDefinitionIds.QUICK_SEARCH, quickSearch);
+        markAsContentDependentAction(EditorActionDefinitionIds.QUICK_SEARCH, true);
+        
         jumpToDeclaration = new JumpToDeclarationAction(bundle, "JumpToDeclaration.", this);
         jumpToDeclaration.setActionDefinitionId(EditorActionDefinitionIds.JUMP_TO_DECLARATION);
         setAction(EditorActionDefinitionIds.JUMP_TO_DECLARATION, jumpToDeclaration);
@@ -182,5 +196,43 @@ public class StoryEditor extends TextEditor {
 
     public IProject getProject() {
         return getInputFile().getProject();
+    }
+
+    public void showRange(int offset, int length) {
+        getSourceViewer().setVisibleRegion(offset, length);
+        getSourceViewer().setRangeIndication(offset, length, true);
+    }
+    
+    public List<OutlineModel> getOutlineModels() {
+        List<OutlineModel> models = New.arrayList();
+        
+        try {
+            IDocument document = getInputDocument();
+            BidirectionalReader reader  = Rules.createReader(document);
+            StoryParser parser = new StoryParser(false);
+            
+            while(!reader.eof()) {
+                JBKeyword keyword = parser.nextKeyword(reader);
+                if(keyword==null) {
+                    continue;
+                }
+                
+                int offset = reader.getPosition();
+                int lineNo = document.getLineOfOffset(offset);
+                int lineOffset = document.getLineOffset(lineNo);
+                int lineLength = document.getLineLength(lineNo);
+                
+                switch(keyword) {
+                    case Narrative:
+                    case Scenario:
+                        String content = Strings.removeTrailingNewlines(document.get(lineOffset,lineLength));
+                        models.add(new OutlineModel(keyword, content, offset, lineLength));
+                        break;
+                }
+            }
+        } catch (BadLocationException e) {
+            Activator.logError("Failed to generate outline models", e);
+        }
+        return models;
     }
 }

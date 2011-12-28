@@ -1,7 +1,11 @@
-package org.technbolts.jbehave.eclipse.editors.story.outline;
+package org.technbolts.jbehave.eclipse.editors.story.quicksearch;
 
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.ui.ISharedImages;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.resource.ImageRegistry;
@@ -26,12 +30,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.PlatformUI;
+import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.story.StoryEditor;
 import org.technbolts.jbehave.eclipse.ui.PatternViewFilter;
+import org.technbolts.util.Lists;
 import org.technbolts.util.Strings;
 import org.technbolts.util.TextProvider;
 
-public class QuickOutlinePopupDialog extends PopupDialog {
+public class QuickSearchPopupDialog extends PopupDialog {
 
     private ImageRegistry imageRegistry;
     
@@ -40,12 +47,12 @@ public class QuickOutlinePopupDialog extends PopupDialog {
      */
     private TreeViewer treeViewer;
     private PatternViewFilter fNamePatternFilter;
-    private QuickOutlineTreeContentProvider treeContentProvider;
-    private QuickOutlineStyledLabelProvider labelProvider;
+    private QuickSearchTreeContentProvider treeContentProvider;
+    private QuickSearchStyledLabelProvider labelProvider;
     private StoryEditor editor;
     private Text filterText;
 
-    public QuickOutlinePopupDialog(Shell parent, int shellStyle, StoryEditor editor, ImageRegistry imageRegistry) {
+    public QuickSearchPopupDialog(Shell parent, int shellStyle, StoryEditor editor, ImageRegistry imageRegistry) {
         super(parent, shellStyle, true, true, true, true, true, null, null);
         setInfoText("select a value or press ESC to exit");
         this.editor = editor;
@@ -93,8 +100,22 @@ public class QuickOutlinePopupDialog extends PopupDialog {
     *
     */
    private void createUIActions() {
+       showStepClassInformationAction = new ShowStepClassInformationAction(false);
    }
    
+   /* (non-Javadoc)
+    * @see org.eclipse.jface.dialogs.PopupDialog#fillDialogMenu(org.eclipse.jface.action.IMenuManager)
+    */
+   @Override
+   protected void fillDialogMenu(IMenuManager dialogMenu) {
+       // Add the sort action
+       dialogMenu.add(showStepClassInformationAction);
+       // Separator
+       dialogMenu.add(new Separator());
+       // Add the default actions
+       super.fillDialogMenu(dialogMenu);
+   }
+
     /**
      * @param parent
      */
@@ -117,11 +138,11 @@ public class QuickOutlinePopupDialog extends PopupDialog {
         treeViewer.addFilter(fNamePatternFilter);
 
         // Set the content provider
-        treeContentProvider = new QuickOutlineTreeContentProvider();
+        treeContentProvider = new QuickSearchTreeContentProvider();
         treeViewer.setContentProvider(treeContentProvider);
 
         // Set the label provider
-        labelProvider = new QuickOutlineStyledLabelProvider(imageRegistry);
+        labelProvider = new QuickSearchStyledLabelProvider(imageRegistry);
         treeViewer.setLabelProvider(labelProvider);
 
         // Create the outline sorter (to be set on the sort action)
@@ -136,7 +157,7 @@ public class QuickOutlinePopupDialog extends PopupDialog {
         // fTreeViewer.setComparator(fTreeViewerDefaultComparator);
         treeViewer.setAutoExpandLevel(1);
         treeViewer.setUseHashlookup(true);
-        treeViewer.setInput(editor.getOutlineModels());
+        treeViewer.setInput(Lists.toList(editor.getPotentialSteps()));
     }
     
     /**
@@ -162,7 +183,7 @@ public class QuickOutlinePopupDialog extends PopupDialog {
        tree.addMouseListener(new MouseAdapter() {
            @Override
             public void mouseDoubleClick(MouseEvent e) {
-               gotoSelectedElement();
+                insertSelectedElement();
             }
        });
        
@@ -173,7 +194,7 @@ public class QuickOutlinePopupDialog extends PopupDialog {
            }
 
            public void widgetDefaultSelected(final SelectionEvent e) {
-               gotoSelectedElement();
+               insertSelectedElement();
            }
        });
    }
@@ -229,7 +250,7 @@ public class QuickOutlinePopupDialog extends PopupDialog {
             public void keyPressed(final KeyEvent e) {
                 if (e.keyCode == 0x0D) {
                     // Return key was pressed
-                    gotoSelectedElement();
+                    insertSelectedElement();
                 } else if (e.keyCode == SWT.ARROW_DOWN) {
                     // Down key was pressed
                     treeViewer.getTree().setFocus();
@@ -269,13 +290,15 @@ public class QuickOutlinePopupDialog extends PopupDialog {
         });
     }
     
-    private void gotoSelectedElement() {
-        OutlineModel selectedElement = (OutlineModel)getSelectedElement();
-        editor.showRange(selectedElement.getOffset(), selectedElement.getLength());
+    private void insertSelectedElement() {
+        Object selectedElement = getSelectedElement();
+        editor.insertAsTemplate((PotentialStep)selectedElement);
         close();
     }
 
     private Pattern namePattern;
+
+    private ShowStepClassInformationAction showStepClassInformationAction;
 
     /**
      * Sets the patterns to filter out for the receiver.
@@ -364,4 +387,22 @@ public class QuickOutlinePopupDialog extends PopupDialog {
         return null;
     }
     
+    private class ShowStepClassInformationAction extends Action {
+
+        public ShowStepClassInformationAction(boolean initValue) {
+            super ("Show class information");
+            setDescription("Show the class and method that defines the step");
+            setToolTipText("Show the class and method that defines the step");
+            setChecked(initValue);
+            setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_CLASS));
+        }
+
+        /*
+         * @see Action#actionPerformed
+         */
+        public void run() {
+            labelProvider.setDisplayDecoration(isChecked());
+            treeViewer.refresh(true);
+        }
+    }
 }

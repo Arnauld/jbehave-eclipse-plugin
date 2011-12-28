@@ -22,7 +22,6 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.TemplateUtils;
-import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
@@ -40,32 +39,27 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             int lineOffset = document.getLineOffset(lineNo);
             boolean isWithinLine = (lineOffset < offset);
             
-            // retrieve region before 'cause we are probably in the next one
-            ITypedRegion region = document.getPartition(offset-1);
-            int partitionOffset = region.getOffset();
-            int partitionLength = region.getLength();
-            int index = (offset - 1) - partitionOffset;
-            
-            String partitionText = document.get(partitionOffset, partitionLength);
+            String partitionText = "";
+            int index = offset;
             String lineStart = "";
-            if(isWithinLine) {
-                lineStart = Strings.getSubLineUntilOffset(partitionText, index+1);
+
+            if(offset>0) {
+                // retrieve region before 'cause we are probably in the next one
+                ITypedRegion region = document.getPartition(offset-1);
+                int partitionOffset = region.getOffset();
+                int partitionLength = region.getLength();
+                index = (offset - 1) - partitionOffset;
+                partitionText = document.get(partitionOffset, partitionLength);
+                if(isWithinLine) {
+                    lineStart = Strings.getSubLineUntilOffset(partitionText, index+1);
+                }
             }
 
-            Activator.logInfo("\n" +
-                            "....Offset........: " + offset + "\n" + 
-                            "lineOffset........: " + lineOffset + "\n" + 
-                            "Partition text....: " + partitionText.substring(0, index) + "<*>" + partitionText.substring(index) + "\n" +
-                            "partitionOffset...: " + partitionOffset + "\n" +
-                            "Index.............: " + index + "\n" +
-                            "lineStart.........:>" + lineStart + "<" + "\n" + 
-                            "isTheStartOfAStep.: " + LineParser.isTheStartIgnoringCaseOfStep(lineStart)
-                    );
             if(StringUtils.isEmpty(lineStart)) {
-                return createKeywordCompletionProposals(offset, 0);
+                return createKeywordCompletionProposals(offset, 0, viewer);
             }
             else if(LineParser.isTheStartIgnoringCaseOfStep(lineStart) && !LineParser.isStepType(lineStart)) {
-                return createKeywordCompletionProposals(lineOffset, lineStart.length());
+                return createKeywordCompletionProposals(lineOffset, lineStart.length(), viewer);
             }
             
             // TODO add support for multi-line step
@@ -79,9 +73,6 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             String stepEntry = LineParser.extractStepSentence(stepStart);
             boolean isEmpty  = StringUtils.isBlank(stepEntry);
             
-            final StoryTemplateCompletionProcessor t = new StoryTemplateCompletionProcessor();
-            
-
             Region regionFullLine = new Region(lineOffset, lineStart.length());
             Region regionComplete = new Region(offset, 0);
             
@@ -109,8 +100,6 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                     displayString = complete;
                 }
 
-                Activator.logInfo(">>> " + pStep.weight + " // >" + complete + "< // >" + stepStart + "< // " + pStep.potentialStep);
-                
                 int cursor = complete.indexOf('$');
                 if(cursor<0) {
                     cursor = complete.length();
@@ -135,7 +124,6 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 }
             }
             
-            proposals.addAll(Arrays.asList(t.computeCompletionProposals(viewer, offset)));
             return proposals.toArray(new ICompletionProposal[proposals.size()]);
 
         } catch (BadLocationException e) {
@@ -149,14 +137,18 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
         return new DocumentTemplateContext(contextType, document, region.getOffset(), region.getLength());
     }
 
-    private ICompletionProposal[] createKeywordCompletionProposals(int offset, int length) {
+    private ICompletionProposal[] createKeywordCompletionProposals(int offset, int length, ITextViewer viewer) {
+        List<ICompletionProposal> proposals = New.arrayList();
+
         String[] keywords = new String[] {"Given ", "When ", "Then ", "And "};
-        ICompletionProposal[] result = new ICompletionProposal[keywords.length];
         for(int i=0;i<keywords.length;i++) {
             String kw = keywords[i];
-            result[i] = new CompletionProposal(kw, offset, length, kw.length());
+            proposals.add(new CompletionProposal(kw, offset, length, kw.length()));
         };
-        return result;
+        
+        StoryTemplateCompletionProcessor t = new StoryTemplateCompletionProcessor();
+        proposals.addAll(Arrays.asList(t.computeCompletionProposals(viewer, offset)));
+        return proposals.toArray(new ICompletionProposal[proposals.size()]);
     }
 
     @Override

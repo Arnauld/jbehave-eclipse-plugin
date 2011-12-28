@@ -35,4 +35,11 @@ public class CharTreeTest {
         assertEquals(Given, cn.lookup("Given a user named \"Bob\""));
         assertEquals(InOrderTo, cn.lookup("In order to be more communicative"));
     }
+    
+    @Test
+    public void lookup_missing() {
+        assertEquals(null, cn.lookup("Gaven"));
+        assertEquals(null, cn.lookup("\n"));
+    }
+
 }

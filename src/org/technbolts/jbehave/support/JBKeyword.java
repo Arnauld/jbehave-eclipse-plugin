@@ -121,6 +121,14 @@ public enum JBKeyword {
         return isStep(this);
     }
     
+    public boolean isNarrative() {
+        return isNarrative(this);
+    }
+    
+    public boolean isExampleTable() {
+        return isExampleTable(this);
+    }
+    
     public static JBKeyword lookup(StringBuilder builder, Keywords keywords) {
         int len = builder.length();
         for(JBKeyword jk : values()) {
@@ -158,6 +166,35 @@ public enum JBKeyword {
             case When:
             case Then:
             case And:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    public static boolean isNarrative(JBKeyword keyword) {
+        if(keyword==null)
+            return false;
+        switch(keyword) {
+            case Narrative:
+            case InOrderTo:
+            case AsA:
+            case IWantTo:
+                return true;
+            default:
+                return false;
+        }
+    }
+    
+    public static boolean isExampleTable(JBKeyword keyword) {
+        if(keyword==null)
+            return false;
+        switch(keyword) {
+            case ExamplesTable:
+            case ExamplesTableHeaderSeparator:
+            case ExamplesTableIgnorableSeparator:
+            case ExamplesTableRow:
+            case ExamplesTableValueSeparator:
                 return true;
             default:
                 return false;

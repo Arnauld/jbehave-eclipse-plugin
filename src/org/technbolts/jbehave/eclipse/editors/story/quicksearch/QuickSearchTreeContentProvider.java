@@ -1,11 +1,12 @@
-package org.technbolts.jbehave.eclipse.editors.story.outline;
+package org.technbolts.jbehave.eclipse.editors.story.quicksearch;
 
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.technbolts.jbehave.eclipse.PotentialStep;
 
-public class QuickOutlineTreeContentProvider implements ITreeContentProvider {
+public class QuickSearchTreeContentProvider implements ITreeContentProvider {
 
     private final Object[] NO_CHILDREN = new Object[] {};
 
@@ -21,8 +22,8 @@ public class QuickOutlineTreeContentProvider implements ITreeContentProvider {
     public Object[] getChildren(Object parent) {
         if(parent instanceof List) {
             @SuppressWarnings("unchecked")
-            List<OutlineModel> models = (List<OutlineModel>)parent;
-            return models.toArray();
+            List<PotentialStep> candidates = (List<PotentialStep>)parent;
+            return candidates.toArray();
         }
         return NO_CHILDREN;
     }
@@ -41,8 +42,8 @@ public class QuickOutlineTreeContentProvider implements ITreeContentProvider {
     public boolean hasChildren(Object parent) {
         if(parent instanceof List) {
             @SuppressWarnings("unchecked")
-            List<OutlineModel> models = (List<OutlineModel>)parent;
-            return !models.isEmpty();
+            List<PotentialStep> candidates = (List<PotentialStep>)parent;
+            return !candidates.isEmpty();
         }
         return false;
     }

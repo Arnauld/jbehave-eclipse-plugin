@@ -1,8 +1,5 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import static org.technbolts.jbehave.support.JBKeyword.stepFilter;
-import static org.technbolts.util.Lists.filterTransformed;
-
 import java.util.List;
 import java.util.Map;
 
@@ -16,22 +13,21 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
+import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
-import org.technbolts.jbehave.support.StoryParser;
-import org.technbolts.util.BidirectionalReader;
-import org.technbolts.util.IO;
 import org.technbolts.util.New;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.Strings;
 import org.technbolts.util.Transform;
 import org.technbolts.util.Visitor;
+
+import fj.F;
 
 public class MarkingStoryValidator {
     public static final String MARKER_ID = Activator.PLUGIN_ID + ".storyMarker";
@@ -56,34 +52,24 @@ public class MarkingStoryValidator {
     }
 
     public void validate() {
-        List<Part> parts = extractParts();
+        List<StoryPart> parts = extractParts();
         Activator.logInfo("MarkingStoryValidator:Validate parts found: " + StringUtils.join(parts, "\n\t"));
         analyzeParts(parts);
     }
 
-    private List<Part> extractParts() {
-        BidirectionalReader bidiReader = IO.toBidirectionalReader(document.get());
-
-        List<Part> parts = New.arrayList();
-        StoryParser parser = new StoryParser(false);
-        JBKeyword keyword = null;
-        do {
-            int beg = bidiReader.getPosition();
-            keyword = parser.nextKeyword(bidiReader);
-            int end = bidiReader.getPosition();
-            if(bidiReader.eof())
-                end--;
-
-            if (keyword == null)
-                continue;
-
-            Part part = new Part(keyword, beg, end);
-            parts.add(part);
-        } while (!bidiReader.eof());
-        return parts;
+    private List<StoryPart> extractParts() {
+        String content = document.get();
+        return new org.technbolts.jbehave.parser.StoryParser().parse(content);
     }
-
-    private void analyzeParts(final List<Part> parts) {
+    
+    private void analyzeParts(final List<StoryPart> storyParts) {
+        final fj.data.List<Part> parts = fj.data.List.iterableList(storyParts).map(new F<StoryPart,Part>() {
+            @Override
+            public Part f(StoryPart storyPart) {
+                return new Part(storyPart);
+            }
+        });
+        
         ProcessGroup<?> group = Activator.getDefault().newProcessGroup();
         group.spawn(new Runnable() {
             public void run() {
@@ -116,8 +102,13 @@ public class MarkingStoryValidator {
         }
     }
 
-    private void checkSteps(final List<Part> parts) throws JavaModelException {
-        List<Part> steps = filterTransformed(parts, partToKeyword(), stepFilter());
+    private void checkSteps(final fj.data.List<Part> parts) throws JavaModelException {
+        fj.data.List<Part> steps = parts.filter(new F<Part,Boolean>() {
+            public Boolean f(Part part) {
+                return JBKeyword.isStep(part.storyPart.getKeyword());
+            };
+        });
+        
         final Map<String, List<PotentialStep>> potentials = New.hashMap();
         for (Part part : steps) {
             List<PotentialStep> list = New.arrayList();
@@ -137,7 +128,7 @@ public class MarkingStoryValidator {
             }
         });
 
-        Activator.logInfo("MarkingStoryValidator:checkSteps:Analysing potentials on #" + steps.size() +" part(s)");
+        Activator.logInfo("MarkingStoryValidator:checkSteps:Analysing potentials on #" + steps.length() +" part(s)");
         for (Part part : steps) {
             String key = extractStepSentenceAndRemoveTrailingNewlines(part);
             List<PotentialStep> candidates = potentials.get(key);
@@ -159,30 +150,26 @@ public class MarkingStoryValidator {
         return new Transform<MarkingStoryValidator.Part, JBKeyword>() {
             @Override
             public JBKeyword transform(Part part) {
-                return part.keyword;
+                return part.storyPart.getKeyword();
             }
         };
     }
 
     class Part {
-        public final int offsetBeg;
-        public final int offsetEnd;
-        public final JBKeyword keyword;
         private List<MarkData> marks = New.arrayList();
+        private StoryPart storyPart;
 
-        private Part(JBKeyword keyword, int offsetBeg, int offsetEnd) {
+        private Part(StoryPart storyPart) {
             super();
-            this.keyword = keyword;
-            this.offsetBeg = offsetBeg;
-            this.offsetEnd = offsetEnd;
+            this.storyPart = storyPart;
         }
 
         public void addMark(int code, String message) {
             marks.add(new MarkData()//
                     .severity(IMarker.SEVERITY_ERROR)//
                     .message(message)//
-                    .offsetStart(offsetBeg)//
-                    .offsetEnd(offsetEnd)
+                    .offsetStart(storyPart.getOffset())//
+                    .offsetEnd(storyPart.getOffsetEnd())
                     .attribute(Marks.ERROR_CODE, code));
         }
 
@@ -194,7 +181,9 @@ public class MarkingStoryValidator {
                 for (MarkData mark : marks) {
                     IMarker marker = file.createMarker(MARKER_ID);
                     marker.setAttributes(mark.createAttributes(file, document));
-                    marker.setAttribute("Keyword", keyword.name());
+                    JBKeyword keyword = storyPart.getKeyword();
+                    if(keyword!=null)
+                        marker.setAttribute("Keyword", keyword.name());
                 }
             } catch (Exception e) {
                 Activator.logError("MarkingStoryValidator:Failed to apply marks", e);
@@ -202,13 +191,7 @@ public class MarkingStoryValidator {
         }
 
         public String text() {
-            try {
-                return document.get(offsetBeg, offsetEnd - offsetBeg);
-            } catch (BadLocationException e) {
-                Activator.logError("MarkingStoryValidator:Unable to get text using offset range <" + offsetBeg + ", " + offsetEnd + "> " +
-                		"document length: " + document.getLength(), e);
-            }
-            return "";
+            return storyPart.getContent();
         }
 
         public String textWithoutTrailingNewlines() {
@@ -217,7 +200,7 @@ public class MarkingStoryValidator {
 
         @Override
         public String toString() {
-            return "Part [offsetBeg=" + offsetBeg + ", offsetEnd=" + offsetEnd + ", keyword=" + keyword + ", marks="
+            return "Part [offset=" + storyPart.getOffset() + ", length=" + storyPart.getLength() + ", keyword=" + storyPart.getKeyword() + ", marks="
                     + marks + ", text=" + textWithoutTrailingNewlines() + "]";
         }
 

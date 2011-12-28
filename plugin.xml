@@ -32,6 +32,9 @@
             id="org.technbolts.jbehave.eclipse.actions.show-outline"
             name="Show outline"/>
       <command
+            id="org.technbolts.jbehave.eclipse.actions.quick-search"
+            name="Show outline"/>
+      <command
             id="org.technbolts.jbehave.eclipse.actions.jump-to-declaration"
             name="Jump to declaration"/>
    </extension>
@@ -53,6 +56,11 @@
             contextId="org.technbolts.jbehave.eclipse.storyEditorScope"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+O"/>
+      <key
+            commandId="org.technbolts.jbehave.eclipse.actions.quick-search"
+            contextId="org.technbolts.jbehave.eclipse.storyEditorScope"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+J"/>
       <key
             commandId="org.technbolts.jbehave.eclipse.actions.jump-to-declaration"
             contextId="org.technbolts.jbehave.eclipse.storyEditorScope"

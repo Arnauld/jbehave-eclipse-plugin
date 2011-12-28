@@ -42,7 +42,7 @@ public class AccountSteps {
             @Named("propertiesTable") ExamplesTable propertiesTable) {
     }
 
-    @Given("a new account named '$accountKey' with the following properties (properties not set will be completed) $propertiesTable")
+    //@Given("a new account named '$accountKey' with the following properties (properties not set will be completed) $propertiesTable")
     public void createAnAccountAndCompleteEmptyFields(@Named("accountKey") String accountKey,
             @Named("propertiesTable") ExamplesTable propertiesTable) {
     }

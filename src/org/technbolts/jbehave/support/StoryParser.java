@@ -23,16 +23,22 @@ public class StoryParser {
             int posBeforeLine = scanner.getPosition();
             line = scanner.readLine();
             
+            System.out.println("StoryParser.nextKeyword(1:line: " + line + ", pos: " + posBeforeLine + ")");
+            
             try {
                 JBKeyword keywordRead = extractKeyword(line);
+                System.out.println("StoryParser.nextKeyword(2: keywordRead:" + keywordRead + ", keyword:" + keyword + ")");
                 if(keywordRead==null) {
                     // no stop word, data can extends to multiple line, continue :)
                     continue;
                 }
                 else
                 if(keyword==null) {
+                    System.out.println("StoryParser.nextKeyword(3.1:keyword is null, readCount: " + readCount + ")");
                     // no keyword yet, if something has been read then it is undefined
                     if(readCount>0) {
+                        System.out.println("StoryParser.nextKeyword(3.2:backToPosition: " + posBeforeLine);
+                        new Exception().printStackTrace();
                         scanner.backToPosition(posBeforeLine);
                         return null;
                     }
@@ -40,6 +46,8 @@ public class StoryParser {
                         keyword = keywordRead;
                 }
                 else if(isKeywordStop(keywordRead, keyword)) {
+                    System.out.println("StoryParser.nextKeyword(3:--)");
+
                     // already within a keyword, thus it is a stop word
                     scanner.backToPosition(posBeforeLine);
                     return keyword;
@@ -50,6 +58,8 @@ public class StoryParser {
                 readCount += line.length();
             }
         }
+        
+        System.out.println("StoryParser.nextKeyword(end: " + keyword);
         
         // remaining
         return keyword;

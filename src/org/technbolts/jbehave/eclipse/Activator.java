@@ -67,6 +67,10 @@ public class Activator extends AbstractUIPlugin {
 	    registry.put(ImageIds.STEP_GIVEN, getImageDescriptor("icons/bdd-g-blue.png"));
         registry.put(ImageIds.STEP_WHEN,  getImageDescriptor("icons/bdd-w-orange.png"));
         registry.put(ImageIds.STEP_THEN,  getImageDescriptor("icons/bdd-t-green.png"));
+        //
+        registry.put(ImageIds.NARRATIVE,  getImageDescriptor("icons/bdd-n-darkred.png"));
+        registry.put(ImageIds.SCENARIO,  getImageDescriptor("icons/bdd-s-darkpink.png"));
+        registry.put(ImageIds.EXAMPLE_TABLE,  getImageDescriptor("icons/bdd-e-turquoise.png"));
 	}
 
 	/**
