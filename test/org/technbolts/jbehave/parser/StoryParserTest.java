@@ -32,4 +32,40 @@ public class StoryParserTest {
         }
     }
     
+    @Test 
+    public void parse_case4() throws IOException {
+        String storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx04.story"));
+        StoryParser parser = new StoryParser();
+        for(StoryPart b : parser.parse(storyAsText)) {
+            System.out.println(
+                    "offset: " + b.getOffset() + ", " +
+                    "length: " + b.getLength() + ", " +
+                    "content: >>" + b.getContent().replace("\n", "\\n") + "<<");
+        }
+    }
+    
+    @Test 
+    public void parse_case5_exampleTable() throws IOException {
+        String storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx05-exampletable.story"));
+        StoryParser parser = new StoryParser();
+        for(StoryPart b : parser.parse(storyAsText)) {
+            System.out.println(
+                    "offset: " + b.getOffset() + ", " +
+                    "length: " + b.getLength() + ", " +
+                    "content: >>" + b.getContent().replace("\n", "\\n") + "<<");
+        }
+    }
+    
+    @Test 
+    public void parse_case6_exampleTable() throws IOException {
+        String storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx06-exampletable.story"));
+        StoryParser parser = new StoryParser();
+        for(StoryPart b : parser.parse(storyAsText)) {
+            System.out.println(
+                    "offset: " + b.getOffset() + ", " +
+                    "length: " + b.getLength() + ", " +
+                    "content: >>" + b.getContent().replace("\n", "\\n") + "<<");
+        }
+    }
+    
 }

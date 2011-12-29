@@ -35,12 +35,6 @@ public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPart
             int length,
             String contentType,
             int partitionOffset) {
-        System.out.println("\n\n==================================\nStoryPartitionScanner.setPartialRange(\n" + 
-                "offset...........: " + offset + "\n" +
-                "length...........: " + length + "\n" +
-                "contentType......: " + contentType + "\n" + 
-                "partitionOffset..: " + partitionOffset + "\n==================================\n");
-        
         this.document = document;
         initializePartitions();
     }
@@ -57,12 +51,6 @@ public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPart
     
     @Override
     public IToken nextToken() {
-        IToken token = nextToken0();
-        System.out.println("StoryPartitionScanner.nextToken(" + token.getData() + ", currentPartition: " + currentPartition + ")");
-        return token;
-    }
-    
-    private IToken nextToken0 () {
         if(cursor<partitions.size()) {
             currentPartition = partitions.get(cursor++);
             return new Token(currentPartition.keyword.name());
@@ -81,15 +69,12 @@ public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPart
                 push(part);
             }
         });
-        
-        for(Partition p : partitions) {
-            System.out.println(">> " + p.keyword + ", offset:" + p.offset + ", length: " + p.length);
-        }
     }
     
     private void push(StoryPart part) {
+        JBPartition partition = JBPartition.partitionOf(part.getKeyword());
         Partition p = new Partition(
-                JBPartition.partitionOf(part.getKeyword()),
+                partition,
                 part.getOffset(),
                 part.getLength());
         

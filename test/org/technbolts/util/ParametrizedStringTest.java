@@ -396,4 +396,44 @@ public class ParametrizedStringTest {
         assertThat(s.matches("a user named $name clicks on $butoon button"), is(true));
         assertThat(s.matches("a user named Travis clicks on enter "), is(false));
     }
+    
+    @Test
+    public void weightChain_withNewlines () {
+        ParametrizedString s = new ParametrizedString("a user named $name with the following properties $exampleTable");
+        String content = "a user named Bob with the following properties \n" +
+                         "|key|value|\n" +
+                         "|Login|networkAgentLogin|\n" +
+                         "|Password|networkAgentPassword|\n";
+        
+        WeightChain chain = s.calculateWeightChain(content);
+        List<String> tokenList = chain.tokenize();
+        for(String token : tokenList) {
+            System.out.println(">>"+token+"<<");
+        }
+        assertThat(tokenList.subList(0, 3), equalTo(Arrays.asList("a user named ", "Bob", " with the following properties ")));
+        assertThat(tokenList.get(3), equalTo("\n" +
+                         "|key|value|\n" +
+                         "|Login|networkAgentLogin|\n" +
+                         "|Password|networkAgentPassword|\n"));
+    }
+    
+    @Test
+    public void weightChain_withNewlines_noParameterBefore () {
+        ParametrizedString s = new ParametrizedString("a user named Bob with the following properties $exampleTable");
+        String content = "a user named Bob with the following properties \n" +
+                         "|key|value|\n" +
+                         "|Login|networkAgentLogin|\n" +
+                         "|Password|networkAgentPassword|\n";
+        
+        WeightChain chain = s.calculateWeightChain(content);
+        List<String> tokenList = chain.tokenize();
+        for(String token : tokenList) {
+            System.out.println(">>"+token+"<<");
+        }
+        assertThat(tokenList.get(0), equalTo("a user named Bob with the following properties "));
+        assertThat(tokenList.get(1), equalTo("\n" +
+                         "|key|value|\n" +
+                         "|Login|networkAgentLogin|\n" +
+                         "|Password|networkAgentPassword|\n"));
+    }
 }

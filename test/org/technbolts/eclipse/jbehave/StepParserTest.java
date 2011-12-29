@@ -15,6 +15,9 @@ import org.eclipse.jface.text.rules.IToken;
 import org.jbehave.core.steps.StepType;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.story.StepScannerStyled;
@@ -29,12 +32,14 @@ public class StepParserTest {
     private TextAttribute keywordAttr;
     private TextAttribute paramAttr;
     private TextAttribute paramValueAttr;
+    private TextAttribute exampleTableSep;
     private StepLocator locator;
     private TextAttributeProvider textAttributeProvider;
     private Provider locatorProvider;
     //
 
     private int offset;
+    private TextAttribute exampleTableCell;
     
     @Before
     public void setUp () throws IOException {
@@ -42,16 +47,23 @@ public class StepParserTest {
         keywordAttr = mock(TextAttribute.class);
         paramAttr = mock(TextAttribute.class);
         paramValueAttr = mock(TextAttribute.class);
+        exampleTableSep = mock(TextAttribute.class);
+        exampleTableCell = mock(TextAttribute.class);
+        
         when(defaultAttr.toString()).thenReturn("mock-default");
         when(keywordAttr.toString()).thenReturn("mock-keyword");
         when(paramAttr.toString()).thenReturn("mock-parameter");
         when(paramValueAttr.toString()).thenReturn("mock-parameter-value");
+        when(exampleTableSep.toString()).thenReturn("mock-table-sep");
+        when(exampleTableCell.toString()).thenReturn("mock-table-cell");
         
         textAttributeProvider = mock(TextAttributeProvider.class);
         when(textAttributeProvider.get(StoryTextAttributes.Step)).thenReturn(defaultAttr);
         when(textAttributeProvider.get(StoryTextAttributes.StepKeyword)).thenReturn(keywordAttr);
         when(textAttributeProvider.get(StoryTextAttributes.StepParameter)).thenReturn(paramAttr);
         when(textAttributeProvider.get(StoryTextAttributes.StepParameterValue)).thenReturn(paramValueAttr);
+        when(textAttributeProvider.get(StoryTextAttributes.StepExampleTableSep)).thenReturn(exampleTableSep);
+        when(textAttributeProvider.get(StoryTextAttributes.StepExampleTableCell)).thenReturn(exampleTableCell);
         
         locator = mock(StepLocator.class);
         locatorProvider = mock(StepLocator.Provider.class);
@@ -169,6 +181,100 @@ public class StepParserTest {
         
         StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
         scanner.setRange(document, offset, 161);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramValueAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramValueAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        consumeRemaining(document, scanner);
+        
+        assertEquals(document.getLength(), offset);
+    }
+    
+    @Test
+    public void usecase_ex04_exampleTable () throws Exception {
+        final PotentialStep user = givenStep("a new account named 'networkAgent' with the following properties (properties not set will be completed) $exampleTable");
+        
+        storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx04.story"));
+        when(locator.findFirstStep(Mockito.anyString())).thenAnswer(new Answer<PotentialStep>() {
+            @Override
+            public PotentialStep answer(InvocationOnMock invocation) throws Throwable {
+                String searched = (String) invocation.getArguments()[0];
+                if(searched.startsWith("a new account named 'networkAgent' with the following properties"))
+                    return user;
+                else
+                    return null;
+            }
+        });
+        IDocument document= new Document(storyAsText);
+        
+        offset = 0;
+        
+        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        scanner.setRange(document, offset, document.getLength());
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramValueAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramValueAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        consumeRemaining(document, scanner);
+        
+        assertEquals(document.getLength(), offset);
+    }
+    
+    @Test
+    public void usecase_ex05_exampleTable () throws Exception {
+        final PotentialStep user = givenStep("a new account named 'networkAgent' with the following properties (properties not set will be completed) $exampleTable");
+        
+        storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx06-exampletable.story"));
+        when(locator.findFirstStep(Mockito.anyString())).thenAnswer(new Answer<PotentialStep>() {
+            @Override
+            public PotentialStep answer(InvocationOnMock invocation) throws Throwable {
+                String searched = (String) invocation.getArguments()[0];
+                if(searched.startsWith("a new account named 'networkAgent' with the following properties"))
+                    return user;
+                else
+                    return null;
+            }
+        });
+        IDocument document= new Document(storyAsText);
+        
+        offset = 0;
+        
+        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        scanner.setRange(document, offset, document.getLength());
         
         checkToken(scanner, document, keywordAttr);
         checkToken(scanner, document, defaultAttr);

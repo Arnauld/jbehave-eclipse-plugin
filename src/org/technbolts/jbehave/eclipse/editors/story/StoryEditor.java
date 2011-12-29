@@ -10,12 +10,17 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.LineBackgroundEvent;
+import org.eclipse.swt.custom.LineBackgroundListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
@@ -36,7 +41,6 @@ import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModel;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModelBuilder;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
-import org.technbolts.util.Strings;
 import org.technbolts.util.Visitor;
 
 public class StoryEditor extends TextEditor {
@@ -57,6 +61,16 @@ public class StoryEditor extends TextEditor {
 	public void dispose() {
 		colorManager.dispose();
 		super.dispose();
+	}
+	
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+	    ISourceViewer sourceViewer = super.createSourceViewer(parent, ruler, styles);
+	    sourceViewer.getTextWidget().addLineBackgroundListener(new LineBackgroundListener() {
+            @Override
+            public void lineGetBackground(LineBackgroundEvent event) {
+            }
+        });
+        return sourceViewer;
 	}
 
 	@Override
@@ -83,7 +97,6 @@ public class StoryEditor extends TextEditor {
         {
             IDocument document = getInputDocument();
             if(document==null) {
-                Activator.logInfo("StoryEditor.validateAndMark()" + Strings.times(10, "########\n"));
                 return;
             }
             final IProject project = getInputFile().getProject();
@@ -164,18 +177,20 @@ public class StoryEditor extends TextEditor {
         IDocument document = getInputDocument();
         
         Point point = getSourceViewer().getSelectedRange();
+        int lineNo  = getSourceViewer().getTextWidget().getLineAtOffset(point.x);
+        int lineOffset  = getSourceViewer().getTextWidget().getOffsetAtLine(lineNo);
         
-        Region replacementRegion = new Region(point.x, 0);
+        Region replacementRegion = new Region(lineOffset, 0);
         TemplateContextType contextType = StoryContextType.getTemplateContextType();
         TemplateContext templateContext = new DocumentTemplateContext(contextType, document, replacementRegion.getOffset(), replacementRegion.getLength());
         
-        String templateText = TemplateUtils.templatizeVariables(pStep.fullStep());
+        String templateText = TemplateUtils.templatizeVariables(pStep.fullStep()) + "\n";
         Template template = new Template(
                 pStep.stepPattern,
                 pStep.fullStep(), 
                 StoryContextType.STORY_CONTEXT_TYPE_ID, templateText, false);
         new StoryTemplateProposal(template,
-                templateContext, replacementRegion, null, 0).apply(getSourceViewer(), (char)0, SWT.CONTROL, point.x);
+                templateContext, replacementRegion, null, 0).apply(getSourceViewer(), (char)0, SWT.CONTROL, replacementRegion.getOffset());
     }
 
     public void jumpToMethod() {

@@ -1,21 +1,22 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import static org.technbolts.util.StringEnhancer.enhanceString;
-
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
-import org.eclipse.jface.text.rules.ICharacterScanner;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
-import org.technbolts.eclipse.rule.Rules;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
+import org.technbolts.jbehave.parser.StoryParser;
+import org.technbolts.jbehave.parser.StoryPart;
+import org.technbolts.jbehave.parser.StoryPartVisitor;
+import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.New;
 import org.technbolts.util.ParametrizedString;
 import org.technbolts.util.ParametrizedString.WeightChain;
@@ -45,6 +46,8 @@ public class StepScannerStyled implements ITokenScanner {
     private IDocument document;
     private Region range;
     private StepLocator.Provider locatorProvider;
+    private Token exampleTableSepToken;
+    private Token exampleTableCellToken;
 
     public StepScannerStyled(StepLocator.Provider locatorProvider, TextAttributeProvider textAttributeProvider) {
         initializeTokens(textAttributeProvider);
@@ -63,6 +66,12 @@ public class StepScannerStyled implements ITokenScanner {
         
         textAttribute = textAttributeProvider.get(StoryTextAttributes.StepParameterValue);
         parameterValueToken = new Token(textAttribute);
+        
+        textAttribute = textAttributeProvider.get(StoryTextAttributes.StepExampleTableSep);
+        exampleTableSepToken = new Token(textAttribute);
+        
+        textAttribute = textAttributeProvider.get(StoryTextAttributes.StepExampleTableCell);
+        exampleTableCellToken = new Token(textAttribute);
     }
 
     /*
@@ -102,103 +111,50 @@ public class StepScannerStyled implements ITokenScanner {
     }
     
     private void evaluateFragments() {
-        logln("evaluateFragments()");
-        ICharacterScanner scanner = createCharacterScanner();
-        int read;
-        int offset = range.getOffset();
-        Buffer buffer = new Buffer();
-        while((read=scanner.read())!=ICharacterScanner.EOF) {
-            buffer.push(offset, (char)read);
-            offset++;
-        }
-        //remaining
-        buffer.emitData();
+        StoryParser parser = new StoryParser();
+        String content = document.get();
+        parser.parse(content, new StoryPartVisitor() {
+            @Override
+            public void visit(StoryPart part) {
+                if(part.intersects(range.getOffset(), range.getLength()) && part.isStepPart())
+                    emitPart(0, part); //part are given in the absolute position
+            }
+        });
         
-        for(Fragment f : fragments) {
-            logln(f.toString());
+        if(DEBUG) {
+            System.out.println(builder);
+            builder.setLength(0);
         }
-        
-        System.out.println(builder.toString());
     }
     
+    private static boolean DEBUG = false;
     private StringBuilder builder = new StringBuilder();
     private void logln(String string) {
-        System.out.println("StepScannerStyled.logln(" + string + ")");
-        builder.append(string).append('\n');
+        if(DEBUG)
+            builder.append(string).append('\n');
     }
-    private void log(String string) {
-        builder.append(string);
-    }
-
-    private class Buffer {
-        private StringBuilder data = new StringBuilder();
-        private boolean inNewLines = false;
-        private int startOffset;
-        private boolean accept(char c) {
-            if(isNewline(c)) {
-                if(!inNewLines && data.length()>0)
-                    return false;
-                return true;
-            }
-            else if(inNewLines) {
-                return false;
-            }
-            else {
-                return true;
-            }
+    
+    private void emitPart(int offset_delta, StoryPart part) {
+        JBKeyword keyword = part.getKeyword();
+        if(keyword!=null && keyword.isStep()) {
+            parseStep(part.getContent(), offset_delta+part.getOffset());
         }
-        private boolean isNewline(char c) {
-            return c=='\r' || c=='\n';
-        }
-        public void push(int offset, char c) {
-            log("Buffer#push(" + offset + ", " + c + ")");
-            if(!accept(c)) {
-                logln("...REJECTED");
-                emitData();
-                reset(offset);
-                logln("Buffer#push(" + offset + ", " + c + ") ADDED");
-            }
-            else {
-                logln("...ACCEPTED");
-                if(data.length()==0)
-                    reset(offset);
-            }
-            append(c);
-        }
-        private void append(char c) {
-            inNewLines |= isNewline(c);
-            data.append(c);
-        }
-        private void emitData() {
-            if(data.length()==0) {
-                return;
-            }
-            String string = data.toString();
-            if(enhanceString(string).startsIgnoringCaseWithOneOf("given ", "when ", "then ")) {
-                parseStep(string, startOffset);
-            }
-            else {
-                emit(defaultToken, startOffset, data.length());
-            }
-        }
-        private void reset(int offset) {
-            inNewLines = false;
-            startOffset = offset;
-            data.setLength(0);
+        else {
+            emit(defaultToken, offset_delta+part.getOffset(), part.getLength());
         }
     }
 
-    private void parseStep(String stepLine, final int initialOffset) {
-        logln("parseStep(" + stepLine + ", offset: " + initialOffset + ", stepLine.length: " + stepLine.length());
+    private void parseStep(String stepContent, final int initialOffset) {
+        logln("parseStep(" + stepContent + ", offset: " + initialOffset + ", stepLine.length: " + stepContent.length());
         int offset = initialOffset;
-        int stepSep = stepLine.indexOf(' ');
+        int stepSep = stepContent.indexOf(' ');
          
         emit(keywordToken, offset, stepSep+1);
         offset += stepSep+1;
         
         // remove any trailing newlines, and keep track to insert 
         // corresponding token in place
-        String afterKeyword = stepLine.substring(stepSep+1);
+        String afterKeyword = stepContent.substring(stepSep+1);
         String stepSentence = Strings.removeTrailingNewlines(afterKeyword);
         
         PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(stepSentence);
@@ -209,38 +165,80 @@ public class StepScannerStyled implements ITokenScanner {
             offset += afterKeyword.length();
         }
         else if(potentialStep.hasVariable()) {
-            logln("parseStep(" + stepLine + ") step found with variable");
 
             ParametrizedString pString = potentialStep.getParametrizedString();
-            
             WeightChain chain = pString.calculateWeightChain(stepSentence);
             List<String> chainTokens = chain.tokenize();
             
+            logln("parseStep() step found with variable " + chainTokens.size() + " tokens in chain");
+
             for(int i=0;i<chainTokens.size();i++) {
                 org.technbolts.util.ParametrizedString.Token pToken = pString.getToken(i);
                 String content = chainTokens.get(i);
                 
-                IToken token = defaultToken;
                 if(pToken.isIdentifier) {
-                    if(content.startsWith("$"))
-                        token = parameterToken;
-                    else
-                        token = parameterValueToken;
+                    
+                    logln("token is an identifier content: >>" + content.replace("\n", "\\n") + "<<");
+                    
+                    if(content.startsWith("$")) {
+                        emit(parameterToken, offset, content.length());
+                    }
+                    else {
+                        String trimmed = content.trim();
+                        
+                        logln("trimmed: >>" + trimmed.replace("\n", "\\n") + "<<");
+
+                        if(trimmed.startsWith("|")) {
+                            emitTable(offset, content);
+                        }
+                        else {
+                            emit(parameterValueToken, offset, content.length());
+                        }
+                    }
                 }
-                emit(token, offset, content.length());
+                else {
+                    emit(defaultToken, offset, content.length());
+                }
                 offset += content.length();
             }
         }
         else {
-            logln("parseStep(" + stepLine + ") step found without variable");
+            logln("parseStep(" + stepContent + ") step found without variable");
             emit(defaultToken, offset, afterKeyword.length());
             offset += afterKeyword.length();
         }
         
         // insert if trailings whitespace have been removed
-        int expectedOffset = initialOffset+stepLine.length();
+        int expectedOffset = initialOffset+stepContent.length();
         if(offset < expectedOffset) {
             emit(defaultToken, offset, expectedOffset-offset);
+        }
+    }
+
+    private void emitTable(int offset, String content) {
+        StringTokenizer tokenizer = new StringTokenizer(content, "|", true);
+        int remaining = tokenizer.countTokens();
+        boolean isFirst = true;
+        while(tokenizer.hasMoreTokens()) {
+            boolean isLast = (remaining==1);
+            String tok = tokenizer.nextToken();
+            int length = tok.length();
+            
+            logln("StepScannerStyled.emitTable(token: >>" +tok.replace("\n", "\\n") + "<<");
+            
+            if(tok.equals("|")) {
+                emit(exampleTableSepToken, offset, length);
+            }
+            else if(isLast || isFirst) {
+                emit(defaultToken, offset, length);
+            }
+            else {
+                emit(exampleTableCellToken, offset, length);
+            }
+            
+            offset += length;
+            remaining--;
+            isFirst = false;
         }
     }
 
@@ -287,10 +285,10 @@ public class StepScannerStyled implements ITokenScanner {
             emit(token, offset + tokenStart, i-tokenStart);
         }
     }
-
+    
     private void emit(IToken token, int offset, int length) {
-        logln("emit(" + token + ", offset: " + offset + ", length: " + length + ")");
-
+        logln("emit(" + token.getData() + ", offset: " + offset + ", length: " + length + ")");
+        
         // can we merge previous one?
         if(!fragments.isEmpty()) {
             Fragment previous = getLastFragment();
@@ -316,10 +314,6 @@ public class StepScannerStyled implements ITokenScanner {
 
     private Fragment getLastFragment() {
         return fragments.get(fragments.size()-1);
-    }
-
-    private ICharacterScanner createCharacterScanner() {
-        return Rules.createScanner(document, range.getOffset(), range.getLength());
     }
 
     /*

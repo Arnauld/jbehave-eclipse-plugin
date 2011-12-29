@@ -64,4 +64,9 @@ public class StoryPart {
         return omin<=tmax && tmin<=omax;
     }
 
+    public boolean isStepPart() {
+        JBKeyword keyword = getKeyword();
+        return keyword!=null && keyword.isStep();
+    }
+
 }

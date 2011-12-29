@@ -5,9 +5,11 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.eclipse.swt.custom.StyledText;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
+import org.technbolts.jbehave.parser.StoryParser;
+import org.technbolts.jbehave.parser.StoryPart;
+import org.technbolts.jbehave.parser.StoryPartVisitor;
 
 public class StepHyperLinkDetector implements IHyperlinkDetector {
     
@@ -16,14 +18,22 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
     @Override
     public IHyperlink[] detectHyperlinks(final ITextViewer viewer, final IRegion region,
             boolean canShowMultipleHyperlinks) {
-        StyledText widget = viewer.getTextWidget();
-        final int lineNo = widget.getLineAtOffset(region.getOffset());
-        final int lineOffset = widget.getOffsetAtLine(lineNo);
         
-        // TODO add support for multi-line step
-        final String line = viewer.getTextWidget().getLine(lineNo);
-        final String step = LineParser.extractStepSentence(line);
+        final StoryPart[] found = new StoryPart[1];
+        new StoryParser().parse(viewer.getDocument().get(), new StoryPartVisitor() {
+            @Override
+            public void visit(StoryPart part) {
+                if(part.intersects(region.getOffset(), region.getLength())) {
+                    found[0] = part;
+                }
+            }
+        });
+        if(found[0]==null) {
+            return NONE;
+        }
         
+        final StoryPart part = found[0];
+        final String step = LineParser.extractStepSentence(part.getContent());
         if(step==null)
             return NONE;
 
@@ -31,7 +41,7 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
 
             @Override
             public IRegion getHyperlinkRegion() {
-                return new Region(lineOffset, line.length());
+                return new Region(part.getOffset(), part.getLength());
             }
 
             @Override

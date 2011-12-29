@@ -26,6 +26,8 @@ public enum JBPartition {
     }
     
     public static JBPartition partitionOf(JBKeyword keyword) {
+        if(keyword==null)
+            return Undefined;
         switch(keyword) {
             case Given:
             case When:

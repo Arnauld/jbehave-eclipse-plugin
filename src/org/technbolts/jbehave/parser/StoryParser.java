@@ -41,7 +41,7 @@ public class StoryParser {
             
             line.append((char)read);
             if(isNewlineCharacter(read)) {
-                if(line.startsWithKeyword(kwTree)) {
+                if(line.startsWithBreakingKeyword(kwTree)) {
                     block.emitTo(visitor);
                     block.reset(line.offset);
                 }
@@ -53,7 +53,7 @@ public class StoryParser {
         }
         
         // remaining
-        if(line.startsWithKeyword(kwTree)) {
+        if(line.startsWithBreakingKeyword(kwTree)) {
             block.emitTo(visitor);
             block.reset(line.offset);
         }
@@ -86,9 +86,17 @@ public class StoryParser {
             this.offset = offset;
             this.buffer.setLength(0);
         }
-        public boolean startsWithKeyword (CharTree<JBKeyword> kwTree) {
+        public boolean startsWithBreakingKeyword (CharTree<JBKeyword> kwTree) {
             JBKeyword kw = kwTree.lookup(buffer);
-            return (kw!=null);
+            if(kw==null)
+                return false;
+            switch(kw) {
+                case ExamplesTableHeaderSeparator:
+                case ExamplesTableValueSeparator:
+                case ExamplesTableIgnorableSeparator:
+                    return false;
+            }
+            return true;
         }
         public void emitTo(Block block) {
             block.buffer.append(buffer);

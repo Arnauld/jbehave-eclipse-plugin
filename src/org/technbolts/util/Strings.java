@@ -71,7 +71,6 @@ public class Strings {
     
     public static Pattern convertGlobToPattern(String line) {
         String regex = convertGlobToRegex(line);
-        System.out.println("Strings.convertGlobToPattern(" + line + " ~> " + regex + ")");
         return Pattern.compile(regex);
     }
     
