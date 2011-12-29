@@ -23,7 +23,7 @@ Christmas 2011 notes:
   * Completion supports step with parameters, even if parameter values are already written ([Issue 4](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/4))
   * Add *template support*: is the inserted step contains variables, the eclipse template behavior is triggered, allowing to efficiently replace variable declaration with their value, and switching to the next using tab key.
 * Smarter step editor: should be able to *detect parameter values and parameter variables* within a step and apply corresponding syntax highlighting ([Issue 5](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/5))
-* *Quick search* (Ctrl+O but is is suject to change) for an quick popup display ([Issue 7](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/7)) that allows to searched for steps. Step's type (Given, When, Then) is indicated with a corresponding icon. Focus is made on the filter where `*` can be used as special character for search.
+* *Quick search* (Ctrl+J) for an quick popup display ([Issue 7](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/7)) that allows to searched for steps. Step's type (Given, When, Then) is indicated with a corresponding icon. Focus is made on the filter where `*` can be used as special character for search.
 * Jump to declaration (ctrl+mouse click) is also bind on keyboard using (Ctrl+G)
 
 
