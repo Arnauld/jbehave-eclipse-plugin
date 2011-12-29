@@ -17,7 +17,6 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
-import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistProcessor;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.support.JBPartition;
@@ -57,7 +56,6 @@ public class StoryConfiguration extends SourceViewerConfiguration {
             @Override
             public IContentAssistProcessor getContentAssistProcessor(String contentType) {
                 IContentAssistProcessor processor = super.getContentAssistProcessor(contentType);
-                Activator.logInfo("StoryConfiguration.getContentAssistant(...).new ContentAssistant() {...}.getContentAssistProcessor(" + contentType + ") :: " + processor);
                 return processor;
             }
         };

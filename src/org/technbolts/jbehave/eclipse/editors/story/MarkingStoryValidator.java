@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -53,7 +52,6 @@ public class MarkingStoryValidator {
 
     public void validate() {
         List<StoryPart> parts = extractParts();
-        Activator.logInfo("MarkingStoryValidator:Validate parts found: " + StringUtils.join(parts, "\n\t"));
         analyzeParts(parts);
     }
 
@@ -117,6 +115,9 @@ public class MarkingStoryValidator {
         while(iterator.hasNext()) {
             Part part = iterator.next();
             JBKeyword keyword = part.storyPart.getKeyword();
+            if(keyword==null) {
+                continue;
+            }
             if(keyword.isNarrative()) {
                 // narrative must be the first
                 if(nonNarrativeOrIgnorable) {
@@ -212,7 +213,6 @@ public class MarkingStoryValidator {
             potentials.put(extractStepSentenceAndRemoveTrailingNewlines(part), list);
         }
 
-        Activator.logInfo("MarkingStoryValidator:checkSteps:Initializing locator");
         StepLocator locator = StepLocator.getStepLocator(project);
         locator.traverseSteps(new Visitor<PotentialStep, Object>() {
             @Override
@@ -225,7 +225,6 @@ public class MarkingStoryValidator {
             }
         });
 
-        Activator.logInfo("MarkingStoryValidator:checkSteps:Analysing potentials on #" + steps.length() +" part(s)");
         for (Part part : steps) {
             String key = extractStepSentenceAndRemoveTrailingNewlines(part);
             List<PotentialStep> candidates = potentials.get(key);
@@ -236,7 +235,6 @@ public class MarkingStoryValidator {
                 part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: "
                         + candidates);
         }
-        Activator.logInfo("MarkingStoryValidator:checkSteps:Analysis done!");
     }
 
     private static String extractStepSentenceAndRemoveTrailingNewlines(Part part) {

@@ -17,13 +17,6 @@ public class ProjectAwareFastPartitioner extends FastPartitioner {
         this.project = project;
     }
     
-    @Override
-    protected boolean isSupportedContentType(String contentType) {
-        boolean supported = super.isSupportedContentType(contentType);
-        System.out.println("ProjectAwareFastPartitioner.isSupportedContentType("+contentType+", " + supported + ")");
-        return supported;
-    }
-
     public IProject getProject() {
         return project;
     }
@@ -31,7 +24,7 @@ public class ProjectAwareFastPartitioner extends FastPartitioner {
     @Override
     public void connect(IDocument document, boolean delayInitialization) {
         super.connect(document, delayInitialization);
-        printPartitions(document);
+        //printPartitions(document);
     }
     
     public void printPartitions(IDocument document)

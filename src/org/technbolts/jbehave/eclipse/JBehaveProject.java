@@ -71,13 +71,11 @@ public class JBehaveProject {
     }
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
-        Activator.logInfo("JBehaveProject:Traversing Steps");
         for(PotentialStep step:getCachedSteps()) {
             visitor.visit(step);
             if(visitor.isDone())
                 return;
         }
-        Activator.logInfo("JBehaveProject:Steps traversed");
     }
     
     public List<PotentialStep> getCachedSteps () throws JavaModelException {
@@ -92,13 +90,11 @@ public class JBehaveProject {
             group.spawn(stepCollector(type, context));
         
         try {
-            Activator.logInfo("JBehaveProject:Waiting for steps cache group termination");
             group.awaitTermination();
         } catch (InterruptedException e) {
             Activator.logError("JBehaveProject:Interrupted while building steps cache for project <" + project.getName() + ">", e);
         }
         
-        Activator.logInfo("JBehaveProject:Steps cache group built " + context.debug.toString());
         cachedSteps = context.collected;
         return context.collected;
     }
@@ -123,7 +119,6 @@ public class JBehaveProject {
         return new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                System.out.println("JBehaveProject:stepCollector(...).new Callable<Void>() {...}.call(" + type.getElementName() + ")");
                 StringBuilder debug = new StringBuilder ("Analysis of type: " + type);
                 for(IMethod method : JavaAnalyzer.getMethods(type)) {
                     List<PotentialStep> methodSteps = extractMethodSteps(debug, method);
