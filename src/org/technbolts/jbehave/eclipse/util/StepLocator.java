@@ -54,8 +54,6 @@ public class StepLocator {
             final String searchedType = LineParser.stepType(stepLine);
             final String stepEntry = LineParser.extractStepSentence(stepLine);
             
-            Activator.logInfo("StepLocator.findCandidatesStartingWith(" + stepLine + "):" + searchedType + "//" + stepEntry + "<<");
-            
             Visitor<PotentialStep, WeightedCandidateStep> findOne = new Visitor<PotentialStep, WeightedCandidateStep>() {
                 @Override
                 public void visit(PotentialStep candidate) {
@@ -74,7 +72,7 @@ public class StepLocator {
                         add(new WeightedCandidateStep(candidate, weight));
                     }
                     else {
-                        Activator.logInfo(">> Step (" + weight + ") rejected: " + candidate);
+                        //Activator.logInfo(">> Step (" + weight + ") rejected: " + candidate);
                     }
                 }
             };
@@ -100,7 +98,6 @@ public class StepLocator {
                 @Override
                 public void visit(PotentialStep candidate) {
                     boolean matches = candidate.matches(step);
-                    Activator.logInfo("Is candidate [" + candidate + "] matching [" +step + "] ?" + matches);
                     if(matches) {
                         add(candidate);
                         done();
