@@ -13,7 +13,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
-import org.technbolts.jbehave.parser.StoryParser;
+import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.jbehave.support.JBKeyword;
@@ -111,15 +111,14 @@ public class StepScannerStyled implements ITokenScanner {
     }
     
     private void evaluateFragments() {
-        StoryParser parser = new StoryParser();
-        String content = document.get();
-        parser.parse(content, new StoryPartVisitor() {
+        StoryPartVisitor visitor = new StoryPartVisitor() {
             @Override
             public void visit(StoryPart part) {
                 if(part.intersects(range.getOffset(), range.getLength()) && part.isStepPart())
                     emitPart(0, part); //part are given in the absolute position
             }
-        });
+        };
+        StoryPartDocumentUtils.traverseStoryParts(document, visitor);
         
         if(DEBUG) {
             System.out.println(builder);
@@ -135,7 +134,7 @@ public class StepScannerStyled implements ITokenScanner {
     }
     
     private void emitPart(int offset_delta, StoryPart part) {
-        JBKeyword keyword = part.getKeyword();
+        JBKeyword keyword = part.getPreferredKeyword();
         if(keyword!=null && keyword.isStep()) {
             parseStep(part.getContent(), offset_delta+part.getOffset());
         }

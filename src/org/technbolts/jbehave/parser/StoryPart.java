@@ -6,6 +6,7 @@ import org.technbolts.util.CharTree;
 public class StoryPart {
     private final int offset;
     private final String content;
+    private JBKeyword preferredKeyword;
     
     public StoryPart(int offset, String content) {
         super();
@@ -25,11 +26,29 @@ public class StoryPart {
         return content;
     }
     
-    public JBKeyword getKeyword() {
-        return getKeyword(defaultTree());
+    /**
+     * @return
+     * @see #extractKeyword(CharTree)
+     */
+    public JBKeyword getPreferredKeyword() {
+        return getPreferredKeyword(defaultTree());
     }
     
-    public JBKeyword getKeyword(CharTree<JBKeyword> kwTree) {
+    public void setPreferredKeyword(JBKeyword keyword) {
+        this.preferredKeyword = keyword;
+    }
+    
+    public JBKeyword getPreferredKeyword(CharTree<JBKeyword> kwTree) {
+        if(preferredKeyword==null)
+            preferredKeyword = extractKeyword(kwTree);
+        return preferredKeyword;
+    }
+    
+    public JBKeyword extractKeyword() {
+        return extractKeyword(defaultTree());
+    }
+    
+    public JBKeyword extractKeyword(CharTree<JBKeyword> kwTree) {
         return kwTree.lookup(getContent());
     }
     
@@ -38,7 +57,7 @@ public class StoryPart {
     }
 
     public boolean startsWithKeyword (CharTree<JBKeyword> kwTree) {
-        return (getKeyword()!=null);
+        return (getPreferredKeyword(kwTree)!=null);
     }
     
     private CharTree<JBKeyword> defaultTree() {
@@ -52,6 +71,7 @@ public class StoryPart {
     public int getOffsetStart() {
         return getOffset();
     }
+    
     public int getOffsetEnd() {
         return getOffset()+getLength();
     }
@@ -65,7 +85,7 @@ public class StoryPart {
     }
 
     public boolean isStepPart() {
-        JBKeyword keyword = getKeyword();
+        JBKeyword keyword = getPreferredKeyword();
         return keyword!=null && keyword.isStep();
     }
 

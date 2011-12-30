@@ -10,8 +10,6 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.IToken;
-import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.Token;
 import org.junit.Before;
 import org.junit.Test;
 import org.technbolts.jbehave.eclipse.editors.story.StoryPartitionScanner;
@@ -28,7 +26,6 @@ private String storyAsText;
     public void usecase_ex1() throws Exception {
         IDocument document= new Document(storyAsText);
         
-        IToken defaultToken= new Token("defaultToken");
         StoryPartitionScanner scanner = new StoryPartitionScanner ();
         scanner.setRange(document, 0, document.getLength());
         
@@ -48,11 +45,4 @@ private String storyAsText;
         
     }
     
-    private static void dumpState(RuleBasedScanner scanner, IDocument doc) throws BadLocationException {
-        int tokenOffset = scanner.getTokenOffset();
-        int tokenLength = scanner.getTokenLength();
-        System.out.print(tokenOffset + " ~> " + tokenLength);
-        System.out.println(" > Ò" + doc.get(tokenOffset, tokenLength) + "Ó");
-    }
-
 }

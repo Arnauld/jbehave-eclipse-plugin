@@ -7,9 +7,10 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
-import org.technbolts.jbehave.parser.StoryParser;
+import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
+import org.technbolts.util.Ref;
 
 public class StepHyperLinkDetector implements IHyperlinkDetector {
     
@@ -19,20 +20,22 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
     public IHyperlink[] detectHyperlinks(final ITextViewer viewer, final IRegion region,
             boolean canShowMultipleHyperlinks) {
         
-        final StoryPart[] found = new StoryPart[1];
-        new StoryParser().parse(viewer.getDocument().get(), new StoryPartVisitor() {
+        final Ref<StoryPart> found = Ref.create();
+        StoryPartVisitor visitor = new StoryPartVisitor() {
             @Override
             public void visit(StoryPart part) {
                 if(part.intersects(region.getOffset(), region.getLength())) {
-                    found[0] = part;
+                    found.set(part);
+                    done();
                 }
             }
-        });
-        if(found[0]==null) {
+        };
+        StoryPartDocumentUtils.traverseStoryParts(viewer.getDocument(), visitor);
+        if(found.isNull()) {
             return NONE;
         }
         
-        final StoryPart part = found[0];
+        final StoryPart part = found.get();
         final String step = LineParser.extractStepSentence(part.getContent());
         if(step==null)
             return NONE;

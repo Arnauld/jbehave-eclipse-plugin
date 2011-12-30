@@ -31,6 +31,11 @@ public class StoryDocumentProvider extends FileDocumentProvider {
         UIUtils.warn("Unsupported type", "Cannot open the following type: " + element.getClass());
         return null;
     }
+    
+    @Override
+    protected IDocument createEmptyDocument() {
+        return new StoryDocument();
+    }
 
     private ProjectAwareFastPartitioner createPartitioner(final IProject project) {
         List<String> names = new ArrayList<String>(JBPartition.names());

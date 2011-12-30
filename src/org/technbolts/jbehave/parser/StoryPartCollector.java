@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.technbolts.util.New;
 
-public class StoryPartCollector implements StoryPartVisitor {
+public class StoryPartCollector extends StoryPartVisitor {
     
     private final List<StoryPart> parts = New.arrayList();
 
@@ -16,4 +16,5 @@ public class StoryPartCollector implements StoryPartVisitor {
     public List<StoryPart> getParts() {
         return parts;
     }
+    
 }

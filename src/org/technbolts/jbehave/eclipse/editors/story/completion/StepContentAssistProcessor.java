@@ -20,11 +20,15 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.jbehave.core.configuration.Keywords;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
+import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
+import org.technbolts.jbehave.parser.StoryPart;
+import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.Lists;
 import org.technbolts.util.New;
 import org.technbolts.util.Strings;
@@ -65,8 +69,17 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             // TODO add support for multi-line step
             final String stepStart = lineStart;
             
+            String stepStartUsedForSearch = stepStart;
+            // special case: one must find the right type of step
+            if(LineParser.isStepAndType(lineStart)) {
+                StoryPart part = StoryPartDocumentUtils.findStoryPartAtOffset(document, offset-1);
+                JBKeyword kw = part.getPreferredKeyword();
+                int indexOf = lineStart.indexOf(' ');
+                stepStartUsedForSearch = kw.asString() + lineStart.substring(indexOf);
+            }
+            
             IProject project = EditorUtils.findProject(viewer);
-            Iterable<WeightedCandidateStep> candidateIter = StepLocator.getStepLocator(project).findCandidatesStartingWith(stepStart);
+            Iterable<WeightedCandidateStep> candidateIter = StepLocator.getStepLocator(project).findCandidatesStartingWith(stepStartUsedForSearch);
             List<WeightedCandidateStep> candidates = Lists.toList(candidateIter);
             Collections.sort(candidates);
             
@@ -140,9 +153,16 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
     private ICompletionProposal[] createKeywordCompletionProposals(int offset, int length, ITextViewer viewer) {
         List<ICompletionProposal> proposals = New.arrayList();
 
-        String[] keywords = new String[] {"Given ", "When ", "Then ", "And "};
-        for(int i=0;i<keywords.length;i++) {
-            String kw = keywords[i];
+        JBKeyword[] keywords = new JBKeyword[] {
+                JBKeyword.Given,
+                JBKeyword.And,
+                JBKeyword.When,
+                JBKeyword.Then,
+                JBKeyword.Scenario,
+                JBKeyword.GivenStories };
+        Keywords jkeywords = new Keywords();
+        for(JBKeyword keyword : keywords) {
+            String kw = keyword.asString(jkeywords);
             proposals.add(new CompletionProposal(kw, offset, length, kw.length()));
         };
         

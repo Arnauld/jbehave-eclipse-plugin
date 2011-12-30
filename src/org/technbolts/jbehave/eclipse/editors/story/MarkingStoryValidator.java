@@ -19,6 +19,7 @@ import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
+import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.New;
@@ -51,15 +52,10 @@ public class MarkingStoryValidator {
     }
 
     public void validate() {
-        List<StoryPart> parts = extractParts();
+        List<StoryPart> parts = StoryPartDocumentUtils.getStoryParts(document);
         analyzeParts(parts);
     }
 
-    private List<StoryPart> extractParts() {
-        String content = document.get();
-        return new org.technbolts.jbehave.parser.StoryParser().parse(content);
-    }
-    
     private void analyzeParts(final List<StoryPart> storyParts) {
         final fj.data.List<Part> parts = fj.data.List.iterableList(storyParts).map(new F<StoryPart,Part>() {
             @Override
@@ -114,7 +110,7 @@ public class MarkingStoryValidator {
         Iterator<Part> iterator = parts.iterator();
         while(iterator.hasNext()) {
             Part part = iterator.next();
-            JBKeyword keyword = part.storyPart.getKeyword();
+            JBKeyword keyword = part.storyPart.getPreferredKeyword();
             if(keyword==null) {
                 continue;
             }
@@ -203,7 +199,7 @@ public class MarkingStoryValidator {
     private void checkSteps(final fj.data.List<Part> parts) throws JavaModelException {
         fj.data.List<Part> steps = parts.filter(new F<Part,Boolean>() {
             public Boolean f(Part part) {
-                return JBKeyword.isStep(part.storyPart.getKeyword());
+                return JBKeyword.isStep(part.storyPart.getPreferredKeyword());
             };
         });
         
@@ -267,7 +263,7 @@ public class MarkingStoryValidator {
                 for (MarkData mark : marks) {
                     IMarker marker = file.createMarker(MARKER_ID);
                     marker.setAttributes(mark.createAttributes(file, document));
-                    JBKeyword keyword = storyPart.getKeyword();
+                    JBKeyword keyword = storyPart.getPreferredKeyword();
                     if(keyword!=null)
                         marker.setAttribute("Keyword", keyword.name());
                 }
@@ -286,7 +282,7 @@ public class MarkingStoryValidator {
 
         @Override
         public String toString() {
-            return "Part [offset=" + storyPart.getOffset() + ", length=" + storyPart.getLength() + ", keyword=" + storyPart.getKeyword() + ", marks="
+            return "Part [offset=" + storyPart.getOffset() + ", length=" + storyPart.getLength() + ", keyword=" + storyPart.getPreferredKeyword() + ", marks="
                     + marks + ", text=" + textWithoutTrailingNewlines() + "]";
         }
 

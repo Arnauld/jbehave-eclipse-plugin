@@ -64,6 +64,7 @@ public class StoryParser {
     private class Block {
         private StringBuilder buffer = new StringBuilder();
         private int offset;
+        private JBKeyword keyword;
         public void reset(int offset) {
             this.offset = offset;
             this.buffer.setLength(0);
@@ -71,7 +72,20 @@ public class StoryParser {
         public void emitTo(StoryPartVisitor visitor) {
             if(buffer.length()>0) {
                 String content = buffer.toString();
-                visitor.visit(new StoryPart(offset, content));
+                StoryPart part = new StoryPart(offset, content);
+                JBKeyword partKeyword = part.extractKeyword();
+                if(partKeyword!=null && partKeyword.isStep()) {
+                    if(partKeyword==JBKeyword.And) {
+                        part.setPreferredKeyword(keyword);
+                    }
+                    else {
+                        keyword = partKeyword;
+                    }
+                }
+                else {
+                    keyword = null;
+                }
+                visitor.visit(part);
             }
         }
     }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
-import org.technbolts.jbehave.parser.StoryParser;
+import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.jbehave.support.JBPartition;
@@ -62,17 +62,17 @@ public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPart
         partitions = New.arrayList();
         cursor = 0;
         
-        String content = document.get();
-        new StoryParser().parse(content, new StoryPartVisitor() {
+        StoryPartVisitor visitor = new StoryPartVisitor() {
             @Override
             public void visit(StoryPart part) {
                 push(part);
             }
-        });
+        };
+        StoryPartDocumentUtils.traverseStoryParts(document, visitor);
     }
     
     private void push(StoryPart part) {
-        JBPartition partition = JBPartition.partitionOf(part.getKeyword());
+        JBPartition partition = JBPartition.partitionOf(part.getPreferredKeyword());
         Partition p = new Partition(
                 partition,
                 part.getOffset(),

@@ -1,14 +1,15 @@
 package org.technbolts.jbehave.eclipse.editors.story.outline;
 
+import static org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils.traverseStoryParts;
+
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
-import org.technbolts.jbehave.parser.StoryParser;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.util.New;
 
-public class OutlineModelBuilder implements StoryPartVisitor {
+public class OutlineModelBuilder extends StoryPartVisitor {
     
     private IDocument document;
     private List<OutlineModel> models;
@@ -19,14 +20,19 @@ public class OutlineModelBuilder implements StoryPartVisitor {
     
     public List<OutlineModel> build () {
         models = New.arrayList();
-        new StoryParser().parse(document.get(), this);
+        traverseStoryParts(document, this);
         return models;
+    }
+    
+    @Override
+    public final void done() {
+        // prevent any state change, since one can reuse the visitor behavior
     }
 
     @Override
     public void visit(StoryPart part) {
         OutlineModel model = new OutlineModel(
-                part.getKeyword(), 
+                part.getPreferredKeyword(), 
                 part.getContent(), 
                 part.getOffset(), 
                 part.getLength());

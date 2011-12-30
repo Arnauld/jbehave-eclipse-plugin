@@ -16,6 +16,11 @@ public class LineParser {
         return enhanceString(line).equalsToOneOf("Given ", "When ", "Then ", "And ");
     }
     
+    public static boolean isStepAndType(String line) {
+        return enhanceString(line).startsIgnoringCaseWithOneOf("And ");
+    }
+
+    
     public static int stepSentenceIndex(String line) {
         if(!isStepIgnoringCase(line))
             return 0;

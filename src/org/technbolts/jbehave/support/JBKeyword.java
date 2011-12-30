@@ -113,6 +113,12 @@ public enum JBKeyword {
         }
     };
     
+    private static Keywords keywords = new Keywords();
+    
+    public String asString() {
+        return asString(keywords);
+    }
+    
     public String asString(Keywords keywords) {
         throw new AbstractMethodError();
     }
