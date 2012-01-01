@@ -13,4 +13,10 @@ public class StoryTemplateProposal extends TemplateProposal {
             final Image image, final int relevance) {
         super(template, context, region, image, relevance);
     }
+    
+    @Override
+    public String getDisplayString() {
+        // by default it is <name> - <description>
+        return getTemplate().getDescription();
+    }
 }
