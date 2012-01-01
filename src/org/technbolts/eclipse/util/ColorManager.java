@@ -13,9 +13,7 @@ public class ColorManager {
 	protected Map<RGB,Color> fColorTable = new HashMap<RGB,Color>(10);
 
 	public void dispose() {
-		Iterator<Color> e = fColorTable.values().iterator();
-		while (e.hasNext())
-			 e.next().dispose();
+	    releaseAll();
 	}
 	
 	public Color getColor(RGB rgb) {
@@ -29,4 +27,12 @@ public class ColorManager {
 		}
 		return color;
 	}
+
+    public void releaseAll() {
+        Iterator<Color> e = fColorTable.values().iterator();
+        while (e.hasNext()) {
+             e.next().dispose();
+        }
+        fColorTable.clear();
+    }
 }

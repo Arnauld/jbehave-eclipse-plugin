@@ -37,7 +37,7 @@ public class StoryDocumentProvider extends FileDocumentProvider {
         return new StoryDocument();
     }
 
-    private ProjectAwareFastPartitioner createPartitioner(final IProject project) {
+    private IDocumentPartitioner createPartitioner(final IProject project) {
         List<String> names = new ArrayList<String>(JBPartition.names());
         names.add((String)TokenConstants.IGNORED.getData());
         return new ProjectAwareFastPartitioner(

@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadFactory;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
@@ -35,7 +36,6 @@ public class Activator extends AbstractUIPlugin {
     
     /** Key to store custom templates. */
     private static final String CUSTOM_TEMPLATES_KEY = "org.technbolts.jbehave.customtemplates"; //$NON-NLS-1$
-
 	
 	/**
 	 * The constructor
@@ -73,6 +73,11 @@ public class Activator extends AbstractUIPlugin {
         registry.put(ImageIds.EXAMPLE_TABLE,  getImageDescriptor("icons/bdd-e-turquoise.png"));
 	}
 
+	@Override
+	public IPreferenceStore getPreferenceStore() {
+	    return super.getPreferenceStore();
+	}
+	
 	/**
 	 * Returns the shared instance
 	 *

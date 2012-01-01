@@ -84,5 +84,19 @@
 			class="org.technbolts.jbehave.eclipse.editors.story.MarkerResolutionGenerator"> 
 		</markerResolutionGenerator>
 	</extension>
+ <extension
+       point="org.eclipse.ui.preferencePages">
+    <page
+          class="org.technbolts.jbehave.eclipse.preferences.EditorPreferencePage"
+          id="org.technbolts.jbehave.eclipse.preferences.EditorPreferencePage"
+          name="Story Editor Preferences">
+    </page>
+ </extension>
+ <extension
+       point="org.eclipse.core.runtime.preferences">
+    <initializer
+          class="org.technbolts.jbehave.eclipse.preferences.PreferenceInitializer">
+    </initializer>
+ </extension>
 
 </plugin>
