@@ -3,9 +3,6 @@ package org.technbolts.jbehave.eclipse.editors.story;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
@@ -13,11 +10,8 @@ import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
-import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
-import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.jbehave.support.JBKeyword;
-import org.technbolts.util.New;
 import org.technbolts.util.ParametrizedString;
 import org.technbolts.util.ParametrizedString.WeightChain;
 import org.technbolts.util.Strings;
@@ -33,21 +27,15 @@ import org.technbolts.util.Strings;
  * of the last found token.
  * </p>
  */
-public class StepScannerStyled implements ITokenScanner {
+public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     
-    private IToken defaultToken;
     private IToken keywordToken;
     private IToken parameterToken;
     private IToken parameterValueToken;
-    //
-    private List<Fragment> fragments;
-    private int cursor = 0;
-    //
-    private IDocument document;
-    private Region range;
-    private StepLocator.Provider locatorProvider;
     private Token exampleTableSepToken;
     private Token exampleTableCellToken;
+    //
+    private StepLocator.Provider locatorProvider;
 
     public StepScannerStyled(StepLocator.Provider locatorProvider, TextAttributeProvider textAttributeProvider) {
         initializeTokens(textAttributeProvider);
@@ -56,7 +44,7 @@ public class StepScannerStyled implements ITokenScanner {
     
     private void initializeTokens(TextAttributeProvider textAttributeProvider) {
         TextAttribute textAttribute = textAttributeProvider.get(StoryTextAttributes.Step);
-        defaultToken = new Token(textAttribute);
+        setDefaultToken(new Token(textAttribute));
         
         textAttribute = textAttributeProvider.get(StoryTextAttributes.StepKeyword);
         keywordToken = new Token(textAttribute);
@@ -73,74 +61,19 @@ public class StepScannerStyled implements ITokenScanner {
         textAttribute = textAttributeProvider.get(StoryTextAttributes.StepExampleTableCell);
         exampleTableCellToken = new Token(textAttribute);
     }
-
-    /*
-     * Returns the length of the last token read by this scanner.
-     * 
-     * @see org.eclipse.jface.text.rules.ITokenScanner#getTokenLength()
-     */
+    
     @Override
-    public int getTokenLength() {
-        return fragments.get(cursor).getLength();
-    }
-    
-    /*
-     * Returns the offset of the last token read by this scanner.
-     * 
-     * @see org.eclipse.jface.text.rules.ITokenScanner#getTokenOffset()
-     */
-    @Override
-    public int getTokenOffset() {
-        return fragments.get(cursor).getOffset();
-    }
-    
-    /*
-     * Returns the next token in the document.
-     * 
-     * @see org.eclipse.jface.text.rules.ITokenScanner#nextToken()
-     */
-    @Override
-    public IToken nextToken() {
-        if(cursor==-1) {
-            evaluateFragments();
-        }
-        cursor++;
-        if(cursor<fragments.size())
-            return fragments.get(cursor).getToken();
-        return Token.EOF;
-    }
-    
-    private void evaluateFragments() {
-        StoryPartVisitor visitor = new StoryPartVisitor() {
-            @Override
-            public void visit(StoryPart part) {
-                if(part.intersects(range.getOffset(), range.getLength()) && part.isStepPart())
-                    emitPart(0, part); //part are given in the absolute position
-            }
-        };
-        StoryPartDocumentUtils.traverseStoryParts(document, visitor);
-        
-        if(DEBUG) {
-            System.out.println(builder);
-            builder.setLength(0);
-        }
-    }
-    
-    private static boolean DEBUG = false;
-    private StringBuilder builder = new StringBuilder();
-    private void logln(String string) {
-        if(DEBUG)
-            builder.append(string).append('\n');
-    }
-    
-    private void emitPart(int offset_delta, StoryPart part) {
+    protected boolean isPartAccepted(StoryPart part) {
         JBKeyword keyword = part.getPreferredKeyword();
         if(keyword!=null && keyword.isStep()) {
-            parseStep(part.getContent(), offset_delta+part.getOffset());
+            return true;
         }
-        else {
-            emit(defaultToken, offset_delta+part.getOffset(), part.getLength());
-        }
+        return false;
+    }
+    
+    @Override
+    protected void emitPart(StoryPart part) {
+        parseStep(part.getContent(), part.getOffset());
     }
 
     private void parseStep(String stepContent, final int initialOffset) {
@@ -196,21 +129,21 @@ public class StepScannerStyled implements ITokenScanner {
                     }
                 }
                 else {
-                    emit(defaultToken, offset, content.length());
+                    emit(getDefaultToken(), offset, content.length());
                 }
                 offset += content.length();
             }
         }
         else {
             logln("parseStep(" + stepContent + ") step found without variable");
-            emit(defaultToken, offset, afterKeyword.length());
+            emit(getDefaultToken(), offset, afterKeyword.length());
             offset += afterKeyword.length();
         }
         
         // insert if trailings whitespace have been removed
         int expectedOffset = initialOffset+stepContent.length();
         if(offset < expectedOffset) {
-            emit(defaultToken, offset, expectedOffset-offset);
+            emit(getDefaultToken(), offset, expectedOffset-offset);
         }
     }
 
@@ -229,7 +162,7 @@ public class StepScannerStyled implements ITokenScanner {
                 emit(exampleTableSepToken, offset, length);
             }
             else if(isLast || isFirst) {
-                emit(defaultToken, offset, length);
+                emit(getDefaultToken(), offset, length);
             }
             else {
                 emit(exampleTableCellToken, offset, length);
@@ -253,7 +186,7 @@ public class StepScannerStyled implements ITokenScanner {
                 if(escaped)
                     continue;
                 
-                IToken token = defaultToken;
+                IToken token = getDefaultToken();
                 if(inVariable) {
                     token = parameterToken;
                 }
@@ -275,7 +208,7 @@ public class StepScannerStyled implements ITokenScanner {
         
         // remaining?
         if(i>tokenStart) {
-            IToken token = defaultToken;
+            IToken token = getDefaultToken();
             if(inVariable) {
                 token = parameterToken;
             }
@@ -285,76 +218,4 @@ public class StepScannerStyled implements ITokenScanner {
         }
     }
     
-    private void emit(IToken token, int offset, int length) {
-        logln("emit(" + token.getData() + ", offset: " + offset + ", length: " + length + ")");
-        
-        // can we merge previous one?
-        if(!fragments.isEmpty()) {
-            Fragment previous = getLastFragment();
-            
-            // check no hole
-            int requiredOffset = previous.offset+previous.length;
-            if(offset != requiredOffset) {
-                logln("emit() hole completion, offset: " +  offset + ", length: " + length + "; previous offset: " + previous.offset + ", length: " + previous.length);
-                emit(defaultToken, requiredOffset, requiredOffset-offset);
-                previous = getLastFragment();
-            }
-            
-            if(previous.token==token) {
-                previous.length += length;
-                logln("emit() token merged, offset: " +  previous.offset + ", length: " + previous.length);
-                return;
-            }
-        }
-        Fragment fragment = new Fragment(token, offset, length);
-        logln("emit() >>> added, offset: " +  offset + ", length: " + length);
-        fragments.add(fragment);
-    }
-
-    private Fragment getLastFragment() {
-        return fragments.get(fragments.size()-1);
-    }
-
-    /*
-     * Configures the scanner by providing access to the document range that should be scanned.
-     * 
-     * @see org.eclipse.jface.text.rules.ITokenScanner#setRange(org.eclipse.jface.text.IDocument, int, int)
-     */
-    @Override
-    public void setRange(IDocument document, int offset, int length) {
-        logln("setRange(offset: " +  offset + ", length: " + length);
-
-        fragments = New.arrayList();
-        cursor = -1;
-        this.document = document;
-        this.range = new Region(offset, length);
-    }
-     
-    public class Fragment {
-        private IToken token;
-        private int offset, length;
-        private Fragment(IToken token, int offset, int length) {
-            super();
-            this.token = token;
-            this.offset = offset;
-            this.length = length;
-        }
-        @Override
-        public String toString() {
-            try {
-                return token.getData() + ", offset: " + offset + ", length: " + length + ", c>>" + document.get(offset, length)+"<<";
-            } catch (BadLocationException e) {
-                return token.getData() + ", offset: " + offset + ", length: " + length + ", c>>" + "//BadLocationException//" +"<<";
-            }
-        }
-        public int getOffset() {
-            return offset;
-        }
-        public int getLength() {
-            return length;
-        }
-        public IToken getToken() {
-            return token;
-        }
-    }
 }
