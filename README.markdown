@@ -22,10 +22,13 @@ Christmas 2011 notes:
   * Fix several issue on completion
   * Completion supports step with parameters, even if parameter values are already written ([Issue 4](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/4))
   * Add *template support*: is the inserted step contains variables, the eclipse template behavior is triggered, allowing to efficiently replace variable declaration with their value, and switching to the next using tab key.
+  * Completion now supports the `And` step keyword too.
 * Smarter step editor: should be able to *detect parameter values and parameter variables* within a step and apply corresponding syntax highlighting ([Issue 5](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/5)).
 * *Quick search* (Ctrl+J) for an quick popup display ([Issue 7](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/7)) that allows to searched for steps. Step's type (Given, When, Then) is indicated with a corresponding icon. Focus is made on the filter where `*` can be used as special character for search. Step selected in then inserted as a new line at the carret position.
 * Jump to declaration (ctrl+mouse click) is also bind on keyboard using (Ctrl+G). Furthermore it now detect multiline steps ([Issue 1](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/1))
 * *Quick outline* (Ctrl+O) can be used to quickly navigate within big stories with several scenario ([Issue 8](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/8))
+* Add validation for narrative keywords
+
 
 
 Package
