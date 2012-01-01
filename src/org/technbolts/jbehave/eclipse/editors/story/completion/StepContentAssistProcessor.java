@@ -71,7 +71,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             
             String stepStartUsedForSearch = stepStart;
             // special case: one must find the right type of step
-            if(LineParser.isStepAndType(lineStart)) {
+            boolean isAndCase = LineParser.isStepAndType(lineStart); 
+            if(isAndCase) {
                 StoryPart part = StoryPartDocumentUtils.findStoryPartAtOffset(document, offset-1);
                 JBKeyword kw = part.getPreferredKeyword();
                 int indexOf = lineStart.indexOf(' ');
@@ -108,6 +109,10 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 }
                 else {
                     complete = pStep.potentialStep.fullStep();
+                    if(isAndCase) {
+                        int kwIndex = complete.indexOf(' ');
+                        complete = "And" + complete.substring(kwIndex);
+                    }
                     templateContext = contextFullLine;
                     replacementRegion = regionComplete;
                     displayString = complete;
