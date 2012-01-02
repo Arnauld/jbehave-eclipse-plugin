@@ -1,5 +1,6 @@
 package org.technbolts.jbehave.eclipse.textstyle;
 
+import static org.technbolts.jbehave.eclipse.textstyle.TextStyle.*;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.RGB;
@@ -8,48 +9,48 @@ public class TextStyleTheme {
     public static TextStyle createDarkTheme () {
         TextStyle root = new TextStyleTreeBuilder().createTree("dark");
         Map<String,TextStyle> map = root.createMap(); 
-        define(map, "default", new RGB(0,0,0),new RGB(255,255,255),false,false);
-        define(map, "narrative_default", null,new RGB(238,159,97),true,false);
-        define(map, "narrative_keyword", null,null,false,true);
-        define(map, "comment", null,new RGB(210,255,210),false,false);
-        define(map, "meta_default", null,new RGB(232,178,255),false,false);
-        define(map, "meta_keyword", null,null,false,true);
-        define(map, "scenario_default", null,new RGB(255,237,117),true,false);
-        define(map, "scenario_keyword", null,null,false,true);
-        define(map, "step_default", null,new RGB(223,225,225),false,false);
-        define(map, "step_keyword", null,new RGB(118,197,255),false,true);
-        define(map, "step_parameter", null,new RGB(192,230,249),true,true);
-        define(map, "step_parameter_value", null,new RGB(209,235,253),true,false);
-        define(map, "step_example_table_separator", null,new RGB(255,169,249),false,false);
-        define(map, "step_example_table_cell", null,new RGB(190,248,255),true,false);
-        define(map, "example_table_default", null,new RGB(223,225,225),false,false);
-        define(map, "example_table_keyword", null,new RGB(118,197,255),false,true);
-        define(map, "example_table_separator", null,new RGB(255,169,249),false,false);
-        define(map, "example_table_cell", null,new RGB(190,248,255),true,false);
+        define(map, DEFAULT, new RGB(0,0,0),new RGB(255,255,255),false,false);
+        define(map, NARRATIVE_DEFAULT, null,new RGB(238,159,97),true,false);
+        define(map, NARRATIVE_KEYWORD, null,null,false,true);
+        define(map, COMMENT, null,new RGB(210,255,210),false,false);
+        define(map, META_DEFAULT, null,new RGB(232,178,255),false,false);
+        define(map, META_KEYWORD, null,null,false,true);
+        define(map, SCENARIO_DEFAULT, null,new RGB(255,237,117),true,false);
+        define(map, SCENARIO_KEYWORD, null,null,false,true);
+        define(map, STEP_DEFAULT, null,new RGB(223,225,225),false,false);
+        define(map, STEP_KEYWORD, null,new RGB(118,197,255),false,true);
+        define(map, STEP_PARAMETER, null,new RGB(192,230,249),true,true);
+        define(map, STEP_PARAMETER_VALUE, null,new RGB(209,235,253),true,false);
+        define(map, STEP_EXAMPLE_TABLE_SEPARATOR, null,new RGB(255,169,249),false,false);
+        define(map, STEP_EXAMPLE_TABLE_CELL, null,new RGB(190,248,255),true,false);
+        define(map, EXAMPLE_TABLE_DEFAULT, null,new RGB(223,225,225),false,false);
+        define(map, EXAMPLE_TABLE_KEYWORD, null,new RGB(118,197,255),false,true);
+        define(map, EXAMPLE_TABLE_SEPARATOR, null,new RGB(255,169,249),false,false);
+        define(map, EXAMPLE_TABLE_CELL, null,new RGB(190,248,255),true,false);
         return root;
     }
     
     public static TextStyle createLightTheme() {
         TextStyle root = new TextStyleTreeBuilder().createTree("light");
         Map<String,TextStyle> map = root.createMap(); 
-        define(map, "default", new RGB(255,255,255),new RGB(0,0,0),false,false);
-        define(map, "narrative_default", null,new RGB(183,57,20),true,false);
-        define(map, "narrative_keyword", null,null,false,true);
-        define(map, "comment", null,new RGB(62,165,0),false,false);
-        define(map, "meta_default", null,new RGB(156,5,203),false,false);
-        define(map, "meta_keyword", null,null,false,true);
-        define(map, "scenario_default", null,new RGB(203,95,0),true,false);
-        define(map, "scenario_keyword", null,null,false,true);
-        define(map, "step_default", null,new RGB(81, 37, 16),false,false);
-        define(map, "step_keyword", null,new RGB(81, 37, 16),false,true);
-        define(map, "step_parameter", null,new RGB(183,57,20),true,true);
-        define(map, "step_parameter_value", null,new RGB(183,57,20),true,false);
-        define(map, "step_example_table_separator", null,new RGB(205,131,55),false,false);
-        define(map, "step_example_table_cell", null,new RGB(183,57,20),true,false);
-        define(map, "example_table_default", null,null,false,false);
-        define(map, "example_table_keyword", null,new RGB(144,144,144),false,true);
-        define(map, "example_table_separator", null,new RGB(205,131,55),false,false);
-        define(map, "example_table_cell", null,new RGB(183,57,20),true,false);
+        define(map, DEFAULT, new RGB(255,255,255),new RGB(0,0,0),false,false);
+        define(map, NARRATIVE_DEFAULT, null,new RGB(183,57,20),true,false);
+        define(map, NARRATIVE_KEYWORD, null,null,false,true);
+        define(map, COMMENT, null,new RGB(62,165,0),false,false);
+        define(map, META_DEFAULT, null,new RGB(156,5,203),false,false);
+        define(map, META_KEYWORD, null,null,false,true);
+        define(map, SCENARIO_DEFAULT, null,new RGB(203,95,0),true,false);
+        define(map, SCENARIO_KEYWORD, null,null,false,true);
+        define(map, STEP_DEFAULT, null,new RGB(81, 37, 16),false,false);
+        define(map, STEP_KEYWORD, null,new RGB(81, 37, 16),false,true);
+        define(map, STEP_PARAMETER, null,new RGB(183,57,20),true,true);
+        define(map, STEP_PARAMETER_VALUE, null,new RGB(183,57,20),true,false);
+        define(map, STEP_EXAMPLE_TABLE_SEPARATOR, null,new RGB(205,131,55),false,false);
+        define(map, STEP_EXAMPLE_TABLE_CELL, null,new RGB(183,57,20),true,false);
+        define(map, EXAMPLE_TABLE_DEFAULT, null,null,false,false);
+        define(map, EXAMPLE_TABLE_KEYWORD, null,new RGB(144,144,144),false,true);
+        define(map, EXAMPLE_TABLE_SEPARATOR, null,new RGB(205,131,55),false,false);
+        define(map, EXAMPLE_TABLE_CELL, null,new RGB(183,57,20),true,false);
         return root;
     }
 

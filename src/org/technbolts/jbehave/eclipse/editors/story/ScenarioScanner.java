@@ -1,22 +1,37 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 
 public class ScenarioScanner extends AbstractStoryPartBasedScanner {
     
+    private TextAttributeProvider textAttributeProvider;
     private IToken keywordToken;
 
     public ScenarioScanner(TextAttributeProvider textAttributeProvider) {
-        
-        TextAttribute textAttribute = textAttributeProvider.get(StoryTextAttributes.Scenario);
+        this.textAttributeProvider = textAttributeProvider;
+        initialize();
+        textAttributeProvider.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                initialize();
+            }
+        });
+    }
+    
+    private void initialize() {
+        TextAttribute textAttribute = textAttributeProvider.get(TextStyle.SCENARIO_DEFAULT);
         setDefaultToken(new Token(textAttribute));
         
-        textAttribute = textAttributeProvider.get(StoryTextAttributes.ScenarioKeyword);
+        textAttribute = textAttributeProvider.get(TextStyle.SCENARIO_KEYWORD);
         keywordToken = new Token(textAttribute);
     }
     

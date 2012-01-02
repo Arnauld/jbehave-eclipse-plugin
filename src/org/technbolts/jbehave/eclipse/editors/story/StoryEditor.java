@@ -16,12 +16,16 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.LineBackgroundEvent;
 import org.eclipse.swt.custom.LineBackgroundListener;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
@@ -39,6 +43,8 @@ import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryTemplateProposal;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModel;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModelBuilder;
+import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
+import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
 import org.technbolts.util.Visitor;
@@ -49,19 +55,58 @@ public class StoryEditor extends TextEditor {
     private ShowOutlineAction showOutline;
     private JumpToDeclarationAction jumpToDeclaration;
     private QuickSearchAction quickSearch;
+    private IPropertyChangeListener listener;
+    private TextAttributeProvider textAttributeProvider;
 
 	public StoryEditor() {
 		super();
 		colorManager = new ColorManager();
-		TextAttributeProvider textAttributeProvider = new TextAttributeProvider(colorManager);
+		textAttributeProvider = new TextAttributeProvider(colorManager);
+        textAttributeProvider.changeTheme(getTheme());
 		setSourceViewerConfiguration(new StoryConfiguration(this, textAttributeProvider));
 		setDocumentProvider(new StoryDocumentProvider());
 	}
 	
-	public void dispose() {
+    @Override
+    public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+        super.init(site, input);
+        listener = new IPropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent event) {
+                System.out.println("StoryEditor.init(...).new IPropertyChangeListener() {...}.propertyChange(" + event + ")");
+                updateStyles();
+            }
+
+        };
+        Activator.getDefault().getPreferenceStore().addPropertyChangeListener(listener);
+    }
+    
+    private void updateStyles() {
+        TextStyle theme = getTheme();
+        textAttributeProvider.changeTheme(theme);
+        
+        StyledText textWidget = getSourceViewer().getTextWidget();
+        textWidget.setBackground(colorManager.getColor(theme.getBackgroundOrDefault()));
+        textWidget.setForeground(colorManager.getColor(theme.getForegroundOrDefault()));
+        
+        getSourceViewer().invalidateTextPresentation();
+    }
+
+    private static TextStyle getTheme() {
+        return TextStylePreferences.getTheme(Activator.getDefault().getPreferenceStore());
+    }
+
+    @Override
+    public void dispose() {
+        Activator.getDefault().getPreferenceStore().removePropertyChangeListener(listener);
 		colorManager.dispose();
 		super.dispose();
 	}
+    
+    @Override
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
+        updateStyles();
+    }
 	
 	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
 	    ISourceViewer sourceViewer = super.createSourceViewer(parent, ruler, styles);
@@ -216,4 +261,5 @@ public class StoryEditor extends TextEditor {
         OutlineModelBuilder builder = new OutlineModelBuilder(getInputDocument());
         return builder.build();
     }
+    
 }

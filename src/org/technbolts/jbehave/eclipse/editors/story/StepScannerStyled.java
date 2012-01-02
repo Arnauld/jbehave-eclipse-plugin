@@ -1,6 +1,8 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.StringTokenizer;
 
 import org.eclipse.jface.text.TextAttribute;
@@ -9,6 +11,7 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
+import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
@@ -29,6 +32,8 @@ import org.technbolts.util.Strings;
  */
 public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     
+    private TextAttributeProvider textAttributeProvider;
+    //
     private IToken keywordToken;
     private IToken parameterToken;
     private IToken parameterValueToken;
@@ -38,27 +43,36 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     private StepLocator.Provider locatorProvider;
 
     public StepScannerStyled(StepLocator.Provider locatorProvider, TextAttributeProvider textAttributeProvider) {
-        initializeTokens(textAttributeProvider);
+        this.textAttributeProvider = textAttributeProvider;
+        initialize();
+        textAttributeProvider.addObserver(new Observer() {
+            @Override
+            public void update(Observable o, Object arg) {
+                initialize();
+            }
+        });
         this.locatorProvider = locatorProvider;
     }
     
-    private void initializeTokens(TextAttributeProvider textAttributeProvider) {
-        TextAttribute textAttribute = textAttributeProvider.get(StoryTextAttributes.Step);
+    private void initialize() {
+        System.out.println("StepScannerStyled.initialize()****\n****\n****");
+        
+        TextAttribute textAttribute = textAttributeProvider.get(TextStyle.STEP_DEFAULT);
         setDefaultToken(new Token(textAttribute));
         
-        textAttribute = textAttributeProvider.get(StoryTextAttributes.StepKeyword);
+        textAttribute = textAttributeProvider.get(TextStyle.STEP_KEYWORD);
         keywordToken = new Token(textAttribute);
         
-        textAttribute = textAttributeProvider.get(StoryTextAttributes.StepParameter);
+        textAttribute = textAttributeProvider.get(TextStyle.STEP_PARAMETER);
         parameterToken = new Token(textAttribute);
         
-        textAttribute = textAttributeProvider.get(StoryTextAttributes.StepParameterValue);
+        textAttribute = textAttributeProvider.get(TextStyle.STEP_PARAMETER_VALUE);
         parameterValueToken = new Token(textAttribute);
         
-        textAttribute = textAttributeProvider.get(StoryTextAttributes.StepExampleTableSep);
+        textAttribute = textAttributeProvider.get(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR);
         exampleTableSepToken = new Token(textAttribute);
         
-        textAttribute = textAttributeProvider.get(StoryTextAttributes.StepExampleTableCell);
+        textAttribute = textAttributeProvider.get(TextStyle.STEP_EXAMPLE_TABLE_CELL);
         exampleTableCellToken = new Token(textAttribute);
     }
     

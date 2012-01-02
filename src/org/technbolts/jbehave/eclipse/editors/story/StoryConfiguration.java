@@ -3,7 +3,6 @@ package org.technbolts.jbehave.eclipse.editors.story;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
@@ -12,12 +11,11 @@ import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.ITokenScanner;
-import org.eclipse.jface.text.rules.RuleBasedScanner;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistProcessor;
+import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.support.JBPartition;
 
@@ -78,7 +76,7 @@ public class StoryConfiguration extends SourceViewerConfiguration {
 
     private ITokenScanner getDefaultScanner() {
         if (defaultScanner == null) {
-            defaultScanner = createScanner(textAttributeProvider.get(StoryTextAttributes.Default));
+            defaultScanner = createScanner(TextStyle.DEFAULT);
         }
         return defaultScanner;
     }
@@ -98,7 +96,7 @@ public class StoryConfiguration extends SourceViewerConfiguration {
     
     protected ITokenScanner getCommentScanner() {
         if (commentScanner == null) {
-            commentScanner = createScanner(textAttributeProvider.get(StoryTextAttributes.Comment));
+            commentScanner = createScanner(TextStyle.COMMENT);
         }
         return commentScanner;
     }
@@ -117,12 +115,14 @@ public class StoryConfiguration extends SourceViewerConfiguration {
         return narrativeScanner;
     }
 
-    private ITokenScanner createScanner(TextAttribute textAttribute) {
-        RuleBasedScanner scanner = new RuleBasedScanner();
-        scanner.setDefaultReturnToken(new Token(textAttribute));
-        return scanner;
+    private ITokenScanner createScanner(String attributeKey) {
+        return new SingleTokenScanner(textAttributeProvider, attributeKey);
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getPresentationReconciler(org.eclipse.jface.text.source.ISourceViewer)
+     */
+    @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         PresentationReconciler reconciler = new PresentationReconciler();
 

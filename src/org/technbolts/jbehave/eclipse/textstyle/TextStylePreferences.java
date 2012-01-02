@@ -4,25 +4,33 @@ import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.technbolts.jbehave.eclipse.preferences.PreferenceConstants;
 
 public class TextStylePreferences {
     
+    private static final String BACKGROUND = "-background";
+    private static final String HAS_BACKGROUND = "-has_background";
+    private static final String FOREGROUND = "-foreground";
+    private static final String HAS_FOREGROUND = "-has_foreground";
+    private static final String BOLD = "-bold";
+    private static final String ITALIC = "-italic";
+
     public static void load(TextStyle rootStyle, IPreferenceStore store) {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
-            style.setItalic(store.getBoolean(path+".italic"));
-            style.setBold(store.getBoolean(path+".bold"));
+            style.setItalic(store.getBoolean(path+ITALIC));
+            style.setBold(store.getBoolean(path+BOLD));
             
-            boolean hasForeground = store.getBoolean(path+".foreground?");
+            boolean hasForeground = store.getBoolean(path+HAS_FOREGROUND);
             if(hasForeground)
-                style.setForeground(PreferenceConverter.getColor(store, path+".foreground"));
+                style.setForeground(PreferenceConverter.getColor(store, path+FOREGROUND));
             else
                 style.setForeground(null);
             
-            boolean hasBackground = store.getBoolean(path+".background?");
+            boolean hasBackground = store.getBoolean(path+HAS_BACKGROUND);
             if(hasBackground)
-                style.setBackground(PreferenceConverter.getColor(store, path+".background"));
+                style.setBackground(PreferenceConverter.getColor(store, path+BACKGROUND));
             else
                 style.setBackground(null);
         }
@@ -32,18 +40,18 @@ public class TextStylePreferences {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
-            style.setItalic(store.getDefaultBoolean(path+".italic"));
-            style.setBold(store.getDefaultBoolean(path+".bold"));
+            style.setItalic(store.getDefaultBoolean(path+ITALIC));
+            style.setBold(store.getDefaultBoolean(path+BOLD));
             
-            boolean hasForeground = store.getDefaultBoolean(path+".foreground?");
+            boolean hasForeground = store.getDefaultBoolean(path+HAS_FOREGROUND);
             if(hasForeground)
-                style.setForeground(PreferenceConverter.getDefaultColor(store, path+".foreground"));
+                style.setForeground(PreferenceConverter.getDefaultColor(store, path+FOREGROUND));
             else
                 style.setForeground(null);
             
-            boolean hasBackground = store.getDefaultBoolean(path+".background?");
+            boolean hasBackground = store.getDefaultBoolean(path+HAS_BACKGROUND);
             if(hasBackground)
-                style.setBackground(PreferenceConverter.getDefaultColor(store, path+".background"));
+                style.setBackground(PreferenceConverter.getDefaultColor(store, path+BACKGROUND));
             else
                 style.setBackground(null);
         }
@@ -53,16 +61,16 @@ public class TextStylePreferences {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
-            store.setDefault(path+".italic", style.isItalic());
-            store.setDefault(path+".bold", style.isBold());
+            store.setDefault(path+ITALIC, style.isItalic());
+            store.setDefault(path+BOLD, style.isBold());
             
-            store.setDefault(path+".foreground?", style.hasForeground());
+            store.setDefault(path+HAS_FOREGROUND, style.hasForeground());
             if(style.hasForeground())
-                PreferenceConverter.setDefault(store, path+".foreground", style.getForegroundOrDefault());
+                PreferenceConverter.setDefault(store, path+FOREGROUND, style.getForegroundOrDefault());
             
-            store.setDefault(path+".background?", style.hasBackground());
+            store.setDefault(path+HAS_BACKGROUND, style.hasBackground());
             if(style.hasBackground())
-                PreferenceConverter.setDefault(store, path+".background", style.getBackgroundOrDefault());
+                PreferenceConverter.setDefault(store, path+BACKGROUND, style.getBackgroundOrDefault());
         }
     }
     
@@ -70,17 +78,24 @@ public class TextStylePreferences {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
-            store.setValue(path+".italic", style.isItalic());
-            store.setValue(path+".bold", style.isBold());
+            store.setValue(path+ITALIC, style.isItalic());
+            store.setValue(path+BOLD, style.isBold());
             
-            store.setValue(path+".foreground?", style.hasForeground());
+            store.setValue(path+HAS_FOREGROUND, style.hasForeground());
             if(style.hasForeground())
-                PreferenceConverter.setValue(store, path+".foreground", style.getForegroundOrDefault());
+                PreferenceConverter.setValue(store, path+FOREGROUND, style.getForegroundOrDefault());
             
-            store.setValue(path+".background?", style.hasBackground());
+            store.setValue(path+HAS_BACKGROUND, style.hasBackground());
             if(style.hasBackground())
-                PreferenceConverter.setValue(store, path+".background", style.getBackgroundOrDefault());
+                PreferenceConverter.setValue(store, path+BACKGROUND, style.getBackgroundOrDefault());
         }
+    }
+
+    public static TextStyle getTheme(IPreferenceStore preferenceStore) {
+        String theme = preferenceStore.getString(PreferenceConstants.THEME);
+        TextStyle style = new TextStyleTreeBuilder().createTree(theme);
+        load(style, preferenceStore);
+        return style;
     }
 
 }

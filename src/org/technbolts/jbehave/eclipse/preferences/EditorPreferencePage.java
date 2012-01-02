@@ -276,12 +276,25 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         current.setBold(customBoldChk.getSelection());
         current.setItalic(customItalicChk.getSelection());
     }
+    
+    protected void storeModifications() {
+        IPreferenceStore store = getPreferenceStore();
+        for(TextStyle rootStyle : themesLoaded.values()) {
+            System.out.println("EditorPreferencePage.storeModifications(" + rootStyle.getPath() + ")");
+            TextStylePreferences.store(rootStyle, store);
+        }
+        
+        String theme = rootStyle.getPath();
+        store.setValue(PreferenceConstants.THEME, theme);
+        
+        // fire an overall change, to have a unique property notification hook
+        // instead of one per property
+        store.firePropertyChangeEvent(PreferenceConstants.THEME_CHANGED, theme, theme);
+    }
 
     @Override
     public boolean performOk() {
-        for(TextStyle rootStyle : themesLoaded.values()) {
-            TextStylePreferences.store(rootStyle, getPreferenceStore());
-        }
+        storeModifications();
         return super.performOk();
     }
     
@@ -292,17 +305,15 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         if(DumpCurrentStyleOnApply) {
             dumpCurrentStyle();
         }
-        
-        for(TextStyle rootStyle : themesLoaded.values()) {
-            TextStylePreferences.store(rootStyle, getPreferenceStore());
-        }
-        
+        storeModifications();
         super.performApply();
     }
 
     @Override
     protected void performDefaults() {
-        TextStylePreferences.loadFromDefault(rootStyle, getPreferenceStore());        
+        TextStylePreferences.loadFromDefault(rootStyle, getPreferenceStore());
+        setCurrentTextStyle(rootStyle);
+        updatePreview();
         super.performDefaults();
     }
     

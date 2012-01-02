@@ -3,7 +3,7 @@ In order to inOrderTo
 As a asA
 I want to iWantTo
 
-Scenario: my scenario 1
+Scenario: my scenario 2
 
 Given a customer named 'bob' created from model 'default'
 Given a user named $username

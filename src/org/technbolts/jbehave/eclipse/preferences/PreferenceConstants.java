@@ -7,5 +7,7 @@ public class PreferenceConstants {
 
 	public static final String THEMES = "text-style.themes";
     public static final String THEME  = "text-style.theme";
+    //
+    public static final String THEME_CHANGED = "preferences-theme-changed";  
 
 }

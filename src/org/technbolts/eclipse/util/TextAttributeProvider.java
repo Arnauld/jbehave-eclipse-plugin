@@ -1,64 +1,47 @@
 package org.technbolts.eclipse.util;
 
 import java.util.Map;
+import java.util.Observable;
 
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
+import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.util.New;
 
-public class TextAttributeProvider {
-    public static class Entry {
-        public final String keyId;
-        public final int style;
-        public final RGB foregroundColor;
-        public final RGB backgroundColor;
-        public Entry(String keyId, RGB foregroundColor) {
-            this(keyId, foregroundColor, SWT.NORMAL);
-        }
-        public Entry(String keyId, RGB foregroundColor, int style) {
-            this(keyId, foregroundColor, null, style);
-        }
-        public Entry(String keyId, RGB foregroundColor, RGB backgroundColor, int style) {
-            this.keyId = keyId;
-            this.foregroundColor = foregroundColor;
-            this.backgroundColor = backgroundColor;
-            this.style = style;
-        }
-        @Override
-        public int hashCode() {
-            return keyId.hashCode();
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            Entry other = (Entry) obj;
-            return keyId.equals(other.keyId);
-        }
-        
-    }
+public class TextAttributeProvider extends Observable {
     
-    private Map<Entry, TextAttribute> textAttributes = New.hashMap();
+    private Map<String, TextAttribute> textAttributes = New.hashMap();
+    
     private ColorManager colorManager;
+    private Map<String, TextStyle> themeMap;
+    
     public TextAttributeProvider(ColorManager colorManager) {
         super();
         this.colorManager = colorManager;
     }
     
-    public TextAttribute get(Entry key) {
+    public synchronized TextAttribute get(String key) {
         TextAttribute textAttribute = textAttributes.get(key);
         if(textAttribute==null) {
-            Color fcolor = colorManager.getColor(key.foregroundColor);
-            Color bcolor = colorManager.getColor(key.backgroundColor);
-            textAttribute = new TextAttribute(fcolor, bcolor, key.style);
+            TextStyle textStyle = themeMap.get(key);
+            Color fcolor = colorManager.getColor(textStyle.getForegroundOrDefault());
+            Color bcolor = colorManager.getColor(textStyle.getBackgroundOrDefault());
+            int style = SWT.NORMAL;
+            if(textStyle.isBold())
+                style |= SWT.BOLD;
+            if(textStyle.isItalic())
+                style |= SWT.ITALIC;
+            textAttribute = new TextAttribute(fcolor, bcolor, style);
             textAttributes.put(key, textAttribute);
         }
         return textAttribute;
+    }
+
+    public synchronized void changeTheme(TextStyle theme) {
+        this.themeMap = theme.createMap();
+        this.textAttributes.clear();
+        setChanged();
+        notifyObservers(theme);
     }
 }

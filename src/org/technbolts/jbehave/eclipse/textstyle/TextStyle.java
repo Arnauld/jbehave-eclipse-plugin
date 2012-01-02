@@ -130,4 +130,14 @@ public class TextStyle {
         for(TextStyle child : getChildren())
             child.recursivelyFill(styles);
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return "TextStyle [key=" + key + ", foreground=" + foreground + ", background=" + background + ", italic="
+                + italic + ", bold=" + bold + "]";
+    }
+    
+    
 }
