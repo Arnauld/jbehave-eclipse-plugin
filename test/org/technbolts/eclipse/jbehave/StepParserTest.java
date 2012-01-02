@@ -21,7 +21,7 @@ import org.mockito.stubbing.Answer;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.story.StepScannerStyled;
-import org.technbolts.jbehave.eclipse.editors.story.StoryTextAttributes;
+import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepLocator.Provider;
 
@@ -58,12 +58,12 @@ public class StepParserTest {
         when(exampleTableCell.toString()).thenReturn("mock-table-cell");
         
         textAttributeProvider = mock(TextAttributeProvider.class);
-        when(textAttributeProvider.get(StoryTextAttributes.Step)).thenReturn(defaultAttr);
-        when(textAttributeProvider.get(StoryTextAttributes.StepKeyword)).thenReturn(keywordAttr);
-        when(textAttributeProvider.get(StoryTextAttributes.StepParameter)).thenReturn(paramAttr);
-        when(textAttributeProvider.get(StoryTextAttributes.StepParameterValue)).thenReturn(paramValueAttr);
-        when(textAttributeProvider.get(StoryTextAttributes.StepExampleTableSep)).thenReturn(exampleTableSep);
-        when(textAttributeProvider.get(StoryTextAttributes.StepExampleTableCell)).thenReturn(exampleTableCell);
+        when(textAttributeProvider.get(TextStyle.STEP_DEFAULT)).thenReturn(defaultAttr);
+        when(textAttributeProvider.get(TextStyle.STEP_KEYWORD)).thenReturn(keywordAttr);
+        when(textAttributeProvider.get(TextStyle.STEP_PARAMETER)).thenReturn(paramAttr);
+        when(textAttributeProvider.get(TextStyle.STEP_PARAMETER_VALUE)).thenReturn(paramValueAttr);
+        when(textAttributeProvider.get(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR)).thenReturn(exampleTableSep);
+        when(textAttributeProvider.get(TextStyle.STEP_EXAMPLE_TABLE_CELL)).thenReturn(exampleTableCell);
         
         locator = mock(StepLocator.class);
         locatorProvider = mock(StepLocator.Provider.class);

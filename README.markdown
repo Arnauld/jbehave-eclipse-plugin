@@ -15,8 +15,12 @@ Story Editor:
   * Detects unimplemented steps, ie invalid step syntax
   * Detects ambiguous steps, ie entry that is match by several implementation
 
-Christmas 2011 notes:
--------------------------
+Preference page:
+
+* Story syntax coloring settings
+
+Christmas 2011 & Happy new year 2012 - Release notes (1.0.4)
+------------------------------------------------------------
 
 * Fix and *improve completion*:
   * Fix several issue on completion
@@ -27,8 +31,8 @@ Christmas 2011 notes:
 * *Quick search* (Ctrl+J) for an quick popup display ([Issue 7](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/7)) that allows to searched for steps. Step's type (Given, When, Then) is indicated with a corresponding icon. Focus is made on the filter where `*` can be used as special character for search. Step selected in then inserted as a new line at the carret position.
 * Jump to declaration (ctrl+mouse click) is also bind on keyboard using (Ctrl+G). Furthermore it now detect multiline steps ([Issue 1](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/1))
 * *Quick outline* (Ctrl+O) can be used to quickly navigate within big stories with several scenario ([Issue 8](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/8))
-* Add validation for narrative keywords
-
+* Add validation for narrative keywords: check for uniqueness and presence of all keywords.
+* Add preferences page to modify the editor color settings ([Issue 12](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/12))
 
 
 Package
@@ -46,4 +50,5 @@ Inspiration
 * [Eclipse Plug-ins, Third Edition](http://www.amazon.com/Eclipse-Plug-ins-3rd-Eric-Clayberg/dp/0321553462/ref=sr_1_1?ie=UTF8&s=books&qid=1300059405&sr=8-1)
 
 Erlide for plugin usage and template proposal behavior
+
 * [Erlang IDE ](https://github.com/erlide/erlide)
