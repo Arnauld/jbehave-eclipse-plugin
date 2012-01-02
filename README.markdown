@@ -22,24 +22,30 @@ Preference page:
 Christmas 2011 & Happy new year 2012 - Release notes (1.0.4)
 ------------------------------------------------------------
 
-* Fix and *improve completion*:
+* Fix and **improve completion**:
   * Fix several issue on completion
   * Completion supports step with parameters, even if parameter values are already written ([Issue 4](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/4))
-  * Add *template support*: is the inserted step contains variables, the eclipse template behavior is triggered, allowing to efficiently replace variable declaration with their value, and switching to the next using tab key.
+  * Add **template support**: is the inserted step contains variables, the eclipse template behavior is triggered, allowing to efficiently replace variable declaration with their value, and switching to the next using tab key.
   * Completion now supports the `And` step keyword too.
-* Smarter step editor: should be able to *detect parameter values and parameter variables* within a step and apply corresponding syntax highlighting ([Issue 5](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/5)).
-* *Quick search* (Ctrl+J) for an quick popup display ([Issue 7](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/7)) that allows to searched for steps. Step's type (Given, When, Then) is indicated with a corresponding icon. Focus is made on the filter where `*` can be used as special character for search. Step selected in then inserted as a new line at the carret position.
+* Smarter step editor: should be able to **detect parameter values and parameter variables** within a step and apply corresponding syntax highlighting ([Issue 5](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/5)).
+* **Quick search** (Ctrl+J) for an quick popup display ([Issue 7](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/7)) that allows to searched for steps. Step's type (Given, When, Then) is indicated with a corresponding icon. Focus is made on the filter where `*` can be used as special character for search. Step selected in then inserted as a new line at the carret position.
 * Jump to declaration (ctrl+mouse click) is also bind on keyboard using (Ctrl+G). Furthermore it now detect multiline steps ([Issue 1](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/1))
 * *Quick outline* (Ctrl+O) can be used to quickly navigate within big stories with several scenario ([Issue 8](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/8))
 * Add validation for narrative keywords: check for uniqueness and presence of all keywords.
 * Add preferences page to modify the editor color settings ([Issue 12](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/12))
 
 
-Package
+Download
 ========================
 
 * [1.0.0.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar)
 * [1.0.3.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.3.SNAPSHOT.jar)
+* [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
+
+Installation
+------------
+
+Simply drop the jar in your eclipse `plugins/` directory and restart your ide.
 
 Inspiration
 ========================
