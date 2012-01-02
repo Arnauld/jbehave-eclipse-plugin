@@ -36,9 +36,9 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
         }
         
         final StoryPart part = found.get();
-        final String step = LineParser.extractStepSentence(part.getContent());
-        if(step==null)
+        if(!part.isStepPart())
             return NONE;
+        final String step = LineParser.extractStepSentence(part.getContent());
 
         IHyperlink link = new IHyperlink() {
 
