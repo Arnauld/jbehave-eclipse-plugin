@@ -4,10 +4,12 @@ import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
+import org.eclipse.swt.graphics.RGB;
 import org.technbolts.jbehave.eclipse.preferences.PreferenceConstants;
 
 public class TextStylePreferences {
     
+    private static final String CURRENT_LINE_COLOR = "-current_line_color";
     private static final String BACKGROUND = "-background";
     private static final String HAS_BACKGROUND = "-has_background";
     private static final String FOREGROUND = "-foreground";
@@ -19,6 +21,10 @@ public class TextStylePreferences {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
+            
+            if(store.contains(path+CURRENT_LINE_COLOR))
+                style.setCurrentLineHighlight(PreferenceConverter.getColor(store, path+CURRENT_LINE_COLOR));
+            
             style.setItalic(store.getBoolean(path+ITALIC));
             style.setBold(store.getBoolean(path+BOLD));
             
@@ -40,6 +46,10 @@ public class TextStylePreferences {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
+            
+            if(store.contains(path+CURRENT_LINE_COLOR))
+                style.setCurrentLineHighlight(PreferenceConverter.getDefaultColor(store, path+CURRENT_LINE_COLOR));
+            
             style.setItalic(store.getDefaultBoolean(path+ITALIC));
             style.setBold(store.getDefaultBoolean(path+BOLD));
             
@@ -61,6 +71,11 @@ public class TextStylePreferences {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
+            
+            RGB currentLineHighlight = style.getCurrentLineHighlight();
+            if(currentLineHighlight!=null)
+                PreferenceConverter.setDefault(store, path+CURRENT_LINE_COLOR, currentLineHighlight);
+            
             store.setDefault(path+ITALIC, style.isItalic());
             store.setDefault(path+BOLD, style.isBold());
             
@@ -78,9 +93,14 @@ public class TextStylePreferences {
         Map<String, TextStyle> map = rootStyle.createMap();
         for(TextStyle style : map.values()) {
             String path = style.getPath();
+            
+            RGB currentLineHighlight = style.getCurrentLineHighlight();
+            if(currentLineHighlight!=null)
+                PreferenceConverter.setValue(store, path+CURRENT_LINE_COLOR, currentLineHighlight);
+            
             store.setValue(path+ITALIC, style.isItalic());
             store.setValue(path+BOLD, style.isBold());
-            
+
             store.setValue(path+HAS_FOREGROUND, style.hasForeground());
             if(style.hasForeground())
                 PreferenceConverter.setValue(store, path+FOREGROUND, style.getForegroundOrDefault());

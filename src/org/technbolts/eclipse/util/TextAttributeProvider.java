@@ -22,17 +22,34 @@ public class TextAttributeProvider extends Observable {
     }
     
     public synchronized TextAttribute get(String key) {
+        if(themeMap==null)
+            throw new IllegalStateException("Make sure to call 'changeTheme' first");
+        
         TextAttribute textAttribute = textAttributes.get(key);
         if(textAttribute==null) {
-            TextStyle textStyle = themeMap.get(key);
-            Color fcolor = colorManager.getColor(textStyle.getForegroundOrDefault());
-            Color bcolor = colorManager.getColor(textStyle.getBackgroundOrDefault());
+            final TextStyle textStyle = themeMap.get(key);
+            Color fcolor = null;
+            if(!textStyle.isForegroundSameAsRoot()) {
+                fcolor = colorManager.getColor(textStyle.getForegroundOrDefault());
+            }
+            
+            Color bcolor = null;
+            if(!textStyle.isBackgroundSameAsRoot()) {
+                bcolor = colorManager.getColor(textStyle.getBackgroundOrDefault());
+            }
+            
+            
             int style = SWT.NORMAL;
             if(textStyle.isBold())
                 style |= SWT.BOLD;
             if(textStyle.isItalic())
                 style |= SWT.ITALIC;
-            textAttribute = new TextAttribute(fcolor, bcolor, style);
+            textAttribute = new TextAttribute(fcolor, bcolor, style) {
+                @Override
+                public String toString() {
+                    return "TextAttribute[" + textStyle + "]";
+                }
+            };
             textAttributes.put(key, textAttribute);
         }
         return textAttribute;

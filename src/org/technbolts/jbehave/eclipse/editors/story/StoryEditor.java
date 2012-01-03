@@ -7,11 +7,11 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
-import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
@@ -19,8 +19,6 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.LineBackgroundEvent;
-import org.eclipse.swt.custom.LineBackgroundListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
@@ -29,6 +27,8 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
+import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.technbolts.eclipse.util.ColorManager;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.eclipse.util.TextAttributeProvider;
@@ -43,6 +43,7 @@ import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryTemplateProposal;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModel;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModelBuilder;
+import org.technbolts.jbehave.eclipse.preferences.PreferenceConstants;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
@@ -72,12 +73,11 @@ public class StoryEditor extends TextEditor {
         super.init(site, input);
         listener = new IPropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent event) {
-                System.out.println("StoryEditor.init(...).new IPropertyChangeListener() {...}.propertyChange(" + event + ")");
                 updateStyles();
             }
 
         };
-        Activator.getDefault().getPreferenceStore().addPropertyChangeListener(listener);
+        getStore().addPropertyChangeListener(listener);
     }
     
     private void updateStyles() {
@@ -88,16 +88,18 @@ public class StoryEditor extends TextEditor {
         textWidget.setBackground(colorManager.getColor(theme.getBackgroundOrDefault()));
         textWidget.setForeground(colorManager.getColor(theme.getForegroundOrDefault()));
         
+        adjustCurrentLineColor(theme);
+        
         getSourceViewer().invalidateTextPresentation();
     }
 
     private static TextStyle getTheme() {
-        return TextStylePreferences.getTheme(Activator.getDefault().getPreferenceStore());
+        return TextStylePreferences.getTheme(getStore());
     }
 
     @Override
     public void dispose() {
-        Activator.getDefault().getPreferenceStore().removePropertyChangeListener(listener);
+        getStore().removePropertyChangeListener(listener);
 		colorManager.dispose();
 		super.dispose();
 	}
@@ -108,14 +110,29 @@ public class StoryEditor extends TextEditor {
         updateStyles();
     }
 	
-	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-	    ISourceViewer sourceViewer = super.createSourceViewer(parent, ruler, styles);
-	    sourceViewer.getTextWidget().addLineBackgroundListener(new LineBackgroundListener() {
-            @Override
-            public void lineGetBackground(LineBackgroundEvent event) {
-            }
-        });
-        return sourceViewer;
+    private static boolean AttemptToChangeCurrentLineColorAccordingToTheme = true;
+    
+	private void adjustCurrentLineColor(TextStyle theme) {
+	    if(AttemptToChangeCurrentLineColorAccordingToTheme) {
+	        PreferenceConverter.setValue(//
+	                getPreferenceStore(), //
+	                PreferenceConstants.CUSTOM_CURRENT_LINE_COLOR, theme.getCurrentLineHighlight());
+	    }
+	}
+	
+	@Override
+	protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
+	    super.configureSourceViewerDecorationSupport(support);
+	    if(AttemptToChangeCurrentLineColorAccordingToTheme) {
+	        adjustCurrentLineColor(getTheme());
+	        support.setCursorLinePainterPreferenceKeys(
+                    AbstractDecoratedTextEditorPreferenceConstants.EDITOR_CURRENT_LINE, 
+                    PreferenceConstants.CUSTOM_CURRENT_LINE_COLOR);
+	    }
+	}
+	
+	private static IPreferenceStore getStore() {
+	    return Activator.getDefault().getPreferenceStore();
 	}
 
 	@Override

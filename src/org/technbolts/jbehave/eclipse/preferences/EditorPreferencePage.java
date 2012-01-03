@@ -9,6 +9,9 @@ import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.text.CursorLinePainter;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.TextViewer;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ISelection;
@@ -18,9 +21,9 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -55,7 +58,7 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
     private ColorSelector customBackgroundButton;
     private Button customItalicChk;
     private Button customBoldChk;
-    private StyledText previewStyledText;
+    private TextViewer previewStyledText;
     //
     private TextStyle current;
     private TextStyle rootStyle;
@@ -111,14 +114,14 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         ResourceBundle bundle = PreferencesMessages.getBundle();
         
         Composite container = new Composite(parent, SWT.NULL);
-        container.setLayout(new GridLayout(5, false));
+        container.setLayout(new GridLayout(6, false));
         
         Label lblTheme = new Label(container, SWT.NONE);
         lblTheme.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         lblTheme.setText("Theme");
         
         themeCombo = new Combo(container, SWT.NONE|SWT.READ_ONLY);
-        themeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        themeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
         themeCombo.addSelectionListener(new SelectionListener() {
            @Override
             public void widgetDefaultSelected(SelectionEvent event) {
@@ -132,10 +135,21 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         });
         new Label(container, SWT.NONE);
         
+        Label lblCurrentLine = new Label(container, SWT.NONE);
+        lblCurrentLine.setText("Current line");
+        
+        currentLineColor = new ColorSelector(container);
+        currentLineColor.addListener(styleChangedPropertyListener);
+        currentLineColor.getButton().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+        Label lblCurrentLineToolTip = new Label(container, SWT.NONE);
+        lblCurrentLineToolTip.setText("(Change the caret position in the preview for feedback)");
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
+        
         keywordTree = new TreeViewer(container, SWT.SINGLE |SWT.BORDER);
         Tree tree = keywordTree.getTree();
         
-        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 5);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 5);
         gridData.widthHint = 80;
         gridData.heightHint = 30;
         tree.setLayoutData(gridData);
@@ -188,13 +202,19 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
         
-        previewStyledText = new StyledText(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-        GridData gridData2 = new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1);
+        previewStyledText = new TextViewer(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
+        GridData gridData2 = new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1);
         gridData2.widthHint = 80;
         gridData2.heightHint = 140;
-        previewStyledText.setLayoutData(gridData2);
-
+        previewStyledText.getControl().setLayoutData(gridData2);
+        
+        cursorLinePainter = new CursorLinePainter(previewStyledText);
+        previewStyledText.addPainter(cursorLinePainter);
+        
         initialize();
         
         return container;
@@ -206,11 +226,15 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         super.dispose();
     }
     
+    private Color getLineBackground() {
+        return colorManager.getColor(currentLineColor.getColorValue());
+    }
+    
     /**
      * Initial values.
      */
     protected void initialize() {
-        previewStyledText.setText(createText());
+        previewStyledText.setDocument(new Document(createText()));
         
         IPreferenceStore store = getPreferenceStore();
         String inlinedThemes = store.getString(PreferenceConstants.THEMES);
@@ -233,6 +257,7 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         }
         
         keywordTree.setInput(new Object[] { rootStyle });
+        currentLineColor.setColorValue(rootStyle.getCurrentLineHighlight());
         setCurrentTextStyle(rootStyle);
         updatePreview();
     }
@@ -253,6 +278,7 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         
         customBoldChk.setSelection(current.isBold());
         customItalicChk.setSelection(current.isItalic());
+        
         adjustButtonStatusAndColors();
     }
     
@@ -275,12 +301,13 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         
         current.setBold(customBoldChk.getSelection());
         current.setItalic(customItalicChk.getSelection());
+        
+        rootStyle.setCurrentLineHighlight(currentLineColor.getColorValue());
     }
     
     protected void storeModifications() {
         IPreferenceStore store = getPreferenceStore();
         for(TextStyle rootStyle : themesLoaded.values()) {
-            System.out.println("EditorPreferencePage.storeModifications(" + rootStyle.getPath() + ")");
             TextStylePreferences.store(rootStyle, store);
         }
         
@@ -299,6 +326,8 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
     }
     
     private static boolean DumpCurrentStyleOnApply = false;
+    private ColorSelector currentLineColor;
+    private CursorLinePainter cursorLinePainter;
     
     @Override
     protected void performApply() {
@@ -318,9 +347,10 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
     }
     
     private void updatePreview() {
-        previewStyledText.setBackground(colorManager.getColor(rootStyle.getBackgroundOrDefault()));
-        previewStyledText.setForeground(colorManager.getColor(rootStyle.getForegroundOrDefault()));
-        previewStyledText.setStyleRanges(createStyleRanges());
+        cursorLinePainter.setHighlightColor(getLineBackground());
+        previewStyledText.getTextWidget().setBackground(colorManager.getColor(rootStyle.getBackgroundOrDefault()));
+        previewStyledText.getTextWidget().setForeground(colorManager.getColor(rootStyle.getForegroundOrDefault()));
+        previewStyledText.getTextWidget().setStyleRanges(createStyleRanges());
     }
     
     /**

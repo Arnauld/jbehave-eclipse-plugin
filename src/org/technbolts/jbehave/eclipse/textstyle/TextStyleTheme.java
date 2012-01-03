@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.RGB;
 public class TextStyleTheme {
     public static TextStyle createDarkTheme () {
         TextStyle root = new TextStyleTreeBuilder().createTree("dark");
+        root.setCurrentLineHighlight(new RGB(70,70,70));
         Map<String,TextStyle> map = root.createMap(); 
         define(map, DEFAULT, new RGB(0,0,0),new RGB(255,255,255),false,false);
         define(map, NARRATIVE_DEFAULT, null,new RGB(238,159,97),true,false);
@@ -32,6 +33,7 @@ public class TextStyleTheme {
     
     public static TextStyle createLightTheme() {
         TextStyle root = new TextStyleTreeBuilder().createTree("light");
+        root.setCurrentLineHighlight(new RGB(247,225,203));
         Map<String,TextStyle> map = root.createMap(); 
         define(map, DEFAULT, new RGB(255,255,255),new RGB(0,0,0),false,false);
         define(map, NARRATIVE_DEFAULT, null,new RGB(183,57,20),true,false);

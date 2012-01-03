@@ -3,6 +3,13 @@ package org.technbolts.util;
 
 public class Ref<T> {
     private T value;
+    
+    public Ref() {
+    }
+    public Ref(T value) {
+        this.value = value;
+    }
+    
     public void set(T value) {
         this.value = value;
     }
@@ -11,6 +18,9 @@ public class Ref<T> {
     }
     public static <T> Ref<T> create() {
         return new Ref<T>();
+    }
+    public static <T> Ref<T> create(T initialValue) {
+        return new Ref<T>(initialValue);
     }
     public boolean isNull() {
         return value==null;

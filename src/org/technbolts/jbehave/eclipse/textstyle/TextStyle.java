@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.technbolts.util.New;
 
 public class TextStyle {
-    
+
     public static final String COMMENT = "comment";
     public static final String META_DEFAULT = "meta_default";
     public static final String META_KEYWORD = "meta_keyword";
@@ -28,55 +28,60 @@ public class TextStyle {
     public static final String NARRATIVE_DEFAULT = "narrative_default";
     public static final String NARRATIVE_KEYWORD = "narrative_keyword";
     public static final String DEFAULT = "default";
-    
+
     private final String key;
     private RGB foreground;
     private RGB background;
     private boolean italic;
     private boolean bold;
-    
+    //
+    private RGB currentLineHighlight;
+
     private final TextStyle parent;
     private List<TextStyle> children = New.arrayList();
-    
+
     public TextStyle(String key, TextStyle parent) {
         this.key = key;
         this.parent = parent;
     }
+
     public TextStyle getParent() {
         return parent;
     }
-    
+
     public boolean isRoot() {
-        return parent==null;
+        return parent == null;
     }
-    
+
     public String getKey() {
         return key;
     }
-    
+
     public String getPath() {
         List<String> keys = New.arrayList();
         TextStyle ts = this;
-        while(ts!=null) {
+        while (ts != null) {
             keys.add(ts.getKey());
             ts = ts.parent;
         }
         Collections.reverse(keys);
         return StringUtils.join(keys, ".");
     }
-    
+
     public void setForeground(RGB foreground) {
         this.foreground = foreground;
     }
+
     public boolean hasForeground() {
-        return foreground!=null;
+        return foreground != null;
     }
+
     public RGB getForegroundOrDefault() {
-        if(foreground==null) {
-            if(parent!=null)
+        if (foreground == null) {
+            if (parent != null)
                 return parent.getForegroundOrDefault();
             else
-                return new RGB(0,0,0);
+                return new RGB(0, 0, 0);
         }
         return foreground;
     }
@@ -84,53 +89,73 @@ public class TextStyle {
     public void setBackground(RGB background) {
         this.background = background;
     }
+
     public boolean hasBackground() {
-        return background!=null;
+        return background != null;
     }
+
     public RGB getBackgroundOrDefault() {
-        if(background==null) {
-            if(parent!=null)
+        if (background == null) {
+            if (parent != null)
                 return parent.getBackgroundOrDefault();
             else
-                return new RGB(255,255,255);
+                return new RGB(255, 255, 255);
         }
         return background;
     }
-    
+
     public boolean isBold() {
         return bold;
     }
+
     public void setBold(boolean bold) {
         this.bold = bold;
     }
+
     public boolean isItalic() {
         return italic;
     }
+
     public void setItalic(boolean italic) {
         this.italic = italic;
     }
+
+    public void setCurrentLineHighlight(RGB currentLineHighlight) {
+        this.currentLineHighlight = currentLineHighlight;
+    }
+    
+    public RGB getCurrentLineHighlight() {
+        return currentLineHighlight;
+    }
+    
     public List<TextStyle> getChildren() {
         return children;
     }
+
     public TextStyle newChild(String key) {
         TextStyle child = new TextStyle(key, this);
         children.add(child);
         return child;
     }
+
     public Map<String, TextStyle> createMap() {
         Map<String, TextStyle> styles = New.hashMap();
         recursivelyFill(styles);
         return styles;
     }
+
     protected void recursivelyFill(Map<String, TextStyle> styles) {
-        if(parent==null)
+        if (parent == null)
             styles.put(DEFAULT, this);
         else
             styles.put(key, this);
-        for(TextStyle child : getChildren())
+        for (TextStyle child : getChildren())
             child.recursivelyFill(styles);
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -138,6 +163,32 @@ public class TextStyle {
         return "TextStyle [key=" + key + ", foreground=" + foreground + ", background=" + background + ", italic="
                 + italic + ", bold=" + bold + "]";
     }
-    
-    
+
+    private TextStyle root;
+
+    private TextStyle getRoot() {
+        if (root == null) {
+            TextStyle ts = this;
+            while (true) {
+                if (ts.parent == null)
+                    break;
+                ts = ts.parent;
+            }
+            root = ts;
+        }
+        return root;
+    }
+
+    public boolean isForegroundSameAsRoot() {
+        RGB tcolor = getForegroundOrDefault();
+        RGB rcolor = getRoot().getForegroundOrDefault();
+        return tcolor.equals(rcolor);
+    }
+
+    public boolean isBackgroundSameAsRoot() {
+        RGB tcolor = getBackgroundOrDefault();
+        RGB rcolor = getRoot().getBackgroundOrDefault();
+        return tcolor.equals(rcolor);
+    }
+
 }

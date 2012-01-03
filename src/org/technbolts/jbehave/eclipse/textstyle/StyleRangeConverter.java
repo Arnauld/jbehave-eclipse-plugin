@@ -15,8 +15,14 @@ public class StyleRangeConverter {
     }
     public StyleRange createStyleRange(TextStyle style, int offset, int length) {
         
-        Color foreground = colorManager.getColor(style.getForegroundOrDefault());
-        Color background = colorManager.getColor(style.getBackgroundOrDefault());
+        Color foreground = null;
+        if(!(style.isRoot() || style.isForegroundSameAsRoot()))
+            foreground = colorManager.getColor(style.getForegroundOrDefault());
+        
+        Color background = null;
+        if(!(style.isRoot() || style.isBackgroundSameAsRoot()))
+            background = colorManager.getColor(style.getBackgroundOrDefault());
+        
         int fontStyle = SWT.NORMAL;
         if(style.isBold())
             fontStyle |= SWT.BOLD;
