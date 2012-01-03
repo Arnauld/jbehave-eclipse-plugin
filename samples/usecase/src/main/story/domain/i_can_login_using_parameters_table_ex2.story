@@ -13,3 +13,4 @@ Then agent see incorrect login error message
 When agent fill in the login filed 'networkAgentLogin' and in the password field 'networkAgentPassword'
 When agent clicks on Login button
 Then agent see the application home page
+

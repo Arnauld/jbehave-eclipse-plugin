@@ -3,8 +3,6 @@ package org.technbolts.jbehave.eclipse.editors.story;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.contentassist.ContentAssistant;
-import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -14,7 +12,7 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
-import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistProcessor;
+import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistant;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.support.JBPartition;
@@ -48,23 +46,7 @@ public class StoryConfiguration extends SourceViewerConfiguration {
      */
     @Override
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-
-        IContentAssistProcessor stepProcessor = new StepContentAssistProcessor(); 
-        ContentAssistant assistant = new ContentAssistant() {
-            @Override
-            public IContentAssistProcessor getContentAssistProcessor(String contentType) {
-                IContentAssistProcessor processor = super.getContentAssistProcessor(contentType);
-                return processor;
-            }
-        };
-        assistant.setContentAssistProcessor(stepProcessor, JBPartition.Step.name());
-        assistant.setContentAssistProcessor(stepProcessor, (String)TokenConstants.IGNORED.getData());
-        assistant.setContentAssistProcessor(stepProcessor, IDocument.DEFAULT_CONTENT_TYPE);
-        assistant.enableAutoActivation(true);
-        assistant.setAutoActivationDelay(500);
-        assistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
-        assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_BELOW);
-        return assistant;
+        return new StepContentAssistant();
     }
 
     /* (non-Javadoc)

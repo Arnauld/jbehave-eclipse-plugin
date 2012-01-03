@@ -20,11 +20,19 @@ public class LoginSteps {
             @Named("password") String password) {
     }
 
+    /**
+     * Log agent with the specified name.
+     * @param accountKey name of the agent in the
+     *    current context.
+     */
     @When("account named '$accountKey' is logged")
     public void logAccountToApplication(//
             @Named("accountKey") String accountKey) {
     }
 
+    /**
+     * Agent clicks on the <b>login</b> button.
+     */
     @When("I log to the application")
     @Alias("agent clicks on Login button")
     public void logToApplication() {

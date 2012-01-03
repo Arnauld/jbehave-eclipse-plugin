@@ -42,6 +42,13 @@ public class AccountSteps {
             @Named("propertiesTable") ExamplesTable propertiesTable) {
     }
 
+    /**
+     * Create a new account with the specified properties. Account is then stored
+     * in the current content with the provided key.
+     * 
+     * @param accountKey key to access the account from the context
+     * @param propertiesTable key/value pairs of properties.
+     */
     @Given("a new account named '$accountKey' with the following properties (properties not set will be completed) $propertiesTable")
     public void createAnAccountAndCompleteEmptyFields(@Named("accountKey") String accountKey,
             @Named("propertiesTable") ExamplesTable propertiesTable) {

@@ -85,7 +85,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             Collections.sort(candidates);
             
             String stepEntry = LineParser.extractStepSentence(stepStart);
-            boolean isEmpty  = StringUtils.isBlank(stepEntry);
+            boolean hasStartOfStep = !StringUtils.isBlank(stepEntry);
             
             Region regionFullLine = new Region(lineOffset, lineStart.length());
             Region regionComplete = new Region(offset, 0);
@@ -101,7 +101,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 String complete;
                 TemplateContext templateContext;
                 Region replacementRegion;
-                if(!isEmpty) {
+                if(hasStartOfStep) {
                     complete = pStep.potentialStep.getParametrizedString().complete(stepEntry);
                     templateContext = contextComplete;
                     replacementRegion = regionComplete;
@@ -117,19 +117,29 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                     replacementRegion = regionComplete;
                     displayString = complete;
                 }
+                complete += "\n";
 
                 int cursor = complete.indexOf('$');
                 if(cursor<0) {
                     cursor = complete.length();
-                    proposals.add(new CompletionProposal(
-                            complete,
-                            replacementRegion.getOffset(),
-                            replacementRegion.getLength(),
-                            cursor,
-                            null,
-                            displayString,
-                            null,
-                            null));
+                    ICompletionProposal proposal = null;
+                    int mode = 2;
+                    switch(mode) {
+                        case 1: 
+                            proposal = new CompletionProposal(
+                                complete,
+                                replacementRegion.getOffset(),
+                                replacementRegion.getLength(),
+                                cursor,
+                                null,
+                                displayString,
+                                null,
+                                displayString);
+                            break;
+                        default:
+                            proposal = new StepCompletionProposal(replacementRegion, complete, displayString, pStep);
+                    }
+                    proposals.add(proposal);
                 }
                 else {
                     String templateText = TemplateUtils.templatizeVariables(complete);
@@ -137,8 +147,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                             lineStart, 
                             displayString, 
                             StoryContextType.STORY_CONTEXT_TYPE_ID, templateText, false);
-                    proposals.add(new StoryTemplateProposal(template,
-                            templateContext, replacementRegion, null, 0));
+                    proposals.add(new StepTemplateProposal(template,
+                            templateContext, replacementRegion, complete, displayString, pStep));
                 }
             }
             

@@ -16,6 +16,7 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -40,7 +41,6 @@ import org.technbolts.jbehave.eclipse.editors.story.actions.JumpToDeclarationAct
 import org.technbolts.jbehave.eclipse.editors.story.actions.QuickSearchAction;
 import org.technbolts.jbehave.eclipse.editors.story.actions.ShowOutlineAction;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
-import org.technbolts.jbehave.eclipse.editors.story.completion.StoryTemplateProposal;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModel;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModelBuilder;
 import org.technbolts.jbehave.eclipse.preferences.PreferenceConstants;
@@ -251,7 +251,7 @@ public class StoryEditor extends TextEditor {
                 pStep.stepPattern,
                 pStep.fullStep(), 
                 StoryContextType.STORY_CONTEXT_TYPE_ID, templateText, false);
-        new StoryTemplateProposal(template,
+        new TemplateProposal(template,
                 templateContext, replacementRegion, null, 0).apply(getSourceViewer(), (char)0, SWT.CONTROL, replacementRegion.getOffset());
     }
 

@@ -4,9 +4,11 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
+import org.technbolts.eclipse.util.JDTUtils;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
 import org.technbolts.jbehave.eclipse.PotentialStep;
+import org.technbolts.util.HasHTMLComment;
 import org.technbolts.util.Visitor;
 
 public class StepLocator {
@@ -24,7 +26,7 @@ public class StepLocator {
         this.project = project;
     }
     
-    public static class WeightedCandidateStep implements Comparable<WeightedCandidateStep> {
+    public static class WeightedCandidateStep implements Comparable<WeightedCandidateStep>, HasHTMLComment {
         public final PotentialStep potentialStep;
         public final float weight;
         public WeightedCandidateStep(PotentialStep potentialStep, float weight) {
@@ -35,6 +37,19 @@ public class StepLocator {
         @Override
         public int compareTo(WeightedCandidateStep o) {
             return (weight>o.weight)?1:-1;
+        }
+        
+        private String htmlComment;
+        @Override
+        public String getHTMLComment() {
+            if(htmlComment==null) {
+                try {
+                    htmlComment = JDTUtils.getJavadocOf(potentialStep.method);
+                } catch (Exception e) {
+                    htmlComment = "No documentation found";
+                }
+            }
+            return htmlComment;
         }
     }
     
