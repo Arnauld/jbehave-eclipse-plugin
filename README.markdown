@@ -1,6 +1,7 @@
 JBehave Eclipse plugin
 =======================
 
+**In progree** see [presentation](http://arnauld.github.com/jbehave-eclipse-plugin/)
 
 Misc:
 
