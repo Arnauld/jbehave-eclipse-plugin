@@ -1,44 +1,33 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import static org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils.findStoryPartAtRegion;
+
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
-import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
-import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.util.Ref;
 
 public class StepHyperLinkDetector implements IHyperlinkDetector {
-    
-    private IHyperlink[] NONE = null;//new IHyperlink[0];
-    
+
+    private IHyperlink[] NONE = null;// new IHyperlink[0];
+
     @Override
     public IHyperlink[] detectHyperlinks(final ITextViewer viewer, final IRegion region,
             boolean canShowMultipleHyperlinks) {
-        
-        final Ref<StoryPart> found = Ref.create();
-        StoryPartVisitor visitor = new StoryPartVisitor() {
-            @Override
-            public void visit(StoryPart part) {
-                if(part.intersects(region.getOffset(), region.getLength())) {
-                    found.set(part);
-                    done();
-                }
-            }
-        };
-        StoryPartDocumentUtils.traverseStoryParts(viewer.getDocument(), visitor);
-        if(found.isNull()) {
+
+        final Ref<StoryPart> found = findStoryPartAtRegion(viewer.getDocument(), region);
+        if (found.isNull()) {
             return NONE;
         }
-        
+
         final StoryPart part = found.get();
-        if(!part.isStepPart())
+        if (!part.isStepPart())
             return NONE;
-        final String step = LineParser.extractStepSentence(part.getContent());
+        final String step = part.extractStepSentenceAndRemoveTrailingNewlines();
 
         IHyperlink link = new IHyperlink() {
 

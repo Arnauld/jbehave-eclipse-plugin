@@ -3,6 +3,8 @@ package org.technbolts.jbehave.eclipse.util;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.Region;
 import org.technbolts.jbehave.eclipse.editors.story.StoryDocument;
 import org.technbolts.jbehave.parser.StoryParser;
 import org.technbolts.jbehave.parser.StoryPart;
@@ -27,19 +29,25 @@ public class StoryPartDocumentUtils {
         }
     }
 
-    public static StoryPart findStoryPartAtOffset(IDocument document, final int offset) {
+    public static Ref<StoryPart> findStoryPartAtOffset(IDocument document, int offset) {
+        if(offset>0)
+            offset--; // one search from the character just behind the caret not after
+        return findStoryPartAtRegion(document, new Region(offset, 1));
+    }
+    
+    public static Ref<StoryPart> findStoryPartAtRegion(IDocument document, final IRegion region) {
         final Ref<StoryPart> ref = Ref.create();
         StoryPartVisitor visitor = new StoryPartVisitor() {
             @Override
             public void visit(StoryPart part) {
-                if(part.intersects(offset, 1)) {
+                if(part.intersects(region.getOffset(), region.getLength())) {
                     ref.set(part);
                     done();
                 }
             }
         };
         traverseStoryParts(document, visitor);
-        return ref.get();
+        return ref;
     }
 
 }

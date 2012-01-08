@@ -17,7 +17,6 @@ import org.eclipse.jface.text.IDocument;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.PotentialStep;
-import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
@@ -206,7 +205,7 @@ public class MarkingStoryValidator {
         final Map<String, List<PotentialStep>> potentials = New.hashMap();
         for (Part part : steps) {
             List<PotentialStep> list = New.arrayList();
-            potentials.put(extractStepSentenceAndRemoveTrailingNewlines(part), list);
+            potentials.put(part.extractStepSentenceAndRemoveTrailingNewlines(), list);
         }
 
         StepLocator locator = StepLocator.getStepLocator(project);
@@ -222,7 +221,7 @@ public class MarkingStoryValidator {
         });
 
         for (Part part : steps) {
-            String key = extractStepSentenceAndRemoveTrailingNewlines(part);
+            String key = part.extractStepSentenceAndRemoveTrailingNewlines();
             List<PotentialStep> candidates = potentials.get(key);
             int count = candidates.size();
             if (count == 0)
@@ -233,10 +232,6 @@ public class MarkingStoryValidator {
         }
     }
 
-    private static String extractStepSentenceAndRemoveTrailingNewlines(Part part) {
-        return Strings.removeTrailingNewlines(LineParser.extractStepSentence(part.text()));
-    }
-
     class Part {
         private List<MarkData> marks = New.arrayList();
         private StoryPart storyPart;
@@ -244,6 +239,10 @@ public class MarkingStoryValidator {
         private Part(StoryPart storyPart) {
             super();
             this.storyPart = storyPart;
+        }
+
+        public String extractStepSentenceAndRemoveTrailingNewlines() {
+            return storyPart.extractStepSentenceAndRemoveTrailingNewlines();
         }
 
         public synchronized void addMark(int code, String message) {
