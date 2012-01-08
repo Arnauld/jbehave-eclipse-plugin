@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8">
+<title>JBehave Eclipse Plugin</title>
+
+<!-- Your Slides -->
+<!-- One section is one slide -->
+
+<section>
+    <h1>BDD<strong><sup>*</sup></strong> using <strong>JBehave</strong> and Eclipse</h1>
+    <footer align="right">
+    	<strong><sup>*</sup></strong> Behavior Driven Development<br/>
+    	<a href="http://twitter.com/aloyer">@aloyer</a>
+    </footer>
+</section>
+
+<section>
+    <h2><strong>Behaviour-Driven Development (<b>BDD</b>) :</strong></h2>
+    <p>&#147;It is about implementing an application by describing it from 
+       the point of view of its stakeholders&#148;</p>
+    <ul>
+        <li>Stories</li>
+		    <li><span class="Scenario">Scenarios</span></li>
+		    <li>and <span class="Step"><b>Steps</b></span></li>
+    </ul>
+</section>
+
+<section class="instant">
+<div class="story">
+    A story is a collection of scenarios<br/>
+    <br/>
+</div>
+<div class="caption">A story</div>
+</section>
+
+
+<section class="instant">
+<div class="story">
+    A story is a collection of scenarios<br/>
+    <br/>
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> communicate effectively to the business some functionality<br/>
+      <b>As a</b> development team<br/>
+      <b>I want to</b> use Behaviour-Driven Development<br/>
+    </div>
+</div>
+<div class="caption">Narrative: describe the intent of the story</div>
+</section>
+
+
+<section class="instant">
+<div class="story">
+    A story is a collection of scenarios<br/>
+    <br/>
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> communicate effectively to the business some functionality<br/>
+      <b>As a</b> development team<br/>
+      <b>I want to</b> use Behaviour-Driven Development<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: A scenario is a collection of executable steps of different type<br/>
+    </div>
+    <br/>
+</div>
+<div class="caption">Scenario: the intent of the scenario</div>
+</section>
+
+
+<section class="instant">
+<div class="story">
+    A story is a collection of scenarios<br/>
+    <br/>
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> communicate effectively to the business some functionality<br/>
+      <b>As a</b> development team<br/>
+      <b>I want to</b> use Behaviour-Driven Development<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: A scenario is a collection of executable steps of different type<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> some initial context (the givens),<br/>
+    </div>
+    <br/>
+</div>
+<div class="caption">Steps: <b>Given</b></div>
+</section>
+
+<section class="instant">
+<div class="story">
+    A story is a collection of scenarios<br/>
+    <br/>
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> communicate effectively to the business some functionality<br/>
+      <b>As a</b> development team<br/>
+      <b>I want to</b> use Behaviour-Driven Development<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: A scenario is a collection of executable steps of different type<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> some initial context (the givens),<br/>
+      <b>When</b> an event occurs,<br/>
+    </div>
+    <br/>
+</div>
+<div class="caption">Steps: <b>When</b></div>
+</section>
+
+<section class="instant">
+<div class="story">
+    A story is a collection of scenarios<br/>
+    <br/>
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> communicate effectively to the business some functionality<br/>
+      <b>As a</b> development team<br/>
+      <b>I want to</b> use Behaviour-Driven Development<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: A scenario is a collection of executable steps of different type<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> some initial context (the givens),<br/>
+      <b>When</b> an event occurs,<br/>
+      <b>Then</b> ensure some outcomes (the assertions)
+    </div>
+    <br/>
+</div>
+<div class="caption">Steps: <b>Then</b></div>
+</section>
+
+<section class="instant">
+<div class="story">
+    A story is a collection of scenarios<br/>
+    <br/>
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> communicate effectively to the business some functionality<br/>
+      <b>As a</b> development team<br/>
+      <b>I want to</b> use Behaviour-Driven Development<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: A scenario is a collection of executable steps of different type<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> some initial context (the givens),<br/>
+      <b>When</b> an event occurs,<br/>
+      <b>Then</b> ensure some outcomes.
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry and Hermione meet together with their wands<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Harry<br/>
+      <b>And</b>   a wizard named Hermione<br/>
+      <b>Given</b> a wand 11" long made of holly wood, with a phoenix feather core<br/>
+      <b>And</b>   a wand 10¾" long made of vine wood, with a dragon heartstring core<br/>
+      <b>When</b>  Ollivander gives the first wand to Harry<br/>
+      <b>And</b>   Ollivander gives the second wand to Hermione<br/>
+      <b>When</b> the wizards meet<br/>
+      <b>Then</b> a spark should occur
+    </div>
+</div>
+<div class="caption">An example</div>
+</section>
+
+<section class="instant">
+  <p>Let's revist <em>Harry Potter</em> saga !</p>
+  <ul>
+      <li>Spell</li>
+      <li>Wizard</li>
+      <li>and <em>Unforgivable Curses</em> !</li>
+  </ul>
+  <footer>
+    Watch out, <strong>spoilers ahead!</strong>
+  </footer>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Ready?
+  -->
+
+<section class="chapter instant">
+  <h1><strong>Ready</strong>?</h1>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Fullstory no highlight
+  -->
+
+<section class="instant">
+<div class="longstory">
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> understand one of the three <em>Unforgivable Curses</em>.<br/>
+      <b>As a</b> wizard<br/>
+      <b>I want to</b> see the Avada Kedavra in action<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Nobody except Harry or Lord Voldemort can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Lily Potter<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Harry Potter blessed with the sacrificial protection<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort can survive to his own curse backfired<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 7 horcruxes<br/>
+      <b>Given</b> a target that counterspells any spells<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort cannot survive without horcruxe<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 0 horcruxe<br/>
+      <b>Given</b> a target named Lord Voldemort<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Fullstory 'a wizard named' highlight
+  -->
+
+<section class="instant">
+<div class="longstory">
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> understand one of the three Unforgivable Curses.<br/>
+      <b>As a</b> wizard<br/>
+      <b>I want to</b> see the Avada Kedavra in action<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Nobody except Harry or Lord Voldemort can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> Lord Voldemort<br/>
+      <b>Given</b> <em>a target named</em> Lily Potter<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> Lord Voldemort<br/>
+      <b>Given</b> <em>a target named</em> Harry Potter <i>blessed with</i> the sacrificial protection<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort can survive to his own curse backfired<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 7 horcruxes<br/>
+      <b>Given</b> a target that counterspells any spells<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort cannot survive without horcruxe<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 0 horcruxe<br/>
+      <b>Given</b> a target named Lord Voldemort<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+</div>
+<div class="caption">reusable step</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Fullstory 'a wizard named' highlight with parameter
+  -->
+
+<section class="instant">
+<div class="longstory">
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> understand one of the three Unforgivable Curses.<br/>
+      <b>As a</b> wizard<br/>
+      <b>I want to</b> see the Avada Kedavra in action<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Nobody except Harry or Lord Voldemort can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> <span class="Parameter">Lord Voldemort</span><br/>
+      <b>Given</b> <em>a target named</em> <span class="Parameter">Lily Potter</span><br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> <span class="Parameter">Lord Voldemort</span><br/>
+      <b>Given</b> <em>a target named</em> <span class="Parameter">Harry Potter</span> <i>blessed with</i> <span class="Parameter">the sacrificial protection</span><br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort can survive to his own curse backfired<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> <span class="Parameter">Lord Voldemort</span></br/>
+      <b>Given</b> Lord Voldemort has 7 horcruxes<br/>
+      <b>Given</b> a target that counterspells any spells<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort cannot survive without horcruxe<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> <em>a wizard named</em> <span class="Parameter">Lord Voldemort</span></br/>
+      <b>Given</b> Lord Voldemort has 0 horcruxe<br/>
+      <b>Given</b> a target named Lord Voldemort<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+</div>
+<div class="caption">with parameter</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Fullstory 'the wizard cast the spell' highlight
+  -->
+
+<section class="instant">
+<div class="longstory">
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> understand one of the three <em>Unforgivable Curses</em>.<br/>
+      <b>As a</b> wizard<br/>
+      <b>I want to</b> see the Avada Kedavra in action<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Nobody except Harry or Lord Voldemort can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Lily Potter<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Harry Potter blessed with the sacrificial protection<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort can survive to his own curse backfired<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 7 horcruxes<br/>
+      <b>Given</b> a target that counterspells any spells<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort cannot survive without horcruxe<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 0 horcruxe<br/>
+      <b>Given</b> a target named Lord Voldemort<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+</div>
+<div class="caption">reusable step</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Fullstory 'the wizard cast the spell' highlight with parameter
+  -->
+
+<section class="instant">
+<div class="longstory">
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> understand one of the three <em>Unforgivable Curses</em>.<br/>
+      <b>As a</b> wizard<br/>
+      <b>I want to</b> see the Avada Kedavra in action<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Nobody except Harry or Lord Voldemort can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Lily Potter<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> <span class="Parameter">Avada Kedavra</span><br/>
+      <b>Then</b>  the target is dead
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Harry Potter blessed with the sacrificial protection<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> <span class="Parameter">Avada Kedavra</span><br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort can survive to his own curse backfired<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 7 horcruxes<br/>
+      <b>Given</b> a target that counterspells any spells<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> <span class="Parameter">Avada Kedavra</span><br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort cannot survive without horcruxe<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort has 0 horcruxe<br/>
+      <b>Given</b> a target named Lord Voldemort<br/>
+      <b>When</b>  <em>the wizard cast the spell</em> <span class="Parameter">Avada Kedavra</span><br/>
+      <b>Then</b>  the target is dead
+    </div>
+</div>
+<div class="caption">with parameter</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Fullstory 'xxx has n horcruxe' highlight
+  -->
+
+<section class="instant">
+<div class="longstory">
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> understand one of the three <em>Unforgivable Curses</em>.<br/>
+      <b>As a</b> wizard<br/>
+      <b>I want to</b> see the Avada Kedavra in action<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Nobody except Harry or Lord Voldemort can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Lily Potter<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Harry Potter blessed with the sacrificial protection<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort can survive to his own curse backfired<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort <em>has</em> 7 <em>horcruxe<i>s</i></em><br/>
+      <b>Given</b> a target that counterspells any spells<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort cannot survive without horcruxe<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> Lord Voldemort <em>has</em> 0 <em>horcruxe</em><br/>
+      <b>Given</b> a target named Lord Voldemort<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+</div>
+<div class="caption">reusable step</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ Fullstory 'xxx has n horcruxe' highlight with parameter
+  -->
+
+<section class="instant">
+<div class="longstory">
+    <div class="Narrative">
+      <b>Narrative</b>:<br/>
+      <b>In order to</b> understand one of the three <em>Unforgivable Curses</em>.<br/>
+      <b>As a</b> wizard<br/>
+      <b>I want to</b> see the Avada Kedavra in action<br/>
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Nobody except Harry or Lord Voldemort can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Lily Potter<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Harry can survive to the spell<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort<br/>
+      <b>Given</b> a target named Harry Potter blessed with the sacrificial protection<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort can survive to his own curse backfired<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> <span class="Parameter">Lord Voldemort</span> <em>has</em> <span class="Parameter">7</span> <em>horcruxe<i>s</i></em><br/>
+      <b>Given</b> a target that counterspells any spells<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is alive
+    </div>
+    <br/>
+    <div class="Scenario">
+      <b>Scenario</b>: Lord Voldemort cannot survive without horcruxe<br/>
+    </div>
+    <br/>
+    <div class="Step">
+      <b>Given</b> a wizard named Lord Voldemort</br/>
+      <b>Given</b> <span class="Parameter">Lord Voldemort</span> <em>has</em> <span class="Parameter">0</span> <em>horcruxe</em><br/>
+      <b>Given</b> a target named Lord Voldemort<br/>
+      <b>When</b>  the wizard cast the spell Avada Kedavra<br/>
+      <b>Then</b>  the target is dead
+    </div>
+</div>
+<div class="caption">with parameters</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ And the java side?
+  -->
+
+<section class="chapter instant">
+  <h1>And the <strong>Java</strong> side</h1>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ WizardSteps class
+  -->
+
+<section class="instant">
+  <div class="code">
+    <span class="keyword">public class</span> <span class="classDef">WizardSteps</span> <span class="c5">{</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="comment">/**<br/>
+    &nbsp;&nbsp; * Create a new wizard with the given name in the current context.<br/>
+    &nbsp;&nbsp; * <br/>
+    &nbsp;&nbsp; * Wizard is then set as current one and is available through several <br/>
+    &nbsp;&nbsp; * aliases: <em>wizard</em>, <em>a wizard</em>, <em>the wizard</em>... <br/>
+    &nbsp;&nbsp; * <br/>
+    &nbsp;&nbsp; * The Wizard's name can be used afterward to retrieve the wizard<br/>
+    &nbsp;&nbsp; * from the context. Well known wizards such as <em>Lord Voldemort</em>,<br/>
+    &nbsp;&nbsp; * <em>Harry Potter</em>, <em>Hermione</em> are created with predefined capabilities<br/>
+    &nbsp;&nbsp; * and known spells.<br/>
+    &nbsp;&nbsp; * <br/>
+    &nbsp;&nbsp; * @param wizardName the name of the wizard to be created, can be <br/>
+    &nbsp;&nbsp; *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; one of the well known ones<br/>
+    &nbsp;&nbsp; */<br/></span>
+    &nbsp;&nbsp;<span class="annotation">@Given(</span><span class="literal2">"a wizard named $wizardName"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">defineCurrentWizard</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">wizardName</span><span class="c5">) </span><span class="c5">{</span><br/>
+    &nbsp;&nbsp;  ... <br/>
+    &nbsp;&nbsp;<span class="c5">}</span><br/>
+    <span class="c5">}</span>
+  </div>
+  <div class="caption">Step annotation and parameter</div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ CastSpellSteps class
+  -->
+
+<section class="instant">
+  <div class="code">
+    <span class="keyword">public class</span> <span class="classDef">CastSpellSteps</span> <span class="c5">{</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="comment">/**<br/>
+    &nbsp;&nbsp; * Define the target of any further action to be the specified entity.<br/>
+    &nbsp;&nbsp; * <br/>
+    &nbsp;&nbsp; * Target is then set as current one and is available through several<br/>
+    &nbsp;&nbsp; * aliases: <em>target</em>, <em>a target</em>, <em>the target</em>... <br/>
+    &nbsp;&nbsp; * <br/>
+    &nbsp;&nbsp; * The entity can be a wizard, a person or anything else such as an<br/>
+    &nbsp;&nbsp; * elephant or a door... The entity is retrieved from the current <br/>
+    &nbsp;&nbsp; * context using the given name, and thus one must ensure it is defined<br/>
+    &nbsp;&nbsp; * first unless it is a well known entity. If it is a well known entity,  <br/>
+    &nbsp;&nbsp; * the entity is created  (if needed) and put in the context.<br/>
+    &nbsp;&nbsp; * <br/>
+    &nbsp;&nbsp; * @param entityName the name of the entity to define as <b>target</b> <br/>
+    &nbsp;&nbsp; *  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for the next actions.<br/>
+    &nbsp;&nbsp; */<br/></span>
+    &nbsp;&nbsp;<span class="annotation">@Given(</span><span class="literal2">"a target named $targetName"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">defineTarget</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">targetName</span><span class="c5">) </span><span class="c5">{...}</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="annotation">@Given(</span><span class="literal2">"a target named $targetName blessed with $spellName"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">defineBlessedTarget</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">targetName</span><span class="c5">, </span><span class="classDef">String</span> <span class="variable">spellName</span><span class="c5">) </span><span class="c5">{...}</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="annotation">@When(</span><span class="literal2">"the wizard cast the spell $spellName"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">cast</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">spellName</span><span class="c5">) </span><span class="c5">{...}</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="annotation">@Given(</span><span class="literal2">"$entityName that counterspells $spellFilterName"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">activateSpellShield</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">entityName</span>, </span><span class="classDef">String</span> <span class="variable">filterName</span><span class="c5">) </span><span class="c5">{...}</span><br/>
+    <span class="c5">}</span>
+  </div>
+</section>
+
+<!--
+    ~~~~~~~~~~~~~ DarkMagicSteps class
+  -->
+
+<section class="instant">
+  <div class="code">
+    <span class="keyword">public class</span> <span class="classDef">DarkMagicSteps</span> <span class="c5">{</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="annotation">@Given(</span><span class="literal2">"$personName has $quantity horcruxes"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="annotation">@Alias(</span><span class="literal2">"$personName has $quantity horcrux"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">associateHorcrux</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">personName</span><span class="c5">, <span class="keyword">int</span> <span class="variable">quantity</span>) </span><span class="c5">{...}</span><br/>
+    <br/>
+    <span class="c5">}</span>
+    <br/>
+    <br/>
+    <span class="keyword">public class</span> <span class="classDef">LivingCreatureSteps</span> <span class="c5">{</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="annotation">@Then(</span><span class="literal2">"$livingName is alive"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="annotation">@Alias(</span><span class="literal2">"$livingName is still alive"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">checkIsAlive</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">livingName</span><span class="c5">) </span><span class="c5">{...}</span><br/>
+    <br/>
+    &nbsp;&nbsp;<span class="annotation">@Then(</span><span class="literal2">"$livingName is dead"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="annotation">@Alias(</span><span class="literal2">"$livingName is suddenly dead"</span><span class="annotation">)</span><br/>
+    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="methodDeclaration">checkIsDied</span><span class="c5">(</span><span class="classDef">String</span> <span class="variable">livingName</span><span class="c5">) </span><span class="c5">{...}</span><br/>
+    <br/>
+    <span class="c5">}</span>
+  </div>
+  <div class="caption">and even aliases</div>
+</section>
+
+<section class="chapter instant">
+    <h2>JBehave <strong>pros</strong></h2>
+    <ul>
+      <li>initiated by <a href="http://dannorth.net/introducing-bdd/">Dan North</a></li>
+      <li><sup>*</sup>documentation &amp; example</li>
+      <li><sup>*</sup><em>separation of story files from code</em></li>
+      <li><sup>*</sup>plain text scenario files easier to deal with</li>
+      <li><sup>*</sup>pretty active community</li>
+      <li>easily integrates into existing processes / tools</li>
+    </ul>
+    <footer>
+      <small><sup>*</sup>: <a href="http://stackoverflow.com/a/5852241/1033489">stackoverflow - What's the best BDD framework to use with Java?</a></small>
+    </footer>
+</section>
+
+<section class="chapter instant">
+    <h2>JBehave <strong>pros</strong> <em>and cons</em></h2>
+    <ul>
+      <li><sup>*</sup><em>steep learning curve</em></li>
+      <li><em>no early feedback</em> on syntax error</li>
+      <li>hard to figure out <em>available steps</em></li>
+      <li>and <em>parameter</em> goals</li>
+    </ul>
+    <footer>
+      <small><sup>*</sup>: <a href="http://stackoverflow.com/a/5852241/1033489">stackoverflow - What's the best BDD framework to use with Java?</a></small>
+    </footer>
+</section>
+
+<section class="chapter instant">
+  <h1>In fact: <em>no IDE</em> support for story files</h1>
+</section>
+
+<section class="chapter instant">
+    <h1>The solution?</h1>
+</section>
+
+<section class="chapter instant">
+    <h2>Have an <strong>Eclipse plugin</strong> to help in writing stories!</h2>
+</section>
+
+<section class="chapter instant">
+    <h1>That's all Folks! (for now)</h1>
+</section>
+
+
+<section>
+    <pre>
+        <span class="Constant">Constant</span> some initial context (the givens),
+        <span class="StorageClass">StorageClass</span> some initial context (the givens),
+        <span class="Exception">Exception</span> some initial context (the givens),
+        <span class="Identifier">Identifier</span> some initial context (the givens),
+        <span class="Title">Title</span> some initial context (the givens),
+        <span class="String">String</span> some initial context (the givens),
+        <span class="Type">Type</span> some initial context (the givens),
+        <span class="Statement">Statement</span> some initial context (the givens),
+        <span class="Function">Function</span> some initial context (the givens),
+        <span class="Comment">Comment</span> some initial context (the givens),
+    </pre>
+</section>
+
+<section class="chapter">
+    <h1>Demo Time!</h1>
+</section>
+
+
+
+<!-- Style -->
+
+<link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+<style>
+
+  html { background-color: black; }
+  a { color: #5fd7ff; /*#FF0066*/ } a:hover {text-decoration: underline;}
+  footer { 
+    position: absolute; 
+    bottom: 50px; 
+    right: 50px; 
+  }
+  footer small {
+    font-weight:lighter;
+    font-size:0.7em;
+  }
+  strong { color: #5fd7ff; /*#FF0066*/}
+  em { color: #FF0066;}
+  i  { color: #FAE50B;}
+  body {
+      font-family: 'Oswald', arial, serif;
+      background-color: white;
+      color: white;
+      font-size: 2em;
+      background: #1C1C1C;
+      background-image: -moz-radial-gradient(center 45deg, #333 0%, #1C1C1C 50%);
+      background-image: -moz-radial-gradient(center 45deg, #333 0%, #1C1C1C 50%);
+  }
+
+
+  /* Transition effect */
+  section {
+      -moz-transition: top 400ms linear 0s;
+      -webkit-transition: top 400ms linear 0s;
+      -o-transition: top 400ms linear 0s;
+      -ms-transition: top 400ms linear 0s;
+      transition: top 400ms linear 0s;
+  }
+  section.instant {
+      -moz-transition: none 0ms linear 0s;
+      -webkit-transition: none 0ms linear 0s;
+      -o-transition: none 0ms linear 0s;
+      -ms-transition: none 0ms linear 0s;
+      transition: none 0ms linear 0s;
+  }
+  section { top: -150%; }
+  section[aria-selected] { top: 0; }
+  section[aria-selected] ~ section { top: +150% }
+
+  .chapter { background-color: black;}
+  .chapter h1 {line-height: 600px; vertical-align: middle; margin: 0; text-align: center; display: block}
+
+  h1 {
+      margin: 50px 100px 0 100px;
+      font-size: 50px;
+      text-shadow: 0px -1px 0px #000;
+      text-align: left;
+  }
+  h2 {
+      color: #d75f00;/*#FAE50B*/
+      margin: 70px 0 0 0;
+      font-size: 40px;
+      text-align: center;
+  }
+  h2 b {
+    color: #FF0066;
+  }
+  ul {
+      margin-top: 70px;
+      font-size: 28px;
+      text-align: right;
+      border-right: 4px solid white;
+      padding-right: 40px;
+      min-width: 310px;
+      margin-left: 50px;
+      display: inline-block;
+  }
+  q, p {
+      margin: 50px auto 0 auto;
+      width: 80%;
+  }
+  q:after {content: ""}
+  q:before {content: ""}
+  q {
+      display: block;
+      margin-top: 140px;
+  }
+  video {
+      position: absolute;
+      top: 210px;
+      width: 260px;
+      left: 445px;
+      box-shadow: 0 0 10px black;
+  }
+  #arrow {
+      position: absolute;
+      top: 165px;
+      left: 460px;
+      font-size: 100px;
+      color: white;
+
+  }
+  li {list-style-type: none}
+  
+  pre { 
+    margin: 70px 0 0 0;
+    font-size: 15px; 
+    font-weight: bold;
+  }
+
+  .caption {
+    position: absolute; 
+    bottom: 50px; 
+    right: 50px;
+    padding-left: 100px;
+    padding-right: 30px;
+    background: #1c1c1c; /* Old browsers */
+    background: -moz-linear-gradient(left, #1c1c1c 0%, #87cefa 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,#1c1c1c), color-stop(100%,#87cefa)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left, #1c1c1c 0%,#87cefa 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left, #1c1c1c 0%,#87cefa 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left, #1c1c1c 0%,#87cefa 100%); /* IE10+ */
+    background: linear-gradient(left, #1c1c1c 0%,#87cefa 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#1c1c1c', endColorstr='#87cefa',GradientType=1 ); /* IE6-9 */
+
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+
+  }
+
+  .code,  
+  .story {
+    margin-left: 20px;
+    margin-top: 70px;
+    font-family: monospace;
+    font-weight: normal;
+    font-size: 16px;
+  }
+
+  .longcode,
+  .longstory {
+    margin-left: 20px;
+    margin-top: 30px;
+    font-family: monospace;
+    font-weight: normal;
+    font-size: 14px;    
+  }
+
+  /* Java syntax coloring */
+  .keyword  { 
+    color: #CC9393;
+  }
+  .variable  { 
+    color: #A19A83;
+    font-style:italic;
+  }
+  .literal2  { 
+    color: #EF77FA;
+    font-style:italic;
+  }
+  .c3 { 
+    color: #E79E3C;
+  }
+  .methodDeclaration { 
+    /*color: #CFBFAD;*/
+    color: #DFBE95;/*#808BED;*/
+    font-weight:bold;
+  }
+  .c5 { 
+    color: #A4B0C0;
+  }
+  .annotation { 
+    color: #87CEFA;
+    font-style:italic;
+  }
+  .classDef { 
+    color: #B8ADA0;
+    font-weight:bold;
+  }
+  .constant { color: #A082BD;}
+  .comment  { color: #00A40F;}
+
+
+  /* Predefined */
+
+  .Constant { color: #af5fff}
+  .StorageClass { color: #ff8700}
+  .Exception { color: #87ff00}
+  .Scenario,
+  .Identifier { color: #ff8700}
+  .Narrative,
+  .Title { color: #d75f00}
+  .Parameter,
+  .String { color: #afaf87}
+  .Step b,
+  .Type { color: #5fd7ff}
+  .Statement { color: #d7005f}
+  .Function { color: #87ff00}
+  .Comment { color: #CCC}
+
+  .Narrative,
+  .Scenario { 
+    font-style:italic
+  }
+
+</style>
+
+
+<!-- {{{{ *****************  DZSlides CORE 2.0b1 *************************** -->
+<!-- *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- *********************************************************************** -->
+<!-- *********************************************************************** -->
+
+<!-- This block of code is not supposed to be edited, but if you want to change the behavior of the slides, feel free to hack it ;) -->
+
+<!-- Default Style -->
+<style>
+  * { margin: 0; padding: 0; }
+  details {display: none;}
+  body {
+    width: 800px; height: 600px;
+    margin-left: -400px; margin-top: -300px;
+    position: absolute; top: 50%; left: 50%;
+    overflow: hidden;
+  }
+  section {
+    position: absolute;
+    pointer-events: none;
+    width: 100%; height: 100%;
+  }
+  section[aria-selected] { pointer-events: auto;}
+  body {display: none}
+  body.loaded {display: block}
+</style>
+
+<script>
+  var friendWindows = [];
+  var idx = 1;
+  var slides;
+
+  /* main() */
+
+  window.onload = function() {
+    slides = document.querySelectorAll("body > section");
+    onhashchange();
+    setSlide();
+    document.body.className = "loaded";
+    onresize();
+  }
+
+  /* Handle keys */
+
+  window.onkeydown = function(e) {
+    // Don't intercept keyboard shortcuts
+    if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+      return;
+    }
+    if ( e.keyCode == 37 // left arrow
+      || e.keyCode == 33 // page up
+    ) {
+      e.preventDefault();
+      back();
+    }
+    if ( e.keyCode == 39 // right arrow
+      || e.keyCode == 34 // page down
+    ) {
+      e.preventDefault();
+      forward();
+    }
+
+    if ( e.keyCode == 32) { // space
+        e.preventDefault();
+        toggleContent();
+    }
+  }
+
+  /* Adapt the size of the slides to the window */
+
+  window.onresize = function() {
+    var sx = document.body.clientWidth / window.innerWidth;
+    var sy = document.body.clientHeight / window.innerHeight;
+    var transform = "scale(" + (1/Math.max(sx, sy)) + ")";
+    document.body.style.MozTransform = transform;
+    document.body.style.WebkitTransform = transform;
+    document.body.style.OTransform = transform;
+    document.body.style.msTransform = transform;
+    document.body.style.transform = transform;
+  }
+  function getDetails(idx) {
+    var s = document.querySelector("section:nth-of-type("+ idx +")");
+    var d = s.querySelector("details");
+    return d?d.innerHTML:"";
+  }
+  window.onmessage = function(e) {
+    msg = e.data;
+    win = e.source;
+    if (msg === "register") {
+      friendWindows.push(win);
+      win.postMessage(JSON.stringify({method: "registered", title: document.title, count: slides.length}), document.location);
+      win.postMessage(JSON.stringify({method: "newslide", details: getDetails(idx), idx: idx}), document.location);
+      return;
+    }
+    if (msg === "back") back();
+    if (msg === "forward") forward();
+    if (msg === "toggleContent") toggleContent();
+    // setSlide(42)
+    var r = /setSlide\((\d+)\)/.exec(msg);
+    if (r) {
+        idx = r[1];
+        setSlide();
+    }
+  }
+
+  /* If a Video is present in this new slide, play it.
+     If a Video is present in the previous slide, stop it. */
+
+  function toggleContent() {
+    var s = document.querySelector("section[aria-selected]");
+    if (s) {
+        var video = s.querySelector("video");
+        if (video) {
+            if (video.ended || video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+    }
+  }
+
+  /* If the user change the slide number in the URL bar, jump
+     to this slide. */
+
+  window.onhashchange = function(e) {
+    var newidx = ~~window.location.hash.split("#")[1];
+    if (!newidx) newidx = 1;
+    if (newidx == idx) return;
+    idx = newidx;
+    setSlide();
+  }
+
+  /* Slide controls */
+
+  function back() {
+    if (idx == 1) return;
+    idx--;
+    setSlide();
+  }
+  function forward() {
+    if (idx >= slides.length) return;
+    idx++;
+    setSlide();
+  }
+  function setSlide() {
+    var old = document.querySelector("section[aria-selected]");
+    var next = document.querySelector("section:nth-of-type("+ idx +")");
+    if (old) {
+      old.removeAttribute("aria-selected");
+      var video = old.querySelector("video");
+      if (video) { video.pause(); }
+    }
+    if (next) {
+      next.setAttribute("aria-selected", "true");
+      var video = next.querySelector("video");
+      if (video) { video.play(); }
+    } else {
+      console.warn("No such slide: " + idx);
+      idx = 0;
+      for (var i = 0; i < slides.length; i++) {
+          if (slides[i].hasAttribute("aria-selected")) {
+              idx = i + 1;
+          }
+      }
+    }
+    window.location.hash = idx;
+    for (var i = 0; i < friendWindows.length; i++) {
+        friendWindows[i].postMessage(JSON.stringify({method: "newslide", details: getDetails(idx), idx: idx}), document.location);
+    }
+  }
+</script>
+<!-- vim: set fdm=marker: }}} -->
