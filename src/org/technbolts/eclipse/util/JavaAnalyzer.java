@@ -13,8 +13,12 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.technbolts.eclipse.util.JavaScanner.Visitor;
+import org.technbolts.eclipse.jdt.JavaScanner;
+import org.technbolts.eclipse.jdt.MethodPerPackageFragmentRootCache;
+import org.technbolts.util.FJ;
 import org.technbolts.util.StringMatcher;
+
+import fj.Effect;
 
 public class JavaAnalyzer {
 
@@ -32,6 +36,9 @@ public class JavaAnalyzer {
     }
 
     private static boolean fullScanDone = false;
+    private static MethodPerPackageFragmentRootCache<IMethod> methodPerPackageFragmentRootCache = 
+            new MethodPerPackageFragmentRootCache<IMethod>(FJ.<IMethod>identityOption());
+
 
     public void collectTypes(IProject project) throws JavaModelException {
         IJavaProject javaProject = (IJavaProject) JavaCore.create(project);
@@ -45,34 +52,39 @@ public class JavaAnalyzer {
 
         if (fullScanDone)
             return;
-        fullScanDone = true;
+        fullScanDone = false;//true;
 
         System.out.println("JavaAnalyzer.collectTypes() >>> Scanning all package fragment roots<<<");
-        StringMatcher packageNameMatcher = new StringMatcher().addGlobExcludes(//
-                "apple.laf*", "com.apple.*", //
-                "sun.*", "com.sun.*", //
+        final StringMatcher packageNameMatcher = new StringMatcher().addGlobExcludes(//
+                "apple.*", "com.apple.*", "quicktime.*", //
+                "sun.*", "com.sun.*", "sunw.*", //
                 "java.*", "javax.*", //
+                "com.oracle.*", //
                 "org.eclipse.*", //
                 "com.google.common*", //
-                "junit.*", //
-                "org.omg.*", "org.xml.*", //
-                "fj*", //
+                "junit*", "org.junit*", //
+                "org.omg.*", "org.xml.*", "org.w3c.*", "org.ietf*", "org.relaxng.*", "org.jcp.*", //
+                "org.codehaus.plexus*", //
+                //"fj*", //
                 "org.xmlpull.*", "com.thoughtworks.xstream*", "com.thoughtworks.paranamer*", // xstream
                 "org.hamcrest*", "org.mockito*", "org.objenesis*", // mockito
                 "org.apache.*", //
                 "org.jbehave.*", //
-                "freemarker.*");
-        StringMatcher classNameMatcher = new StringMatcher().addGlobIncludes("*Steps");
+                "freemarker*"
+                );
+        final StringMatcher classNameMatcher = new StringMatcher();//.addGlobIncludes("*Steps");
+        final StringMatcher packageRootNameMatcher = new StringMatcher();//.addGlobIncludes("technbolts-*.jar");
         
-        StringMatcher packageRootNameMatcher = new StringMatcher().addGlobIncludes("technbolts-*.jar");
-
-        Visitor visitor = new Visitor();
-        JavaScanner javaScanner = new JavaScanner(project, visitor);
-        javaScanner.setPackageRootNameFilter(packageRootNameMatcher);
-        javaScanner.setPackageNameFilter(packageNameMatcher);
-        javaScanner.setClassNameFilter(classNameMatcher);
-        javaScanner.traversePackageFragmentRoots();
+        methodPerPackageFragmentRootCache.rebuild(project, new Effect<JavaScanner<?>>() {
+            @Override
+            public void e(JavaScanner<?> scanner) {
+                scanner.setPackageRootNameFilter(packageRootNameMatcher);
+                scanner.setPackageNameFilter(packageNameMatcher);
+                scanner.setClassNameFilter(classNameMatcher);
+            }
+        });
     }
+    
 
     public void collectTypes(IPackageFragmentRoot packageFragmentRoot) throws JavaModelException {
         for (IJavaElement jElem : packageFragmentRoot.getChildren()) {

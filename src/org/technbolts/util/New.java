@@ -1,9 +1,11 @@
 package org.technbolts.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class New {
@@ -11,6 +13,11 @@ public class New {
     public static <T> ArrayList<T> arrayList () {
         return new ArrayList<T>();
     }
+    
+    public static <T> ArrayList<T> arrayList (Collection<? extends T> elements) {
+        return new ArrayList<T>(elements);
+    }
+
     
     public static <T> Vector<T> vector() {
         return new Vector<T>();
@@ -26,6 +33,15 @@ public class New {
 
     public static <T> ConcurrentLinkedQueue<T> concurrentLinkedQueue() {
         return new ConcurrentLinkedQueue<T>();
+    }
+    
+    public static <K,V> ConcurrentHashMap<K,V> concurrentHashMap() {
+        return new ConcurrentHashMap<K,V>();
+    }
+    
+
+    public static <K,V> ConcurrentMultimap<K,V> concurrentMultimap() {
+        return new ConcurrentMultimap<K,V>();
     }
 
 }

@@ -3,6 +3,7 @@ package org.technbolts.util;
 import fj.F;
 import fj.F2;
 import fj.data.Array;
+import fj.data.Option;
 
 public class FJ {
 
@@ -36,6 +37,10 @@ public class FJ {
                 return one.f(value) && two.f(value);
             }
         };
+    }
+
+    public static <T> F<T, Option<T>> identityOption() {
+        return Option.some_();
     }
 
 }
