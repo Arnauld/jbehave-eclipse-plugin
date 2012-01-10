@@ -65,7 +65,7 @@ public class JavaAnalyzer {
                 "junit*", "org.junit*", //
                 "org.omg.*", "org.xml.*", "org.w3c.*", "org.ietf*", "org.relaxng.*", "org.jcp.*", //
                 "org.codehaus.plexus*", //
-                //"fj*", //
+                "fj*", //
                 "org.xmlpull.*", "com.thoughtworks.xstream*", "com.thoughtworks.paranamer*", // xstream
                 "org.hamcrest*", "org.mockito*", "org.objenesis*", // mockito
                 "org.apache.*", //

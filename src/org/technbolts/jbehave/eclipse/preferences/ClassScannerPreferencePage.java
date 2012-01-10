@@ -1,0 +1,173 @@
+package org.technbolts.jbehave.eclipse.preferences;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.dialogs.ControlEnableState;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.dialogs.PropertyPage;
+import org.osgi.service.prefs.BackingStoreException;
+import org.technbolts.jbehave.eclipse.Activator;
+
+public class ClassScannerPreferencePage extends PropertyPage implements org.eclipse.ui.IWorkbenchPreferencePage {
+
+    private IProject project;
+    private Button enableProjectSpecific;
+    private ClassScannerPreferences prefs;
+    private ClassScannerFiltersComposite scannerFilterComposite;
+    private ControlEnableState blockEnableState;
+
+    /**
+     * Create the property page.
+     */
+    public ClassScannerPreferencePage() {
+        setTitle("Configure the Java scanner");
+        setDescription("Configure which packages or classes should be scanned to lookup for steps");
+    }
+
+    /**
+     * Create contents of the property page.
+     * 
+     * @param parent
+     */
+    @Override
+    public Control createContents(Composite parent) {
+        Composite container = new Composite(parent, SWT.NULL);
+        container.setLayout(new GridLayout(2, false));
+
+        if (isProjectPreferencePage()) {
+            enableProjectSpecific = new Button(container, SWT.CHECK);
+            enableProjectSpecific.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+            enableProjectSpecific.setText("Enable project specific settings");
+            enableProjectSpecific.addSelectionListener(new SelectionListener() {
+                @Override
+                public void widgetSelected(SelectionEvent event) {
+                    adjustProjectSpecificState();
+                }
+                
+                @Override
+                public void widgetDefaultSelected(SelectionEvent event) {
+                    adjustProjectSpecificState();
+                }
+            });
+        }
+
+        scannerFilterComposite = new ClassScannerFiltersComposite(container, SWT.NONE);
+        scannerFilterComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+        reload();
+        updatePageWithPrefs();
+        
+        return container;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+     */
+    @Override
+    public void init(IWorkbench workbench) {
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.eclipse.ui.dialogs.PropertyPage#setElement(org.eclipse.core.runtime.IAdaptable)
+     */
+    @Override
+    public void setElement(final IAdaptable element) {
+        project = (IProject) element.getAdapter(IResource.class);
+        super.setElement(element);
+    }
+
+    private boolean isProjectPreferencePage() {
+        return project != null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performOk()
+     */
+    @Override
+    public boolean performOk() {
+        try {
+            updatePrefsWithPage();
+            if (isProjectPreferencePage()
+                    && !enableProjectSpecific.getSelection()) {
+                prefs.removeAllSpecificSettings();
+            } else {
+                prefs.store();
+            }
+        } catch (final BackingStoreException e) {
+            Activator.logError("Failed to store ClassScanner preferences", e);
+        }
+        return super.performOk();
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.preference.PreferencePage#performDefaults()
+     */
+    @Override
+    protected void performDefaults() {
+        try {
+            prefs.removeAllSpecificSettings();
+        } catch (BackingStoreException e) {
+            Activator.logError("Failed to remove specific settings", e);
+        }
+        reload();
+        updatePageWithPrefs();
+        super.performDefaults();
+    }
+
+    private void reload() {
+        if (project == null) {
+            prefs = new ClassScannerPreferences();
+        } else {
+            prefs = new ClassScannerPreferences(project);
+        }
+        try {
+            prefs.load();
+        } catch (BackingStoreException e) {
+            Activator.logError("Failed to load preferences", e);
+        }
+    }
+    
+    private void updatePrefsWithPage() {
+        if (isProjectPreferencePage()) {
+            boolean isProjectSpecific = enableProjectSpecific.getSelection();
+            prefs.setUseProjectSettings(isProjectSpecific);
+        }
+    }
+
+    private void updatePageWithPrefs() {
+        scannerFilterComposite.setInput(prefs);
+        if (isProjectPreferencePage()) {
+            enableProjectSpecific.setSelection(prefs.isUseProjectSettings());
+            adjustProjectSpecificState();
+        }
+    }
+
+    private void adjustProjectSpecificState() {
+        boolean useProjectSpecificSettings = enableProjectSpecific.getSelection();
+        if (useProjectSpecificSettings) {
+            if (blockEnableState != null) {
+                blockEnableState.restore();
+                blockEnableState = null;
+            }
+        } else {
+            if (blockEnableState == null) {
+                blockEnableState = ControlEnableState.disable(scannerFilterComposite);
+            }
+        }
+    }
+
+}

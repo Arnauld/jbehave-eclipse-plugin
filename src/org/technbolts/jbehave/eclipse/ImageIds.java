@@ -8,4 +8,6 @@ public class ImageIds {
     public static final String NARRATIVE  = "image-narrative";
     public static final String SCENARIO   = "image-scenario";
     public static final String EXAMPLE_TABLE = "image-example-table";
+    //
+    public static final String FORBIDDEN_OVERLAY = "forbidden_overlay";
 }

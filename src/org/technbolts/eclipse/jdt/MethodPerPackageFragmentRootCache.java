@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
@@ -106,13 +107,13 @@ public class MethodPerPackageFragmentRootCache<E> extends JavaVisitorAdapter<Met
     @Override
     public boolean visit(IPackageFragmentRoot packageFragmentRoot, Bucket<E> bucket) {
         long timestamp = modificationStampOf(packageFragmentRoot);
-        String elementName = packageFragmentRoot.getElementName();
-        bucket.traversePackageFragmentRoot(elementName);
+        String key = keyOf(packageFragmentRoot);
+        bucket.traversePackageFragmentRoot(key);
         
-        Container<E> typedMethods = content.get(elementName);
+        Container<E> typedMethods = content.get(key);
         if(typedMethods==null) {
             Container<E> newTypedMethods = new Container<E>(timestamp);
-            typedMethods = content.putIfAbsent(elementName, newTypedMethods);
+            typedMethods = content.putIfAbsent(key, newTypedMethods);
             if(typedMethods==null)
                 typedMethods = newTypedMethods;
             
@@ -127,7 +128,7 @@ public class MethodPerPackageFragmentRootCache<E> extends JavaVisitorAdapter<Met
                 return true;
             }
             
-            System.out.println("MethodPerPackageFragmentRootCache.visit()::no change detected on [" + elementName + "]");
+            System.out.println("MethodPerPackageFragmentRootCache.visit()::no change detected on [" + key + "]");
             
             // nothing else to scan
             return false;
@@ -136,9 +137,18 @@ public class MethodPerPackageFragmentRootCache<E> extends JavaVisitorAdapter<Met
     
     @Override
     public Bucket<E> argumentFor(IPackageFragmentRoot packageFragmentRoot, Bucket<E> bucket) {
-        String elementName = packageFragmentRoot.getElementName();
-        Container<E> container = content.get(elementName);
+        String key = keyOf(packageFragmentRoot);
+        Container<E> container = content.get(key);
         return bucket.withContainer(container);
+    }
+    
+    private static String keyOf(IPackageFragmentRoot elem) {
+        // rely on underlying file
+        IPath path = elem.getPath();
+        if(path!=null)
+            return StringUtils.reverse(path.toString());
+        else
+            return elem.getElementName();
     }
     
     private static long modificationStampOf(IPackageFragmentRoot elem) {

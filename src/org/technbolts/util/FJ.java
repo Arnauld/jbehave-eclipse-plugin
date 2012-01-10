@@ -3,6 +3,7 @@ package org.technbolts.util;
 import fj.F;
 import fj.F2;
 import fj.data.Array;
+import fj.data.List;
 import fj.data.Option;
 
 public class FJ {
@@ -41,6 +42,14 @@ public class FJ {
 
     public static <T> F<T, Option<T>> identityOption() {
         return Option.some_();
+    }
+    
+    public static <T> F2<List<T>, T[], List<T>> listCollector(Class<T> type) {
+        return new F2<List<T>, T[], List<T>>() {
+            public fj.data.List<T> f(fj.data.List<T> list, T[] dataToAppend) {
+                return list.append(List.list(dataToAppend));
+            };
+        };
     }
 
 }

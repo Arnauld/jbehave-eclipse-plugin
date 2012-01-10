@@ -15,6 +15,7 @@ import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.util.ProcessGroup;
@@ -33,6 +34,8 @@ public class Activator extends AbstractUIPlugin {
     private ContributionContextTypeRegistry fContextTypeRegistry;
 
     private ContributionTemplateStore fStore;
+
+    private String version;
     
     /** Key to store custom templates. */
     private static final String CUSTOM_TEMPLATES_KEY = "org.technbolts.jbehave.customtemplates"; //$NON-NLS-1$
@@ -49,6 +52,8 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		Bundle bundle = context.getBundle();
+		version = (String) bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
 		plugin = this;
 	}
 
@@ -71,6 +76,8 @@ public class Activator extends AbstractUIPlugin {
         registry.put(ImageIds.NARRATIVE,  getImageDescriptor("icons/bdd-n-darkred.png"));
         registry.put(ImageIds.SCENARIO,  getImageDescriptor("icons/bdd-s-darkpink.png"));
         registry.put(ImageIds.EXAMPLE_TABLE,  getImageDescriptor("icons/bdd-e-turquoise.png"));
+        //
+        registry.put(ImageIds.FORBIDDEN_OVERLAY, getImageDescriptor("icons/error_ovr16.gif"));
 	}
 
 	@Override
@@ -148,5 +155,9 @@ public class Activator extends AbstractUIPlugin {
 
     public static void logError(String message, Throwable e) {
         getDefault().getLog().log(new Status(Status.ERROR, PLUGIN_ID, message, e));        
+    }
+
+    public String getVersion() {
+        return version;
     }
 }
