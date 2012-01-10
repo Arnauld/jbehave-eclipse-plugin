@@ -176,7 +176,8 @@ public class ClassScannerFiltersComposite extends Composite {
         }
         
         ClassScannerFilterEntry entry = prefs.addEntry(patterns, applyOn, exclude);
-        filterViewer.add(entry);
+        if(entry!=null)
+            filterViewer.add(entry);
     }
     
     @Override

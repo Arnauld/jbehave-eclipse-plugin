@@ -23,6 +23,7 @@ public class JavaScanner<T> {
     private F<String, Boolean> packageRootNameFilter = FJ.alwaysTrue();
     private F<String, Boolean> packageNameFilter = FJ.alwaysTrue();
     private F<String, Boolean> classNameFilter = FJ.alwaysTrue();
+    private byte[] filterHash;
     
     public JavaScanner(IProject project, JavaVisitor<T> visitor) {
         super();
@@ -174,6 +175,31 @@ public class JavaScanner<T> {
                 visitor.visit(jElem, arg);
             }
         }
+    }
+    
+
+    /**
+     * Define the filter hash. It may be used to optimize scanning between two runs
+     * if the filtering is not changed. It is the responsibility of the caller to
+     * provides a suitable and valid hash according to the current filtering 
+     * configuration.
+     * 
+     * @param filterHash
+     */
+    public void setFilterHash(byte[] filterHash) {
+        this.filterHash = filterHash;
+    }
+    
+    /**
+     * Returns the filter hash. It may be used to optimize scanning between two runs
+     * if the filtering is not changed. It is the responsibility of the caller to
+     * provides a suitable and valid hash according to the current filtering 
+     * configuration.
+     * 
+     * @return
+     */
+    public byte[] getFilterHash() {
+        return filterHash;
     }
     
 }

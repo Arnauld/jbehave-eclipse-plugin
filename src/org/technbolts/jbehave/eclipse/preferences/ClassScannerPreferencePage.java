@@ -4,9 +4,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.dialogs.ControlEnableState;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -92,6 +96,27 @@ public class ClassScannerPreferencePage extends PropertyPage implements org.ecli
     private boolean isProjectPreferencePage() {
         return project != null;
     }
+    
+    @Override
+    protected void contributeButtons(Composite parent) {
+        ((GridLayout) parent.getLayout()).numColumns++;
+        int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
+        Button defaultsButton = new Button(parent, SWT.PUSH);
+        defaultsButton.setText("Reload");
+        Dialog.applyDialogFont(defaultsButton);
+        GridData data = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+        Point minButtonSize = defaultsButton.computeSize(SWT.DEFAULT,
+                SWT.DEFAULT, true);
+        data.widthHint = Math.max(widthHint, minButtonSize.x);
+        defaultsButton.setLayoutData(data);
+        defaultsButton.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                performReload();
+            }
+        });
+        
+        super.contributeButtons(parent);
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
@@ -123,6 +148,12 @@ public class ClassScannerPreferencePage extends PropertyPage implements org.ecli
         } catch (BackingStoreException e) {
             Activator.logError("Failed to remove specific settings", e);
         }
+        reload();
+        updatePageWithPrefs();
+        super.performDefaults();
+    }
+    
+    protected void performReload () {
         reload();
         updatePageWithPrefs();
         super.performDefaults();

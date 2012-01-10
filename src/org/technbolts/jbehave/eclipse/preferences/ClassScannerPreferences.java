@@ -5,6 +5,10 @@ import static org.technbolts.jbehave.eclipse.preferences.ClassScannerFilterEntry
 import static org.technbolts.jbehave.eclipse.preferences.ClassScannerFilterEntry.toSplittedPatterns;
 import static org.technbolts.util.FJ.listCollector;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.zip.Adler32;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -12,8 +16,10 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.technbolts.eclipse.preferences.PreferencesHelper;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerFilterEntry.ApplyOn;
+import org.technbolts.util.Bytes;
+import org.technbolts.util.StringMatcher;
 
-import fj.Equal;
+import fj.Effect;
 import fj.data.List;
 
 public class ClassScannerPreferences {
@@ -40,6 +46,13 @@ public class ClassScannerPreferences {
         helper = PreferencesHelper.getHelper(QUALIFIER, project);
     }
     
+    public StringMatcher getPackageRootMatcher() {
+        StringMatcher m = new StringMatcher();
+        m.addGlobExcludes(getPackageRootExcludes());
+        m.addGlobIncludes(getPackageRootIncludes());
+        return m;
+    }
+    
     public String[] getPackageRootExcludes() {
         return getSplittedStrings(ApplyOn.PackageRoot, true);
     }
@@ -48,12 +61,26 @@ public class ClassScannerPreferences {
         return getSplittedStrings(ApplyOn.PackageRoot, false);
     }
 
+    public StringMatcher getPackageMatcher() {
+        StringMatcher m = new StringMatcher();
+        m.addGlobExcludes(getPackageExcludes());
+        m.addGlobIncludes(getPackageIncludes());
+        return m;
+    }
+    
     public String[] getPackageExcludes() {
         return getSplittedStrings(ApplyOn.Package, true);
     }
 
     public String[] getPackageIncludes() {
         return getSplittedStrings(ApplyOn.Package, false);
+    }
+    
+    public StringMatcher getClassMatcher() {
+        StringMatcher m = new StringMatcher();
+        m.addGlobExcludes(getClassExcludes());
+        m.addGlobIncludes(getClassIncludes());
+        return m;
     }
 
     public String[] getClassExcludes() {
@@ -111,16 +138,16 @@ public class ClassScannerPreferences {
     
     public ClassScannerFilterEntry addEntry(String patterns, ApplyOn applyOn, boolean exclude) {
         ClassScannerFilterEntry entry = new ClassScannerFilterEntry(patterns, applyOn, exclude);
+        if(entries.exists(entry.equalF()))
+            return null;
         entries = entries.snoc(entry);
-        //entries = entries.nub();//prevent duplicate
         return entry;
     }
     
     public void removeEntry(ClassScannerFilterEntry entry) {
-        Equal<ClassScannerFilterEntry> any = Equal.anyEqual();
-        entries = entries.removeAll(any.eq(entry));
+        entries = entries.removeAll(entry.equalF());
     }
-    
+
     public List<ClassScannerFilterEntry> getEntries() {
         return entries;
     }
@@ -142,4 +169,35 @@ public class ClassScannerPreferences {
         return entries.toCollection().toArray();
     }
 
+    public byte[] calculateHash() {
+        try {
+            final MessageDigest md = MessageDigest.getInstance("MD5");
+            entries.foreach(new Effect<ClassScannerFilterEntry>() {
+                final byte[] bytes = new byte[2];
+                @Override
+                public void e(ClassScannerFilterEntry entry) {
+                    bytes[0] = (byte) (entry.getApplyOn().ordinal());
+                    bytes[1] = (byte) (entry.isExclude()?1:0);
+                    md.update(bytes);
+                    md.update(entry.getPatterns().getBytes());
+                }
+            });
+            return md.digest();
+        }
+        catch (NoSuchAlgorithmException e1) {
+            final Adler32 adler32 = new Adler32();
+            entries.foreach(new Effect<ClassScannerFilterEntry>() {
+                final byte[] bytes = new byte[2];
+                @Override
+                public void e(ClassScannerFilterEntry entry) {
+                    bytes[0] = (byte) (entry.getApplyOn().ordinal());
+                    bytes[1] = (byte) (entry.isExclude()?1:0);
+                    adler32.update(bytes);
+                    adler32.update(entry.getPatterns().getBytes());
+                }
+            });
+            return Bytes.longToBytes(adler32.getValue());
+        }
+    }
+    
 }

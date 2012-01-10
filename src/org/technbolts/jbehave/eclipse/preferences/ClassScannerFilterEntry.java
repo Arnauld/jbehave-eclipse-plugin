@@ -2,6 +2,7 @@ package org.technbolts.jbehave.eclipse.preferences;
 
 import org.apache.commons.lang.StringUtils;
 
+import fj.Equal;
 import fj.F;
 
 public class ClassScannerFilterEntry {
@@ -76,5 +77,11 @@ public class ClassScannerFilterEntry {
         return other.applyOn == applyOn//
                 && other.exclude == exclude//
                 && StringUtils.equals(patterns, other.patterns);
+    }
+
+    public F<ClassScannerFilterEntry, Boolean> equalF() {
+        Equal<ClassScannerFilterEntry> any = Equal.anyEqual();
+        F<ClassScannerFilterEntry, Boolean> filter = any.eq(this);
+        return filter;
     }
 }
