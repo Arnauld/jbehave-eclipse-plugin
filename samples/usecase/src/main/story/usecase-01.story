@@ -1,6 +1,6 @@
 Narrative:
 In order to inOrderTo
-As a asA
+As a asA  
 I want to iWantTo
 
 Scenario: my scenario 2

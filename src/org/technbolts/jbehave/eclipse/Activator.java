@@ -17,8 +17,16 @@ import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.slf4j.LoggerFactory;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.util.ProcessGroup;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
+import ch.qos.logback.core.rolling.RollingFileAppender;
+import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -55,6 +63,46 @@ public class Activator extends AbstractUIPlugin {
 		Bundle bundle = context.getBundle();
 		version = (String) bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
 		plugin = this;
+		initLogger();
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    private void initLogger () {
+	    String logFile = getStateLocation().append("plugin.log").toOSString();
+		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+
+	    RollingFileAppender rfAppender = new RollingFileAppender();
+	    rfAppender.setContext(loggerContext);
+        rfAppender.setFile(logFile);
+	    FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
+	    rollingPolicy.setContext(loggerContext);
+	    // rolling policies need to know their parent
+	    // it's one of the rare cases, where a sub-component knows about its parent
+	    rollingPolicy.setParent(rfAppender);
+	    rollingPolicy.setFileNamePattern("plugin.%i.log.zip");
+	    rollingPolicy.start();
+
+	    SizeBasedTriggeringPolicy triggeringPolicy = new SizeBasedTriggeringPolicy();
+	    triggeringPolicy.setMaxFileSize("5MB");
+	    triggeringPolicy.start();
+
+	    PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+	    encoder.setContext(loggerContext);
+	    encoder.setPattern("%-4relative [%thread] %-5level %logger{35} - %msg%n");
+	    encoder.start();
+
+	    rfAppender.setEncoder(encoder);
+	    rfAppender.setRollingPolicy(rollingPolicy);
+	    rfAppender.setTriggeringPolicy(triggeringPolicy);
+
+	    rfAppender.start();
+
+	    // attach the rolling file appender to the logger of your choice
+	    Logger logbackLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+	    logbackLogger.detachAndStopAllAppenders();
+	    logbackLogger.addAppender(rfAppender);
+	    
+	    logInfo("Log file at " + logFile);
 	}
 
 	/*

@@ -18,13 +18,12 @@ public class UserSteps {
 	public void clicks(String name) {
 	}
 	
-	@Then("the page title must be $content")
-	public void titleContent(String content) {
+	@Then("the page title must be $title")
+	public void titleContent(String title) {
 	}
 	
-	@Then("the page title must be displayed in $color")
+	@Then("the page title must be displayed in $colorAlias")
 	public void titleColor(String colorAlias) {
 	}
-
 
 }

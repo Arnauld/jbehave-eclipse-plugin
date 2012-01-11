@@ -6,7 +6,7 @@ public abstract class Visitor<T,R> {
     private boolean isDone;
     private ConcurrentLinkedQueue<R> founds = New.concurrentLinkedQueue();
     
-    public abstract void visit(T step);
+    public abstract void visit(T value);
     
     public boolean isDone () {
         return isDone;
