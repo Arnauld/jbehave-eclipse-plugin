@@ -15,7 +15,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.osgi.service.prefs.BackingStoreException;
 import org.technbolts.eclipse.jdt.JavaScanner;
-import org.technbolts.eclipse.jdt.MethodPerPackageFragmentRootCache;
+import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
 import org.technbolts.util.FJ;

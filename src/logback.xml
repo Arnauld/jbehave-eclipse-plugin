@@ -8,7 +8,7 @@
 	</appender>
 
 	<logger name="org.technbolts" level="warn" />
-	<logger name="org.technbolts.eclipse.jdt.MethodPerPackageFragmentRootCache" level="debug" />
+	<logger name="org.technbolts.eclipse.jdt.methodcache" level="debug" />
 
 	<root level="error">
 		<appender-ref ref="STDOUT" />

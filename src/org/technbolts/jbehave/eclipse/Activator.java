@@ -88,7 +88,7 @@ public class Activator extends AbstractUIPlugin {
 
 	    PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 	    encoder.setContext(loggerContext);
-	    encoder.setPattern("%-4relative [%thread] %-5level %logger{35} - %msg%n");
+	    encoder.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
 	    encoder.start();
 
 	    rfAppender.setEncoder(encoder);
