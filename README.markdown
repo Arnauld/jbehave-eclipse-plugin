@@ -20,8 +20,8 @@ Preference page:
 
 * Story syntax coloring settings
 
-[Next release] - Release notes 1.0.5.SNAPSHOT
----------------------------------------------
+Daughter 1st Birthday - Release notes 1.0.5.SNAPSHOT
+----------------------------------------------------
 
 * Fix and unify code for **jump to declaration** behavior (mouse and keybord shortcut use the same code, supports
   multiline steps and should not be anymore sensible to trailing newlines) [Brathax's followup on Issue 6](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/6#issuecomment-3395767).
