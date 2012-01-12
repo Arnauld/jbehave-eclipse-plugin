@@ -11,6 +11,10 @@ import org.technbolts.util.Visitor;
 public class FlatContainer<E> extends Container<E> {
     private ConcurrentLinkedQueue<E> elements = new ConcurrentLinkedQueue<E>();
 
+    public FlatContainer(String containerName) {
+        super(containerName);
+    }
+
     @Override
     public void clear() {
         elements.clear();
@@ -22,7 +26,7 @@ public class FlatContainer<E> extends Container<E> {
     }
 
     @Override
-    public void traverse(Visitor<E, E> visitor) {
+    public void traverse(Visitor<E, ?> visitor) {
         for (E element : elements) {
             visitor.visit(element);
             if (visitor.isDone())

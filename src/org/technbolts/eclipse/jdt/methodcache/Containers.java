@@ -15,14 +15,14 @@ public class Containers {
     static final long UNITIALIZED_STAMP = NULL_STAMP-1;
     
     public interface Factory<E> {
-        Container<E> create();
+        Container<E> create(String name);
     }
 
     public static <E> Factory<E> hierarchicalFactory() {
         return new Factory<E>() {
             @Override
-            public Container<E> create() {
-                return new HierarchicalContainer<E>();
+            public Container<E> create(String name) {
+                return new HierarchicalContainer<E>(name);
             };
         };
     }
@@ -30,8 +30,8 @@ public class Containers {
     public static <E> Factory<E> flatFactory() {
         return new Factory<E>() {
             @Override
-            public Container<E> create() {
-                return new FlatContainer<E>();
+            public Container<E> create(String name) {
+                return new FlatContainer<E>(name);
             };
         };
     }

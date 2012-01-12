@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.JavaCore;
 
 public class JBehaveProjectRegistry {
     
-    static boolean AwareOfJDTChange = false;
+    static boolean AwareOfJDTChange = true;
     
     private static JBehaveProjectRegistry singleton = new JBehaveProjectRegistry();
     public static JBehaveProjectRegistry get() {
@@ -38,22 +38,10 @@ public class JBehaveProjectRegistry {
         }
     }
     
-    private static boolean hasAnnotationFlag(IJavaElementDelta delta) {
-        int mask = IJavaElementDelta.F_ANNOTATIONS;
-        return (delta.getFlags() & mask)==mask;
-    }
-    
     private void notifyChanges(IJavaElementDelta delta) {
-        if(!hasAnnotationFlag(delta)) {
-            for(IJavaElementDelta sub : delta.getAffectedChildren())
-                notifyChanges(sub);
-            return;
-        }
-        for(IJavaElementDelta sub : delta.getAnnotationDeltas()) {
-            IProject project = extractProject(sub);
-            if(project!=null)
-                notifyProjectChanges(project, sub);
-        }
+        IProject project = extractProject(delta);
+        if(project!=null)
+            notifyProjectChanges(project, delta); 
     }
     
     private static IProject extractProject(IJavaElementDelta delta) {

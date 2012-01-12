@@ -2,136 +2,139 @@ package org.technbolts.jbehave.eclipse;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.jbehave.core.steps.StepType;
-import org.technbolts.eclipse.util.JavaAnalyzer;
-import org.technbolts.util.ArrayUtils;
-import org.technbolts.util.New;
+import org.osgi.service.prefs.BackingStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.technbolts.eclipse.jdt.JavaScanner;
+import org.technbolts.eclipse.jdt.methodcache.Container;
+import org.technbolts.eclipse.jdt.methodcache.Containers;
+import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
+import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
+import org.technbolts.util.C2;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.StringEnhancer;
 import org.technbolts.util.Visitor;
 
+import fj.Effect;
+
 public class JBehaveProject {
+    private static Logger log = LoggerFactory.getLogger(JBehaveProject.class);
+
     private IProject project;
     //
-    private boolean useCache = JBehaveProjectRegistry.AwareOfJDTChange;
-    //
-    private List<IType> cachedTypes;
-    private List<PotentialStep> cachedSteps;
-    
+    private MethodPerPackageFragmentRootCache<PotentialStep> cache;
+
     public JBehaveProject(IProject project) {
         this.project = project;
+        this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(
+                newCallback());
+    }
+
+    private static C2<IMethod, Container<PotentialStep>> newCallback() {
+        return new C2<IMethod, Container<PotentialStep>>() {
+         public void op(IMethod method, Container<PotentialStep> container) {
+             try {
+                extractMethodSteps(method, container);
+            } catch (JavaModelException e) {
+                log.error("Failed to extract step from method <" + method + ">", e);
+            }
+         };
+      };
     }
     
+    private AtomicInteger comod = new AtomicInteger();
+    private volatile int rebuildTick = -1;
+    
     public void notifyChanges (IJavaElementDelta delta) {
-        Activator.logInfo("Invalidating jbehave project <"+project.getName()+"> " + delta);
-        cachedTypes = null;
-        cachedSteps = null;
+        log.debug("Notify JDT change within project <"+project.getName()+"> " + delta);
+        comod.incrementAndGet();
     }
     
     public IProject getProject() {
         return project;
     }
     
-    protected List<IType> getCachedTypes() throws JavaModelException {
-        if(useCache) {
-            List<IType> types = this.cachedTypes;
-            if(types==null) {
-                types = collectTypes();
-                this.cachedTypes = types;
-            }
-            return types;
-        }
-        else {
-            return collectTypes();
-        }
-    }
-
-    private List<IType> collectTypes() throws JavaModelException {
-        JavaAnalyzer analyzer = new JavaAnalyzer();
-        analyzer.collectTypes(project);
-        return analyzer.getTypes();
-    }
-    
-    public List<IMethod> getMethods() throws JavaModelException {
-        List<IType> projectTypes = getCachedTypes();
-        return JavaAnalyzer.getMethods(projectTypes);
-    }
-
-    public List<IType> getTypes() throws JavaModelException {
-        return ArrayUtils.copyOf(getCachedTypes());
-    }
+    private ReadWriteLock rwLock = new ReentrantReadWriteLock();
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
-        for(PotentialStep step:getCachedSteps()) {
-            visitor.visit(step);
-            if(visitor.isDone())
-                return;
+        boolean rAcquired = true;
+        rwLock.readLock().lock();
+        try {
+            int mod = comod.get();
+            if(rebuildTick!=mod) {
+                // promote lock
+                rwLock.readLock().unlock();   // must unlock first to obtain writelock
+                rAcquired = false;
+                rwLock.writeLock().lock();
+                try {
+                    rebuildTick = mod;
+                    rebuild();
+                    
+                    // Downgrade by acquiring read lock before releasing write lock
+                    rwLock.readLock().lock();
+                    rAcquired = true;
+                }
+                finally {
+                    rwLock.writeLock().unlock(); // Unlock write, still hold read
+                }
+            }
+            
+            log.info("Traversing cache for project <"+project.getName()+">");
+            cache.traverse(visitor);
+        }
+        finally {
+            if(rAcquired)
+                rwLock.readLock().unlock();
         }
     }
     
-    public List<PotentialStep> getCachedSteps () throws JavaModelException {
-        List<PotentialStep> steps = cachedSteps;
-        if(useCache && steps!=null)
-            return steps;
-        
-        Activator.logInfo("JBehaveProject:Building steps cache for project <" + project.getName() + ">");
-        StepCollectorContext context = new StepCollectorContext();
-        ProcessGroup<Void> group = Activator.getDefault().newProcessGroup();
-        for(IType type : getCachedTypes())
-            group.spawn(stepCollector(type, context));
+    protected void rebuild () {
+        log.info("Re-building cache for project <"+project.getName()+">");
+
+        ProcessGroup<Void> processGroup = Activator.getDefault().newProcessGroup();
+        try {
+            cache.rebuild(project, new Effect<JavaScanner<?>>() {
+                @Override
+                public void e(JavaScanner<?> scanner) {
+                    try {
+                        ClassScannerPreferences prefs = new ClassScannerPreferences(project);
+                        prefs.load();
+                        scanner.setFilterHash(prefs.calculateHash());
+                        scanner.setPackageRootNameFilter(prefs.getPackageRootMatcher());
+                        scanner.setPackageNameFilter(prefs.getPackageMatcher());
+                        scanner.setClassNameFilter(prefs.getClassMatcher());
+                    } catch (BackingStoreException e) {
+                        log.error("Failed to load scanner preferences", e);
+                    }
+                }
+            }, processGroup);
+        } catch (JavaModelException e) {
+            log.error("Error during cache rebuild", e);
+            // invalidate cache
+            comod.incrementAndGet();
+        }
         
         try {
-            group.awaitTermination();
+            processGroup.awaitTermination();
         } catch (InterruptedException e) {
-            Activator.logError("JBehaveProject:Interrupted while building steps cache for project <" + project.getName() + ">", e);
-        }
-        
-        cachedSteps = context.collected;
-        return context.collected;
-    }
-    
-    private class StepCollectorContext {
-        private final StringBuilder debug = new StringBuilder ();
-        public final List<PotentialStep> collected = New.arrayList();
-
-        public void addAll(List<PotentialStep> steps) {
-            synchronized (collected) {
-                collected.addAll(steps);
-            }
-        }
-        public StepCollectorContext debugNL(CharSequence message) {
-            debug.append(message);
-            debug.append('\n');
-            return this;
+            log.info("Java traversal interrupted");
+            // invalidate cache
+            comod.incrementAndGet();
         }
     }
     
-    private static Callable<Void> stepCollector(final IType type, final StepCollectorContext context) {
-        return new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                StringBuilder debug = new StringBuilder ("Analysis of type: " + type);
-                for(IMethod method : JavaAnalyzer.getMethods(type)) {
-                    List<PotentialStep> methodSteps = extractMethodSteps(debug, method);
-                    context.addAll(methodSteps);
-                }
-                context.debugNL(debug);
-                return null;
-            }
-        };
-    }
-    private static List<PotentialStep> extractMethodSteps(StringBuilder debug, IMethod method) throws JavaModelException {
-        List<PotentialStep> steps = New.arrayList();
-        
+    private static void extractMethodSteps(IMethod method, Container<PotentialStep> container) throws JavaModelException {
         StepType stepType = null;
         for(IAnnotation annotation : method.getAnnotations()) {
             String elementName = annotation.getElementName();
@@ -164,16 +167,14 @@ public class JBehaveProject {
             }
 
             if(!patterns.isEmpty()) {
-                debug.append("StepLocator analysing method: " + method +"\n  found: " + patterns +"\n");
+                log.debug("StepLocator analysing method: " + Containers.pathOf(method) +" found: " + patterns);
                 for(String stepPattern : patterns) {
                     if(stepPattern==null)
                         continue;
-                    steps.add(new PotentialStep(method, annotation, stepType, stepPattern));
+                    container.add(new PotentialStep(method, annotation, stepType, stepPattern));
                 }
             }
         }
-
-        return steps;
     }
     
     @SuppressWarnings("unchecked")

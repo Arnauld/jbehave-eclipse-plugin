@@ -5,7 +5,6 @@ import org.jbehave.core.annotations.Then;
 import org.jbehave.core.annotations.When;
 
 /**
- *
  */
 public class UserSteps {
 

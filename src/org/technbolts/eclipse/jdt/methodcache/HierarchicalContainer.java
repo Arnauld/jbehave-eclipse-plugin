@@ -23,6 +23,10 @@ public class HierarchicalContainer<E> extends Container<E> {
 
     private final ConcurrentMap<String, Container<E>> children = New.concurrentHashMap();
 
+    public HierarchicalContainer(String containerName) {
+        super(containerName);
+    }
+
     @Override
     public void clear() {
         children.clear();
@@ -37,20 +41,25 @@ public class HierarchicalContainer<E> extends Container<E> {
     public void recursivelyRemoveBuildOlderThan(int buildTick, IProgressMonitor monitor) {
         ArrayList<Entry<String, Container<E>>> elems = New.arrayList(children.entrySet());
         monitor.beginTask("", elems.size());
+        int removed = 0;
+        int remaining = 0;
         for (Entry<String, Container<E>> e : elems) {
             Container<E> child = e.getValue();
             if (child.getLastBuildTick() < buildTick) {
+                removed++;
                 children.remove(e.getKey());
             } else {
+                remaining++;
                 child.recursivelyRemoveBuildOlderThan(buildTick, wrapMonitorForRecursive(monitor));
             }
             monitor.worked(1);
         }
         monitor.done();
+        log.debug("Unsed #" + removed + " removed (#"+remaining+" remaining) in " + containerName);
     }
 
     @Override
-    public void traverse(Visitor<E, E> visitor) {
+    public void traverse(Visitor<E, ?> visitor) {
         for (Container<E> child : children.values()) {
             child.traverse(visitor);
             if (visitor.isDone())
@@ -94,7 +103,7 @@ public class HierarchicalContainer<E> extends Container<E> {
         String path = javaElement.getPath().toString();
         Container<E> container = children.get(path);
         if (container == null) {
-            Container<E> newContainer = factory.create();
+            Container<E> newContainer = factory.create(path);
             container = children.putIfAbsent(path, newContainer);
             if (container == null)
                 container = newContainer;

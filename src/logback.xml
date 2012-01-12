@@ -9,6 +9,7 @@
 
 	<logger name="org.technbolts" level="warn" />
 	<logger name="org.technbolts.eclipse.jdt.methodcache" level="debug" />
+	<logger name="org.technbolts.jbehave.eclipse.JBehaveProject" level="debug" />
 
 	<root level="error">
 		<appender-ref ref="STDOUT" />

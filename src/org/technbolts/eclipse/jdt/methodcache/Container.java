@@ -17,42 +17,44 @@ public abstract class Container<E> {
 
     private long timestamp = Containers.UNITIALIZED_STAMP;
     private volatile int lastBuildTick;
+    protected final String containerName;
 
-    public Container() {
+    public Container(String containerName) {
+        this.containerName = containerName;
     }
 
     public int getLastBuildTick() {
         return lastBuildTick;
     }
 
-    public void setLastBuildTick(int traverseTick) {
+    void setLastBuildTick(int traverseTick) {
         while (this.lastBuildTick < traverseTick)
             this.lastBuildTick = traverseTick;
     }
 
-    public abstract void recursivelyRemoveBuildOlderThan(int buildTick, IProgressMonitor monitor);
+    abstract void recursivelyRemoveBuildOlderThan(int buildTick, IProgressMonitor monitor);
 
-    public void setTimestamp(long timestamp) {
+    void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 
-    public boolean isTimestampDifferent(long timestamp) {
+    boolean isTimestampDifferent(long timestamp) {
         return this.timestamp != timestamp;
     }
 
-    public abstract void traverse(Visitor<E, E> visitor);
+    public abstract void traverse(Visitor<E, ?> visitor);
 
-    public abstract void clear();
+    abstract void clear();
 
     public abstract void add(E element);
 
-    public abstract Container<E> specializeFor(IPackageFragmentRoot pkgFragmentRoot);
+    abstract Container<E> specializeFor(IPackageFragmentRoot pkgFragmentRoot);
 
-    public abstract Container<E> specializeFor(IPackageFragment pkgFragment);
+    abstract Container<E> specializeFor(IPackageFragment pkgFragment);
 
-    public abstract Container<E> specializeFor(ICompilationUnit cunit);
+    abstract Container<E> specializeFor(ICompilationUnit cunit);
 
-    public boolean prepareForTraversal(IJavaElement element, int buildTick) {
+    boolean prepareForTraversal(IJavaElement element, int buildTick) {
         setLastBuildTick(buildTick);
         long timestamp = modificationStampOf(element);
         log.debug("Preparing for traversal [" + element.getElementName() + "] in [" + Containers.pathOf(element) + "] ts: " + timestamp);
@@ -90,7 +92,7 @@ public abstract class Container<E> {
         return true;
     }
 
-    public void resetForBuild(IJavaElement element, int buildTick) {
+    void resetForBuild(IJavaElement element, int buildTick) {
         setLastBuildTick(buildTick);
         long timestamp = modificationStampOf(element);
         setTimestamp(timestamp);

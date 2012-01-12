@@ -18,11 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.jdt.JavaScanner;
 import org.technbolts.eclipse.jdt.JavaVisitorAdapter;
+import org.technbolts.util.C2;
+import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.Visitor;
 
 import fj.Effect;
-import fj.F;
-import fj.data.Option;
 
 public class MethodPerPackageFragmentRootCache<E> extends
         JavaVisitorAdapter<MethodPerPackageFragmentRootCache.Bucket<E>> {
@@ -31,16 +31,19 @@ public class MethodPerPackageFragmentRootCache<E> extends
     
     private Logger log = LoggerFactory.getLogger(MethodPerPackageFragmentRootCache.class);
 
-    private final HierarchicalContainer<E> content = new HierarchicalContainer<E>();
-    private F<IMethod, Option<E>> transform;
+    private final HierarchicalContainer<E> content = new HierarchicalContainer<E>("<root>");
+    private C2<IMethod, Container<E>> callback;
     private byte[] cachedFilterHash;
 
-    public MethodPerPackageFragmentRootCache(F<IMethod, Option<E>> transform) {
-        this.transform = transform;
+    public MethodPerPackageFragmentRootCache(C2<IMethod, Container<E>> callback) {
+        this.callback = callback;
     }
 
-    public void rebuild(IProject project, Effect<JavaScanner<?>> initializer) throws JavaModelException {
-        JavaScanner<Bucket<E>> javaScanner = new JavaScanner<Bucket<E>>(project, this);
+    public void rebuild(IProject project, 
+                        Effect<JavaScanner<?>> initializer,
+                        ProcessGroup<Void> group) throws JavaModelException {
+        
+        JavaScanner<Bucket<E>> javaScanner = new JavaScanner<Bucket<E>>(project, this, group);
         initializer.e(javaScanner);
         
         int buildTick = buildTickGen.incrementAndGet();
@@ -52,7 +55,7 @@ public class MethodPerPackageFragmentRootCache<E> extends
         removeUnsed(buildTick);
     }
 
-    public void traverse(Visitor<E, E> visitor) {
+    public void traverse(Visitor<E, ?> visitor) {
         content.traverse(visitor);
     }
 
@@ -65,7 +68,7 @@ public class MethodPerPackageFragmentRootCache<E> extends
     }
 
     public Bucket<E> newRootBucket(int buildTick, boolean hasFilterHashChanged) {
-        return new Bucket<E>(buildTick, hasFilterHashChanged);
+        return new Bucket<E>(buildTick, hasFilterHashChanged, content);
     }
 
     protected void removeUnsed(final int buildTick) {
@@ -82,19 +85,32 @@ public class MethodPerPackageFragmentRootCache<E> extends
 
     @Override
     public boolean visit(IPackageFragmentRoot packageFragmentRoot, Bucket<E> bucket) {
-        Container<E> typedMethods = content.specializeFor(packageFragmentRoot);
+        Container<E> container = bucket.container.specializeFor(packageFragmentRoot);
         if(bucket.hasFilterChanged()) {
-            typedMethods.resetForBuild(packageFragmentRoot, bucket.buildTick);
+            container.resetForBuild(packageFragmentRoot, bucket.buildTick);
             return true;
         }
         else {
-            return typedMethods.prepareForTraversal(packageFragmentRoot, bucket.buildTick);
+            return container.prepareForTraversal(packageFragmentRoot, bucket.buildTick);
         }
     }
 
     @Override
     public Bucket<E> argumentFor(IPackageFragmentRoot packageFragmentRoot, Bucket<E> bucket) {
-        return bucket.withContainer(content.specializeFor(packageFragmentRoot));
+        Container<E> container = bucket.container.specializeFor(packageFragmentRoot);
+        return bucket.withContainer(container);
+    }
+    
+    @Override
+    public boolean visit(IPackageFragment packageFragment, Bucket<E> bucket) {
+        Container<E> container = bucket.container.specializeFor(packageFragment);
+        if(bucket.hasFilterChanged()) {
+            container.resetForBuild(packageFragment, bucket.buildTick);
+            return true;
+        }
+        else {
+            return container.prepareForTraversal(packageFragment, bucket.buildTick);
+        }
     }
 
     @Override
@@ -115,13 +131,13 @@ public class MethodPerPackageFragmentRootCache<E> extends
 
     @Override
     public boolean visit(ICompilationUnit cunit, Bucket<E> bucket) {
-        Container<E> typedMethods = content.specializeFor(cunit);
+        Container<E> container = bucket.container.specializeFor(cunit);
         if(bucket.hasFilterChanged()) {
-            typedMethods.resetForBuild(cunit, bucket.buildTick);
+            container.resetForBuild(cunit, bucket.buildTick);
             return true;
         }
         else {
-            return typedMethods.prepareForTraversal(cunit, bucket.buildTick);
+            return container.prepareForTraversal(cunit, bucket.buildTick);
         }
     }
 
@@ -130,14 +146,11 @@ public class MethodPerPackageFragmentRootCache<E> extends
         Container<E> container = bucket.container.specializeFor(cunit);
         return bucket.withContainer(container);
     }
-
+    
     @Override
     public boolean visit(IMethod method, Bucket<E> bucket) {
-        Option<E> typedMethod = transform.f(method);
-        if (typedMethod.isSome()) {
-            Container<E> container = bucket.getContainer();
-            container.add(typedMethod.some());
-        }
+        Container<E> container = bucket.getContainer();
+        callback.op(method, container);
         return false;
     }
 
