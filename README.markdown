@@ -27,7 +27,7 @@ Daughter 1st Birthday - Release notes 1.0.5.SNAPSHOT
 * Complete refactoring of the Java Scanner [Issue 15](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15)
   * **All the classpath is now scanned**: source folders and libraries
   * Classes and packages scanned can be **filtered** to reduce overhead: a **new preference page** has been added to configure the filters. Filters can be setup globally through *preferences*, or by project through the *project properties*.
-  * Step cache is now fully operational and not anymore recalculated each time: rebuild is triggered on JDT change, and the cache sub-hierarchy is only recalculated if required.
+  * Step cache is now fully operational and not anymore recalculated each time: rebuild is triggered on JDT change, and the cache sub-hierarchy is only recalculated if required (see implementation notes [here](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15#issuecomment-3478376))
 * Plugin has now a dedicated log file [Issue 16](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/16) available at `<workspace>/.metadata/.plugins/technbolts-jbehave-eclipse-plugin/plugin.log`. `logback.xml` in plugin jar file is used to configure logger (whereas appenders are removed and configured programatically).
 
 
