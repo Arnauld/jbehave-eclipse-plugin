@@ -6,19 +6,19 @@ import org.jbehave.core.model.ExamplesTable;
 
 public class AccountSteps {
 
-    @Given("an account model named '$accountModelKey'")
+    @Given("an account {model |}named '$accountModelKey'")
     public void createAccountModel(//
             @Named("accountModelKey") String accountModelKey) {
     }
 
-    @Given("The '$fieldKey' in account model '$accountModelKey' is '$fieldValue'")
+    @Given("The '$fieldKey' in account {model |}'$accountModelKey' is '$fieldValue'")
     public void setAccountModelProperty(//
             @Named("fieldKey") String fieldKey, //
             @Named("accountModelKey") String accountModelKey, //
             @Named("fieldValue") String fieldValue) {
     }
 
-    @Given("The '$fieldKey' in account model '$accountModelKey' is a random string")
+    @Given("The '$fieldKey' in account {model |}'$accountModelKey' is a random string")
     public void setAccountModelRandomProperty(//
             @Named("fieldKey") String fieldKey, //
             @Named("accountModelKey") String accountModelKey) {
