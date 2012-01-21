@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.jbehave.core.steps.PatternVariantBuilder;
 import org.jbehave.core.steps.StepType;
 import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
@@ -144,15 +145,22 @@ public class JBehaveProject {
                 // TODO check import declaration matches org.jbehave...
                 stepType = StepType.valueOf(elementName.toUpperCase());
                 String stepPattern = getValue(annotation.getMemberValuePairs(), "value");
-                patterns.add(stepPattern);
+                PatternVariantBuilder b = new PatternVariantBuilder(stepPattern);
+                for (String variant : b.allVariants()) {
+                	patterns.add(variant);
+                }
             }
             else if(StringEnhancer.enhanceString(elementName).endsWithOneOf("Aliases")) {
                 // TODO check import declaration matches org.jbehave...
                 Object aliases = getValue(annotation.getMemberValuePairs(), "values");
                 if(aliases instanceof Object[]) {
                     for(Object o : (Object[])aliases) {
-                        if(o instanceof String)
-                            patterns.add((String)o);
+                        if(o instanceof String) {
+                        	PatternVariantBuilder b = new PatternVariantBuilder((String) o);
+                        	for (String variant : b.allVariants()) {
+                            	patterns.add(variant);
+                            }       	
+                        }
                     }
                     if(!patterns.isEmpty() && stepType==null)
                         stepType = StepType.GIVEN;
@@ -161,7 +169,11 @@ public class JBehaveProject {
             else if(StringEnhancer.enhanceString(elementName).endsWithOneOf("Alias")) {
                 // TODO check import declaration matches org.jbehave...
                 String stepPattern = getValue(annotation.getMemberValuePairs(), "value");
-                patterns.add(stepPattern);
+                PatternVariantBuilder b = new PatternVariantBuilder(stepPattern);
+                for (String variant : b.allVariants()) {
+                	patterns.add(variant);
+                }
+                
                 if(!patterns.isEmpty() && stepType==null)
                     stepType = StepType.GIVEN;
             }
