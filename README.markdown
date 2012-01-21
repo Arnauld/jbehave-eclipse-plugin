@@ -29,9 +29,13 @@ Daughter 1st Birthday - Release notes (1.0.5)
   * Classes and packages scanned can be **filtered** to reduce overhead: a **new preference page** has been added to configure the filters. Filters can be setup globally through *preferences*, or by project through the *project properties*.
   * Step cache is now fully operational and not anymore recalculated each time: rebuild is triggered on JDT change, and the cache sub-hierarchy is only recalculated if required (see implementation notes [here](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15#issuecomment-3478376))
 * Plugin has now a dedicated log file [Issue 16](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/16) available at `<workspace>/.metadata/.plugins/technbolts-jbehave-eclipse-plugin/plugin.log`. `logback.xml` in plugin jar file is used to configure logger (whereas appenders are removed and configured programatically).
-* Integrate step variants feature by [dschneller](https://github.com/dschneller) [Issue 18](https://github.com/Arnauld/jbehave-eclipse-plugin/pull/18)
+* Integrate step variants feature by [dschneller](https://github.com/dschneller) [Issue 18](https://github.com/Arnauld/jbehave-eclipse-plugin/pull/18). **Your project requires to use a suitable version of jbehave in order for the steps to be recognize at runtime too**. `@When("$A {+|plus|is added to} $B")` would then fits
+  * `When 3 + 4`
+  * `When 3 plus 4`
+  * `When 3 is added to 4`
 
 Thanks to [brathax](https://github.com/brathax) for his help in solving [Issue 6](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/6#issuecomment-3395767).
+
 Thanks to [dschneller](https://github.com/dschneller) for his integration of the [step variants](http://jira.codehaus.org/browse/JBEHAVE-702?focusedCommentId=288852&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-288852) in both [jbehave-core](https://github.com/jbehave/jbehave-core) and this project.
 
 
