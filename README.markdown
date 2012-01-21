@@ -20,8 +20,8 @@ Preference page:
 
 * Story syntax coloring settings
 
-Daughter 1st Birthday - Release notes 1.0.5.SNAPSHOT
-----------------------------------------------------
+Daughter 1st Birthday - Release notes (1.0.5)
+---------------------------------------------
 
 * Fix and unify code for **jump to declaration** behavior (mouse and keybord shortcut use the same code, supports multiline steps and should not be anymore sensible to trailing newlines) [Brathax's followup on Issue 6](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/6#issuecomment-3395767).
 * Complete refactoring of the Java Scanner [Issue 15](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15)
@@ -29,10 +29,14 @@ Daughter 1st Birthday - Release notes 1.0.5.SNAPSHOT
   * Classes and packages scanned can be **filtered** to reduce overhead: a **new preference page** has been added to configure the filters. Filters can be setup globally through *preferences*, or by project through the *project properties*.
   * Step cache is now fully operational and not anymore recalculated each time: rebuild is triggered on JDT change, and the cache sub-hierarchy is only recalculated if required (see implementation notes [here](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15#issuecomment-3478376))
 * Plugin has now a dedicated log file [Issue 16](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/16) available at `<workspace>/.metadata/.plugins/technbolts-jbehave-eclipse-plugin/plugin.log`. `logback.xml` in plugin jar file is used to configure logger (whereas appenders are removed and configured programatically).
-
-
+* Integrate step variants feature by [dschneller](https://github.com/dschneller) [Issue 18](https://github.com/Arnauld/jbehave-eclipse-plugin/pull/18)
 
 Thanks to [brathax](https://github.com/brathax) for his help in solving [Issue 6](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/6#issuecomment-3395767).
+Thanks to [dschneller](https://github.com/dschneller) for his integration of the [step variants](http://jira.codehaus.org/browse/JBEHAVE-702?focusedCommentId=288852&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-288852) in both [jbehave-core](https://github.com/jbehave/jbehave-core) and this project.
+
+
+Note: the embedded `jbehave-core` library is build from the [jbehave-core](https://github.com/jbehave/jbehave-core) master branch (commit 3bf29212b6). Since this library is used only by the plugin itself, and not the project that uses the plugin, this should have no impact on projects.
+
 
 Christmas 2011 & Happy new year 2012 - Release notes (1.0.4)
 ------------------------------------------------------------
