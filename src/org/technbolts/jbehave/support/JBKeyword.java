@@ -1,6 +1,7 @@
 package org.technbolts.jbehave.support;
 
 import org.jbehave.core.configuration.Keywords;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.util.Filter;
 
 public enum JBKeyword {
@@ -117,6 +118,9 @@ public enum JBKeyword {
     
     public String asString() {
         return asString(keywords);
+    }
+    public String asLocalizedString() {
+    	return asString(JBehaveProject.getLocalizedKeywords());
     }
     
     public String asString(Keywords keywords) {

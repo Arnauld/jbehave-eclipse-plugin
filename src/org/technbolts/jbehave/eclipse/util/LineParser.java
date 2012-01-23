@@ -2,6 +2,8 @@ package org.technbolts.jbehave.eclipse.util;
 
 import static org.technbolts.util.StringEnhancer.enhanceString;
 import static org.technbolts.jbehave.eclipse.JBehaveProject.*;
+
+import org.jbehave.core.steps.StepType;
 import org.technbolts.util.Strings;
 
 public class LineParser {
@@ -49,7 +51,14 @@ public class LineParser {
     public static String stepType(String stepLine) {
         if(isStepIgnoringCase(stepLine)) {
             int indexOf = stepLine.indexOf(' ');
-            return stepLine.substring(0, indexOf);
+            String localizedKeyword = stepLine.substring(0, indexOf);
+            if (localizedKeyword.equalsIgnoreCase(lWhen(false))) {
+            	return StepType.WHEN.name();
+            } else if (localizedKeyword.equalsIgnoreCase(lGiven(false))) {
+            	return StepType.GIVEN.name();
+            } else if (localizedKeyword.equalsIgnoreCase(lThen(false))) {
+            	return StepType.THEN.name();
+            }
         }
         return null;
     }

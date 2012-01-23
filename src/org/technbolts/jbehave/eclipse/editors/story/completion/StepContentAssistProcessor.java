@@ -76,7 +76,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 StoryPart part = StoryPartDocumentUtils.findStoryPartAtOffset(document, offset).get();
                 JBKeyword kw = part.getPreferredKeyword();
                 int indexOf = lineStart.indexOf(' ');
-                stepStartUsedForSearch = kw.asString() + lineStart.substring(indexOf);
+                
+                stepStartUsedForSearch = kw.asLocalizedString() + lineStart.substring(indexOf);
             }
             
             IProject project = EditorUtils.findProject(viewer);
