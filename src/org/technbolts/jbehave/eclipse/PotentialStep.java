@@ -1,5 +1,6 @@
 package org.technbolts.jbehave.eclipse;
 
+import static org.technbolts.jbehave.eclipse.JBehaveProject.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -58,11 +59,11 @@ public class PotentialStep {
     
     public String typeWord () {
         switch(stepType) {
-            case WHEN: return "When";
-            case THEN: return "Then";
+            case WHEN: return lWhen(false);
+            case THEN: return lThen(false);
             case GIVEN:
             default:
-                return "Given";
+                return lGiven(false);
         }
     }
     

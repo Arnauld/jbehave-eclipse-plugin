@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
+import org.jbehave.core.i18n.LocalizedKeywords;
 import org.jbehave.core.steps.StepType;
 import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import org.technbolts.eclipse.jdt.methodcache.Container;
 import org.technbolts.eclipse.jdt.methodcache.Containers;
 import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
+import org.technbolts.jbehave.eclipse.preferences.JBehavePluginPreferencePage;
 import org.technbolts.util.C2;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.StringEnhancer;
@@ -35,8 +37,61 @@ public class JBehaveProject {
     //
     private MethodPerPackageFragmentRootCache<PotentialStep> cache;
 
+    
+    private static LocalizedKeywords LOCALIZED_KEYWORDS = getLocalizedKeywords();
+
+    public static LocalizedKeywords getLocalizedKeywords() {
+    	return new LocalizedKeywords(JBehavePluginPreferencePage.getLocale(Activator.getDefault().getPreferenceStore()));
+    }
+    
+	private static String plusSpace(String aString, boolean wantSpace) {
+		return wantSpace ? aString + " " : aString;
+	}
+	
+	public static String lGiven(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.given(), withTrailingSpace);
+	}
+	public static String lAnd(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.and(), withTrailingSpace);
+	}
+	public static String lAsA(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.asA(), withTrailingSpace);
+	}
+	public static String lExamplesTable(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.examplesTable(), withTrailingSpace);
+	}
+	public static String lGivenStories(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.givenStories(), withTrailingSpace);
+	}
+	public static String lIgnorable(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.ignorable(), withTrailingSpace);
+	}
+	public static String lInOrderTo(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.inOrderTo(), withTrailingSpace);
+	}
+	public static String lIWantTo(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.iWantTo(), withTrailingSpace);
+	}
+	public static String lMeta(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.meta(), withTrailingSpace);
+	}
+	public static String lNarrative(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.narrative(), withTrailingSpace);
+	}
+	public static String lScenario(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.scenario(), withTrailingSpace);
+	}
+	public static String lThen(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.then(), withTrailingSpace);
+	}
+	public static String lWhen(boolean withTrailingSpace) {
+		return plusSpace(LOCALIZED_KEYWORDS.when(), withTrailingSpace);
+	}
+	
+	
     public JBehaveProject(IProject project) {
         this.project = project;
+        LOCALIZED_KEYWORDS = getLocalizedKeywords();
         this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(
                 newCallback());
     }
@@ -137,7 +192,7 @@ public class JBehaveProject {
     private static void extractMethodSteps(IMethod method, Container<PotentialStep> container) throws JavaModelException {
         StepType stepType = null;
         for(IAnnotation annotation : method.getAnnotations()) {
-            String elementName = annotation.getElementName();
+        	String elementName = annotation.getElementName();
             
             List<String> patterns = new ArrayList<String>();
             if(StringEnhancer.enhanceString(elementName).endsWithOneOf("Given", "When", "Then")) {

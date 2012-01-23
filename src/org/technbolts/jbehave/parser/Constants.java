@@ -1,8 +1,8 @@
 package org.technbolts.jbehave.parser;
 
-import java.util.Locale;
-
 import org.jbehave.core.i18n.LocalizedKeywords;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;
 
@@ -14,7 +14,7 @@ public class Constants {
     }
     
     public static CharTree<JBKeyword> createKeywordCharTree() {
-        LocalizedKeywords keywords = new LocalizedKeywords(Locale.US);
+        LocalizedKeywords keywords = JBehaveProject.getLocalizedKeywords();
         CharTree<JBKeyword> cn = new CharTree<JBKeyword>('/', null);
         for(JBKeyword kw : JBKeyword.values()) {
             String asString = kw.asString(keywords);
