@@ -5,26 +5,29 @@ import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
+import org.technbolts.jbehave.support.JBPartition;
 
-public class ScenarioScanner extends AbstractStoryPartBasedScanner {
+public class ExampleTableScanner extends AbstractStoryPartBasedScanner {
     
     private IToken keywordToken;
 
-    public ScenarioScanner(TextAttributeProvider textAttributeProvider) {
+    public ExampleTableScanner(TextAttributeProvider textAttributeProvider) {
         super(textAttributeProvider);
         initialize();
     }
     
     @Override
     protected void initialize() {
-        setDefaultToken(newToken(TextStyle.SCENARIO_DEFAULT));
-        keywordToken = newToken(TextStyle.SCENARIO_KEYWORD);
+        setDefaultToken(newToken(TextStyle.EXAMPLE_TABLE_DEFAULT));
+        keywordToken = newToken(TextStyle.EXAMPLE_TABLE_KEYWORD);
+        exampleTableCellToken = newToken(TextStyle.EXAMPLE_TABLE_CELL);
+        exampleTableSepToken  = newToken(TextStyle.EXAMPLE_TABLE_SEPARATOR);
     }
     
     @Override
     protected boolean isPartAccepted(StoryPart part) {
         JBKeyword keyword = part.getPreferredKeyword();
-        if(keyword==JBKeyword.Scenario) {
+        if(JBPartition.ExampleTable==JBPartition.partitionOf(keyword)) {
             return true;
         }
         return false;
@@ -33,16 +36,18 @@ public class ScenarioScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected void emitPart(StoryPart part) {
         String content = part.getContent();
-        String kwString = JBKeyword.Scenario.asString();
+        String kwString = JBKeyword.ExamplesTable.asString();
         int offset = part.getOffset();
         
         if(content.startsWith(kwString)) {
             emit(keywordToken, offset, kwString.length());
             offset += kwString.length();
-            emit(getDefaultToken(), offset, content.length()-kwString.length());
+            emitTable(getDefaultToken(), offset, content.substring(kwString.length()));
         }
         else {
             emit(getDefaultToken(), offset, content.length());
         }
     }
+
+
 }

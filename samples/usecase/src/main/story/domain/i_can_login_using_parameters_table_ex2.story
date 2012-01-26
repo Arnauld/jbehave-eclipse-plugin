@@ -1,5 +1,6 @@
 Given a new account named 'networkAgent' with the following properties (properties not set will be completed) 
 |key|value|
+!-- Comment inside an example table
 |Login|networkAgentLogin|
 |Password|networkAgentPassword|
 

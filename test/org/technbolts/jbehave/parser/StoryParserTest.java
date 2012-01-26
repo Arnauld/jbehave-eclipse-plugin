@@ -68,4 +68,16 @@ public class StoryParserTest {
         }
     }
     
+    @Test 
+    public void parse_case7_exampleTable() throws IOException {
+        String storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx07-exampletable-comment.story"));
+        StoryParser parser = new StoryParser();
+        for(StoryPart b : parser.parse(storyAsText)) {
+            System.out.println(
+                    "offset: " + b.getOffset() + ", " +
+                    "length: " + b.getLength() + ", " +
+                    "content: >>" + b.getContent().replace("\n", "\\n") + "<<");
+        }
+    }
+    
 }

@@ -41,7 +41,7 @@ public class StoryParser {
             
             line.append((char)read);
             if(isNewlineCharacter(read)) {
-                if(line.startsWithBreakingKeyword(kwTree)) {
+                if(line.startsWithBreakingKeyword(kwTree, block)) {
                     block.emitTo(visitor);
                     block.reset(line.offset);
                 }
@@ -53,7 +53,7 @@ public class StoryParser {
         }
         
         // remaining
-        if(line.startsWithBreakingKeyword(kwTree)) {
+        if(line.startsWithBreakingKeyword(kwTree, block)) {
             block.emitTo(visitor);
             block.reset(line.offset);
         }
@@ -100,11 +100,12 @@ public class StoryParser {
             this.offset = offset;
             this.buffer.setLength(0);
         }
-        public boolean startsWithBreakingKeyword (CharTree<JBKeyword> kwTree) {
+        public boolean startsWithBreakingKeyword (CharTree<JBKeyword> kwTree, Block block) {
             JBKeyword kw = kwTree.lookup(buffer);
             if(kw==null)
                 return false;
             switch(kw) {
+                case Ignorable: // comment should not be considered as breaking, but must be ignored...
                 case ExamplesTableHeaderSeparator:
                 case ExamplesTableValueSeparator:
                 case ExamplesTableIgnorableSeparator:
