@@ -1,7 +1,5 @@
 package org.technbolts.jbehave.parser;
 
-import java.util.regex.Pattern;
-
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;

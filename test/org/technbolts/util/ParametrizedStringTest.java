@@ -408,7 +408,7 @@ public class ParametrizedStringTest {
         WeightChain chain = s.calculateWeightChain(content);
         List<String> tokenList = chain.tokenize();
         for(String token : tokenList) {
-            System.out.println(">>"+token+"<<");
+            System.out.println(">>"+escapeNL(token)+"<<");
         }
         assertThat(tokenList.subList(0, 3), equalTo(Arrays.asList("a user named ", "Bob", " with the following properties ")));
         assertThat(tokenList.get(3), equalTo("\n" +
@@ -417,6 +417,10 @@ public class ParametrizedStringTest {
                          "|Password|networkAgentPassword|\n"));
     }
     
+    private static String escapeNL(String token) {
+        return token.replace("\n", "\\n").replace("\r", "\\r");
+    }
+
     @Test
     public void weightChain_withNewlines_noParameterBefore () {
         ParametrizedString s = new ParametrizedString("a user named Bob with the following properties $exampleTable");

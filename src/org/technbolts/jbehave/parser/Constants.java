@@ -53,7 +53,7 @@ public class Constants {
             index = end;
         }
         if(index<input.length())
-            callback.token(index, input.length()-1, input.substring(index), false);
+            callback.token(index, input.length(), input.substring(index), false);
     }
     
     public static Pattern commentLineMatcher = Pattern.compile("^\\s*!--[^\r\n]*[\r\n]{0,2}", Pattern.MULTILINE); 
