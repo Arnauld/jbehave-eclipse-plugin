@@ -1,4 +1,4 @@
-package org.technbolts.jbehave.eclipse.editors.story;
+package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
 import org.eclipse.jface.text.rules.IToken;
 import org.technbolts.eclipse.util.TextAttributeProvider;

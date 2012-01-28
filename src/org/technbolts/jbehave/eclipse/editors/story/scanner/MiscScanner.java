@@ -1,4 +1,4 @@
-package org.technbolts.jbehave.eclipse.editors.story;
+package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
 import static org.technbolts.jbehave.support.JBKeyword.GivenStories;
 import static org.technbolts.jbehave.support.JBKeyword.Meta;

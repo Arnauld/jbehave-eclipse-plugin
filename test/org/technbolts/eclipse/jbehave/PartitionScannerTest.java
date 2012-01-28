@@ -12,7 +12,7 @@ import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.IToken;
 import org.junit.Before;
 import org.junit.Test;
-import org.technbolts.jbehave.eclipse.editors.story.StoryPartitionScanner;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.StoryPartitionScanner;
 
 public class PartitionScannerTest {
 private String storyAsText;

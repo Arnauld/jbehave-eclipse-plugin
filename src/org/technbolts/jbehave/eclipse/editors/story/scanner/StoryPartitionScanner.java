@@ -1,4 +1,4 @@
-package org.technbolts.jbehave.eclipse.editors.story;
+package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
 import java.util.List;
 
