@@ -14,11 +14,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.IDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
+import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.New;
@@ -30,6 +33,9 @@ import fj.F;
 
 public class MarkingStoryValidator {
     public static final String MARKER_ID = Activator.PLUGIN_ID + ".storyMarker";
+    
+    private static Logger log = LoggerFactory.getLogger(MarkingStoryValidator.class);
+
 
     private IFile file;
     private IDocument document;
@@ -208,7 +214,9 @@ public class MarkingStoryValidator {
         final Map<String, List<PotentialStep>> potentials = New.hashMap();
         for (Part part : steps) {
             List<PotentialStep> list = New.arrayList();
-            potentials.put(part.extractStepSentenceAndRemoveTrailingNewlines(), list);
+            String stepSentence = part.extractStepSentenceAndRemoveTrailingNewlines();
+            log.debug("To analyse: >>" + Strings.escapeNL(stepSentence) + "<<");
+            potentials.put(stepSentence, list);
         }
 
         StepLocator locator = StepLocator.getStepLocator(project);
@@ -227,6 +235,7 @@ public class MarkingStoryValidator {
             String key = part.extractStepSentenceAndRemoveTrailingNewlines();
             List<PotentialStep> candidates = potentials.get(key);
             int count = candidates.size();
+            log.debug("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
             if (count == 0)
                 part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
             else if (count > 1)
@@ -245,7 +254,10 @@ public class MarkingStoryValidator {
         }
 
         public String extractStepSentenceAndRemoveTrailingNewlines() {
-            return storyPart.extractStepSentenceAndRemoveTrailingNewlines();
+            String stepSentence = storyPart.extractStepSentence();
+            // remove any comment that can still be within the step
+            String cleaned = Constants.removeComment(stepSentence);
+            return Strings.removeTrailingNewlines(cleaned);
         }
 
         public synchronized void addMark(int code, String message) {

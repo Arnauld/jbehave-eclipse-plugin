@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.technbolts.jbehave.parser.Constants.containsExampleTable;
-import static org.technbolts.jbehave.parser.Constants.removeComment;
+import static org.technbolts.jbehave.parser.Constants.*;
 
 import java.util.List;
 
@@ -132,6 +132,15 @@ public class ConstantsTest {
     }
     
     @Test
+    public void removeComment_withNLAndEndingWithComment () {
+        assertThat(removeComment(
+                "Given ac account named 'networkAgent' with the following properties" + NL + 
+                NL + 
+                "!-- Some other comment" + NL), 
+                equalTo("Given ac account named 'networkAgent' with the following properties" + NL));
+    }
+    
+    @Test
     public void removeComment_ex1 () {
         final String actual = NL + "Given ac account named 'networkAgent' with the following properties" + NL +
                         "|key|value|" + NL +
@@ -143,6 +152,22 @@ public class ConstantsTest {
                         "|Login|networkAgentLogin|" + NL +
                         "|Password|networkAgentPassword|" + NL;
         assertThat(removeComment(actual), equalTo(expected));
+    }
+    
+    @Test
+    public void removeTrailingComment_noComment () {
+        final String actual = NL + "Given an account named 'networkAgent'" + NL;
+        final String expected = NL + "Given an account named 'networkAgent'" + NL;
+        assertThat(removeTrailingComment(actual), equalTo(expected));
+    }
+    
+    @Test
+    public void removeTrailingComment_ex1 () {
+        final String actual = NL + "Given an account named 'networkAgent'" + NL +
+                NL + 
+                "!-- Some comment" + NL;
+        final String expected = NL + "Given an account named 'networkAgent'" + NL;
+        assertThat(removeTrailingComment(actual), equalTo(expected));
     }
     
     @Test

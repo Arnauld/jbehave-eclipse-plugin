@@ -31,6 +31,14 @@ public class StoryPart {
         return content;
     }
     
+
+    /**
+     * @return
+     */
+    public String extractStepSentence() {
+        return LineParser.extractStepSentence(getContent());
+    }
+    
     /**
      * @see #isStepPart()
      */

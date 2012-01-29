@@ -20,6 +20,7 @@ public class ExampleTableScanner extends AbstractStoryPartBasedScanner {
     
     @Override
     protected void initialize() {
+        super.initialize();
         setDefaultToken(newToken(TextStyle.EXAMPLE_TABLE_DEFAULT));
         keywordToken = newToken(TextStyle.EXAMPLE_TABLE_KEYWORD);
         exampleTableCellToken = newToken(TextStyle.EXAMPLE_TABLE_CELL);

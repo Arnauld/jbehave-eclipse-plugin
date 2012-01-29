@@ -21,6 +21,7 @@ file/
 # building
 target/
 bin/
+test-output/
 
 # other scm
 .svn

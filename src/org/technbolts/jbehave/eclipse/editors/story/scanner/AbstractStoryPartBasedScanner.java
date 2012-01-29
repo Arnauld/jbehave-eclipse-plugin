@@ -207,6 +207,8 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
             public void token(int startOffset, int endOffset, String line, boolean isDelimiter) {
                 if(isDelimiter)
                     emit(emitter, defaultToken, offset + startOffset, line.length());
+                else if(line.trim().startsWith("|--"))
+                    emit(emitter, commentToken, offset + startOffset, line.length());
                 else
                     emitTableRow(emitter, defaultToken, offset + startOffset, line);
             }

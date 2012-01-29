@@ -1,5 +1,6 @@
 package org.technbolts.jbehave.parser;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,6 +8,7 @@ import java.util.regex.Pattern;
 import org.jbehave.core.i18n.LocalizedKeywords;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;
+import org.technbolts.util.New;
 
 public class Constants {
     private static final CharTree<JBKeyword> kwTree = createKeywordCharTree();
@@ -60,6 +62,39 @@ public class Constants {
     
     public static String removeComment(String input) {
         return commentLineMatcher.matcher(input).replaceAll("");
+    }
+    
+    public static String removeTrailingComment(String input) {
+        class Tok {
+            String content;
+            boolean delim;
+            public Tok(String content, boolean delim) {
+                super();
+                this.content = content;
+                this.delim = delim;
+            }
+        }
+        final List<Tok> toks = New.arrayList();
+        tokenize(commentLineMatcher, input, new TokenizerCallback() {
+            @Override
+            public void token(int startOffset, int endOffset, String token, boolean isDelimiter) {
+                toks.add(new Tok(token, isDelimiter));
+            }
+        });
+        int lastIndex = toks.size()-1;
+        for(;lastIndex>=0;lastIndex--) {
+            if(!toks.get(lastIndex).delim)
+                break;
+        }
+        
+        if(lastIndex == toks.size()-1)
+            // nothing to remove, return as is
+            return input;
+        
+        StringBuilder builder = new StringBuilder ();
+        for(int i=0;i<=lastIndex;i++)
+            builder.append(toks.get(i).content);
+        return builder.toString();
     }
     
 
