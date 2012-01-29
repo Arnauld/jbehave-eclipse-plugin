@@ -159,7 +159,10 @@ public class MarkingStoryValidator {
                     }
                 }
             }
-            else if(keyword != JBKeyword.Ignorable) {
+            else if( keyword != JBKeyword.Ignorable
+                  && keyword != JBKeyword.Meta
+                  && keyword != JBKeyword.MetaProperty
+                  && keyword != JBKeyword.GivenStories) {
                 nonNarrativeOrIgnorable = true;
             }
         }
