@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>TestNG:  Unit Test</title>
+<style type="text/css">
+table caption,table.info_table,table.param,table.passed,table.failed {margin-bottom:10px;border:1px solid #000099;border-collapse:collapse;empty-cells:show;}
+table.info_table td,table.info_table th,table.param td,table.param th,table.passed td,table.passed th,table.failed td,table.failed th {
+border:1px solid #000099;padding:.25em .5em .25em .5em
+}
+table.param th {vertical-align:bottom}
+td.numi,th.numi,td.numi_attn {
+text-align:right
+}
+tr.total td {font-weight:bold}
+table caption {
+text-align:center;font-weight:bold;
+}
+table.passed tr.stripe td,table tr.passedodd td {background-color: #00AA00;}
+table.passed td,table tr.passedeven td {background-color: #33FF33;}
+table.passed tr.stripe td,table tr.skippedodd td {background-color: #cccccc;}
+table.passed td,table tr.skippedodd td {background-color: #dddddd;}
+table.failed tr.stripe td,table tr.failedodd td,table.param td.numi_attn {background-color: #FF3333;}
+table.failed td,table tr.failedeven td,table.param tr.stripe td.numi_attn {background-color: #DD0000;}
+tr.stripe td,tr.stripe th {background-color: #E6EBF9;}
+p.totop {font-size:85%;text-align:center;border-bottom:2px black solid}
+div.shootout {padding:2em;border:3px #4854A8 solid}
+</style>
+</head>
+<body>
+<table cellspacing=0 cellpadding=0 class="param">
+<tr><th>Test</th><th class="numi">Methods<br/>Passed</th><th class="numi">Scenarios<br/>Passed</th><th class="numi"># skipped</th><th class="numi"># failed</th><th class="numi">Total<br/>Time</th><th class="numi">Included<br/>Groups</th><th class="numi">Excluded<br/>Groups</th></tr>
+<tr><td style="text-align:left;padding-right:2em">Default test</td><td class="numi">96</td><td class="numi">96</td><td class="numi">0</td><td class="numi">0</td><td class="numi">3,5 seconds</td><td class="numi"></td><td class="numi"></td></tr>
+</table>
+<a id="summary"></a>
+<table cellspacing=0 cellpadding=0 class="passed">
+<tr><th>Class</th><th>Method</th><th># of<br/>Scenarios</th><th>Start</th><th>Time<br/>(ms)</th></tr>
+<tr><th colspan="4">Default test &#8212; passed</th></tr>
+<tr class="passedodd"><td rowspan="1">org.technbolts.jbehave.support.JBKeywordTest<td><a href="#m1"><b>asString</b>  </a></td><td class="numi">1</td><td>1327845441193</td><td class="numi">32</td></tr>
+<tr class="passedeven"><td rowspan="1">org.technbolts.util.StringEnhancerTest<td><a href="#m2"><b>isTheStartOfOneOf</b>  </a></td><td class="numi">1</td><td>1327845441241</td><td class="numi">2</td></tr>
+<tr class="passedodd"><td rowspan="1">org.technbolts.eclipse.util.TemplateUtilsTest<td><a href="#m3"><b>templatizeVariables_</b>  </a></td><td class="numi">1</td><td>1327845441247</td><td class="numi">2</td></tr>
+<tr class="passedeven"><td rowspan="2">org.technbolts.util.StringsTest<td><a href="#m4"><b>getSubLineUntilOffset</b>  </a></td><td class="numi">1</td><td>1327845441250</td><td class="numi">7</td></tr><tr class="passedeven"><td><a href="#m5"><b>tet_removeTrailingNewline</b>  </a></td><td class="numi">1</td><td>1327845441257</td><td class="numi">1</td></tr>
+<tr class="passedodd"><td rowspan="52">org.technbolts.util.ParametrizedStringTest<td><a href="#m6"><b>acceptsInputPart_noParameter</b>  </a></td><td class="numi">1</td><td>1327845441261</td><td class="numi">5</td></tr><tr class="passedodd"><td><a href="#m7"><b>acceptsInputPart_with2Parameters_after2ndParameter</b>  </a></td><td class="numi">1</td><td>1327845441267</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m8"><b>acceptsInputPart_with2Parameters_before2ndParameter</b>  </a></td><td class="numi">1</td><td>1327845441269</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m9"><b>acceptsInputPart_with2Parameters_fullMatch</b>  </a></td><td class="numi">1</td><td>1327845441271</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m10"><b>acceptsInputPart_with2Parameters_inside2ndParameter</b>  </a></td><td class="numi">1</td><td>1327845441276</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m11"><b>acceptsInputPart_withParameter_afterParameter</b>  </a></td><td class="numi">1</td><td>1327845441278</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m12"><b>acceptsInputPart_withParameter_beforeParameter_fullLiteral</b>  </a></td><td class="numi">1</td><td>1327845441296</td><td class="numi">2</td></tr><tr class="passedodd"><td><a href="#m13"><b>acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex1</b>  </a></td><td class="numi">1</td><td>1327845441299</td><td class="numi">2</td></tr><tr class="passedodd"><td><a href="#m14"><b>acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex2</b>  </a></td><td class="numi">1</td><td>1327845441302</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m15"><b>acceptsInputPart_withParameter_beforeParameter_invalidLiteral</b>  </a></td><td class="numi">1</td><td>1327845441304</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m16"><b>acceptsInputPart_withParameter_fullMatch</b>  </a></td><td class="numi">1</td><td>1327845441313</td><td class="numi">9</td></tr><tr class="passedodd"><td><a href="#m17"><b>acceptsInputPart_withParameter_insideParameter</b>  </a></td><td class="numi">1</td><td>1327845441323</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m18"><b>complete_noParameter_ex1</b>  </a></td><td class="numi">1</td><td>1327845441325</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m19"><b>complete_noParameter_ex2</b>  </a></td><td class="numi">1</td><td>1327845441326</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m20"><b>complete_noParameter_ex3</b>  </a></td><td class="numi">1</td><td>1327845441327</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m21"><b>complete_with2Parameters_after2ndParameter</b>  </a></td><td class="numi">1</td><td>1327845441329</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m22"><b>complete_with2Parameters_before2ndParameter_ex1</b>  </a></td><td class="numi">1</td><td>1327845441330</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m23"><b>complete_with2Parameters_before2ndParameter_ex2</b>  </a></td><td class="numi">1</td><td>1327845441331</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m24"><b>complete_with2Parameters_fullMatch</b>  </a></td><td class="numi">1</td><td>1327845441332</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m25"><b>complete_with2Parameters_inside2ndParameter</b>  </a></td><td class="numi">1</td><td>1327845441334</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m26"><b>complete_withParameter_afterParameter</b>  </a></td><td class="numi">1</td><td>1327845441336</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m27"><b>complete_withParameter_beforeParameter_fullLiteral</b>  </a></td><td class="numi">1</td><td>1327845441337</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m28"><b>complete_withParameter_beforeParameter_insideLiteral_ex1</b>  </a></td><td class="numi">1</td><td>1327845441338</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m29"><b>complete_withParameter_beforeParameter_insideLiteral_ex2</b>  </a></td><td class="numi">1</td><td>1327845441340</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m30"><b>complete_withParameter_beforeParameter_invalidLiteral</b>  </a></td><td class="numi">1</td><td>1327845441341</td><td class="numi">3</td></tr><tr class="passedodd"><td><a href="#m31"><b>complete_withParameter_fullMatch</b>  </a></td><td class="numi">1</td><td>1327845441345</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m32"><b>complete_withParameter_insideParameter</b>  </a></td><td class="numi">1</td><td>1327845441346</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m33"><b>getParameters</b>  </a></td><td class="numi">1</td><td>1327845441347</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m34"><b>getParameters_parameterAtEnd</b>  </a></td><td class="numi">1</td><td>1327845441349</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m35"><b>getTokens</b>  </a></td><td class="numi">1</td><td>1327845441350</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m36"><b>getTokens_ex1</b>  </a></td><td class="numi">1</td><td>1327845441351</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m37"><b>matches_noParameter</b>  </a></td><td class="numi">1</td><td>1327845441353</td><td class="numi">82</td></tr><tr class="passedodd"><td><a href="#m38"><b>matches_withOneParameter</b>  </a></td><td class="numi">1</td><td>1327845441436</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m39"><b>matches_withTwoParameters</b>  </a></td><td class="numi">1</td><td>1327845441437</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m40"><b>weightChain_ex1</b>  </a></td><td class="numi">1</td><td>1327845441438</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m41"><b>weightChain_noParameter_ex1</b>  </a></td><td class="numi">1</td><td>1327845441439</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m42"><b>weightChain_noParameter_ex2</b>  </a></td><td class="numi">1</td><td>1327845441440</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m43"><b>weightChain_noParameter_ex3</b>  </a></td><td class="numi">1</td><td>1327845441441</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m44"><b>weightChain_with2Parameters_after2ndParameter</b>  </a></td><td class="numi">1</td><td>1327845441442</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m45"><b>weightChain_with2Parameters_before2ndParameter_ex1</b>  </a></td><td class="numi">1</td><td>1327845441443</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m46"><b>weightChain_with2Parameters_before2ndParameter_ex2</b>  </a></td><td class="numi">1</td><td>1327845441444</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m47"><b>weightChain_with2Parameters_fullMatch</b>  </a></td><td class="numi">1</td><td>1327845441445</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m48"><b>weightChain_with2Parameters_inside2ndParameter</b>  </a></td><td class="numi">1</td><td>1327845441446</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m49"><b>weightChain_withNewlines</b>  </a></td><td class="numi">1</td><td>1327845441447</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m50"><b>weightChain_withNewlines_noParameterBefore</b>  </a></td><td class="numi">1</td><td>1327845441448</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m51"><b>weightChain_withParameter_afterParameter</b>  </a></td><td class="numi">1</td><td>1327845441449</td><td class="numi">13</td></tr><tr class="passedodd"><td><a href="#m52"><b>weightChain_withParameter_beforeParameter_fullLiteral</b>  </a></td><td class="numi">1</td><td>1327845441465</td><td class="numi">2</td></tr><tr class="passedodd"><td><a href="#m53"><b>weightChain_withParameter_beforeParameter_insideLiteral_ex1</b>  </a></td><td class="numi">1</td><td>1327845441468</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m54"><b>weightChain_withParameter_beforeParameter_insideLiteral_ex2</b>  </a></td><td class="numi">1</td><td>1327845441469</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m55"><b>weightChain_withParameter_beforeParameter_invalidLiteral</b>  </a></td><td class="numi">1</td><td>1327845441469</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m56"><b>weightChain_withParameter_fullMatch</b>  </a></td><td class="numi">1</td><td>1327845441471</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m57"><b>weightChain_withParameter_insideParameter</b>  </a></td><td class="numi">1</td><td>1327845441472</td><td class="numi">1</td></tr>
+<tr class="passedeven"><td rowspan="1">org.technbolts.eclipse.jbehave.PartitionScannerTest<td><a href="#m58"><b>usecase_ex1</b>  </a></td><td class="numi">1</td><td>1327845441475</td><td class="numi">35</td></tr>
+<tr class="passedodd"><td rowspan="13">org.technbolts.jbehave.parser.ConstantsTest<td><a href="#m59"><b>containsExampleTable_noTable</b>  </a></td><td class="numi">1</td><td>1327845441517</td><td class="numi">2</td></tr><tr class="passedodd"><td><a href="#m60"><b>containsExampleTable_noTableButComment</b>  </a></td><td class="numi">1</td><td>1327845441521</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m61"><b>containsExampleTable_withTable</b>  </a></td><td class="numi">1</td><td>1327845441522</td><td class="numi">2</td></tr><tr class="passedodd"><td><a href="#m62"><b>containsExampleTable_withTableAndComment</b>  </a></td><td class="numi">1</td><td>1327845441525</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m63"><b>containsExampleTable_withTable_edgeCase1</b>  </a></td><td class="numi">1</td><td>1327845441526</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m64"><b>containsExampleTable_withTable_edgeCase2</b>  </a></td><td class="numi">1</td><td>1327845441527</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m65"><b>removeComment_ex1</b>  </a></td><td class="numi">1</td><td>1327845441528</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m66"><b>removeComment_noComment</b>  </a></td><td class="numi">1</td><td>1327845441529</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m67"><b>removeComment_onlyOneComment</b>  </a></td><td class="numi">1</td><td>1327845441530</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m68"><b>removeComment_onlySeveralComments</b>  </a></td><td class="numi">1</td><td>1327845441531</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m69"><b>splitLine</b>  </a></td><td class="numi">1</td><td>1327845441533</td><td class="numi">2</td></tr><tr class="passedodd"><td><a href="#m70"><b>splitLine_startsWithNL</b>  </a></td><td class="numi">1</td><td>1327845441535</td><td class="numi">2</td></tr><tr class="passedodd"><td><a href="#m71"><b>tokenize_</b>  </a></td><td class="numi">1</td><td>1327845441538</td><td class="numi">1</td></tr>
+<tr class="passedeven"><td rowspan="2">org.technbolts.util.RegexTest<td><a href="#m72"><b>usecaseEx1</b>  </a></td><td class="numi">1</td><td>1327845441541</td><td class="numi">1</td></tr><tr class="passedeven"><td><a href="#m73"><b>usecaseEx2</b>  </a></td><td class="numi">1</td><td>1327845441543</td><td class="numi">3</td></tr>
+<tr class="passedodd"><td rowspan="1">org.technbolts.util.ProcessGroupTest<td><a href="#m74"><b>usecase</b>  </a></td><td class="numi">1</td><td>1327845441551</td><td class="numi">2532</td></tr>
+<tr class="passedeven"><td rowspan="2">org.technbolts.util.CharTreeTest<td><a href="#m75"><b>lookup</b>  </a></td><td class="numi">1</td><td>1327845444084</td><td class="numi">1</td></tr><tr class="passedeven"><td><a href="#m76"><b>lookup_missing</b>  </a></td><td class="numi">1</td><td>1327845444085</td><td class="numi">1</td></tr>
+<tr class="passedodd"><td rowspan="1">org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyledTest<td><a href="#m77"><b>useCase_ex1</b>  </a></td><td class="numi">1</td><td>1327845444314</td><td class="numi">8</td></tr>
+<tr class="passedeven"><td rowspan="6">org.technbolts.jbehave.parser.StoryParserTest<td><a href="#m78"><b>parse_case1</b>  </a></td><td class="numi">1</td><td>1327845444323</td><td class="numi">2</td></tr><tr class="passedeven"><td><a href="#m79"><b>parse_case2</b>  </a></td><td class="numi">1</td><td>1327845444326</td><td class="numi">0</td></tr><tr class="passedeven"><td><a href="#m80"><b>parse_case4</b>  </a></td><td class="numi">1</td><td>1327845444327</td><td class="numi">3</td></tr><tr class="passedeven"><td><a href="#m81"><b>parse_case5_exampleTable</b>  </a></td><td class="numi">1</td><td>1327845444331</td><td class="numi">2</td></tr><tr class="passedeven"><td><a href="#m82"><b>parse_case6_exampleTable</b>  </a></td><td class="numi">1</td><td>1327845444333</td><td class="numi">3</td></tr><tr class="passedeven"><td><a href="#m83"><b>parse_case7_exampleTable</b>  </a></td><td class="numi">1</td><td>1327845444336</td><td class="numi">11</td></tr>
+<tr class="passedodd"><td rowspan="5">org.technbolts.eclipse.jbehave.StepParserTest<td><a href="#m84"><b>usecase_ex04_exampleTable</b>  </a></td><td class="numi">1</td><td>1327845444362</td><td class="numi">18</td></tr><tr class="passedodd"><td><a href="#m85"><b>usecase_ex05_exampleTable</b>  </a></td><td class="numi">1</td><td>1327845444385</td><td class="numi">14</td></tr><tr class="passedodd"><td><a href="#m86"><b>usecase_ex1</b>  </a></td><td class="numi">1</td><td>1327845444404</td><td class="numi">79</td></tr><tr class="passedodd"><td><a href="#m87"><b>usecase_ex2</b>  </a></td><td class="numi">1</td><td>1327845444488</td><td class="numi">56</td></tr><tr class="passedodd"><td><a href="#m88"><b>usecase_ex3</b>  </a></td><td class="numi">1</td><td>1327845444550</td><td class="numi">24</td></tr>
+<tr class="passedeven"><td rowspan="2">org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest<td><a href="#m89"><b>useCase_exampleTableWithComment_case1</b>  </a></td><td class="numi">1</td><td>1327845444577</td><td class="numi">1</td></tr><tr class="passedeven"><td><a href="#m90"><b>useCase_exampleTableWithComment_case2</b>  </a></td><td class="numi">1</td><td>1327845444579</td><td class="numi">12</td></tr>
+<tr class="passedodd"><td rowspan="6">org.technbolts.util.StringMatcherTest<td><a href="#m91"><b>no_include_one_exclude</b>  </a></td><td class="numi">1</td><td>1327845444618</td><td class="numi">51</td></tr><tr class="passedodd"><td><a href="#m92"><b>no_include_two_excludes</b>  </a></td><td class="numi">1</td><td>1327845444670</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m93"><b>no_includes_no_excludes</b>  </a></td><td class="numi">1</td><td>1327845444671</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m94"><b>one_include_no_excludes</b>  </a></td><td class="numi">1</td><td>1327845444673</td><td class="numi">0</td></tr><tr class="passedodd"><td><a href="#m95"><b>one_include_one_exclude</b>  </a></td><td class="numi">1</td><td>1327845444674</td><td class="numi">1</td></tr><tr class="passedodd"><td><a href="#m96"><b>two_includes_no_excludes</b>  </a></td><td class="numi">1</td><td>1327845444676</td><td class="numi">0</td></tr>
+</table>
+<h1>Default test</h1>
+<a id="m1"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:removeComment_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m2"></a><h2>org.technbolts.util.StringMatcherTest:one_include_no_excludes</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m3"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_withParameter_beforeParameter_fullLiteral</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m4"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withParameter_beforeParameter_insideLiteral_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m5"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_noParameter_ex3</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m6"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_withParameter_insideParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m7"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:tokenize_</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m8"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_noParameter_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m9"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withParameter_beforeParameter_fullLiteral</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m10"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_with2Parameters_fullMatch</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m11"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withParameter_beforeParameter_insideLiteral_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m12"></a><h2>org.technbolts.util.StringsTest:tet_removeTrailingNewline</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m13"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_withParameter_beforeParameter_insideLiteral_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m14"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withParameter_afterParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m15"></a><h2>org.technbolts.util.StringMatcherTest:no_include_one_exclude</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m16"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_with2Parameters_before2ndParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m17"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_withParameter_afterParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m18"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withNewlines_noParameterBefore</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m19"></a><h2>org.technbolts.util.ParametrizedStringTest:getTokens_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m20"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_withParameter_afterParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m21"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_with2Parameters_after2ndParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m22"></a><h2>org.technbolts.jbehave.parser.StoryParserTest:parse_case2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m23"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m24"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_noParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m25"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_with2Parameters_fullMatch</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m26"></a><h2>org.technbolts.jbehave.support.JBKeywordTest:asString</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m27"></a><h2>org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest:useCase_exampleTableWithComment_case1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m28"></a><h2>org.technbolts.util.RegexTest:usecaseEx2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m29"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_with2Parameters_after2ndParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m30"></a><h2>org.technbolts.util.CharTreeTest:lookup</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m31"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_with2Parameters_inside2ndParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m32"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_with2Parameters_before2ndParameter_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m33"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_withParameter_insideParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m34"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:removeComment_noComment</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m35"></a><h2>org.technbolts.util.ParametrizedStringTest:matches_withOneParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m36"></a><h2>org.technbolts.util.StringMatcherTest:one_include_one_exclude</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m37"></a><h2>org.technbolts.util.ProcessGroupTest:usecase</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m38"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_with2Parameters_inside2ndParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m39"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withNewlines</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m40"></a><h2>org.technbolts.eclipse.jbehave.StepParserTest:usecase_ex04_exampleTable</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m41"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_withParameter_beforeParameter_invalidLiteral</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m42"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_with2Parameters_fullMatch</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m43"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_with2Parameters_inside2ndParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m44"></a><h2>org.technbolts.jbehave.parser.StoryParserTest:parse_case6_exampleTable</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m45"></a><h2>org.technbolts.util.ParametrizedStringTest:getTokens</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m46"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_with2Parameters_before2ndParameter_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m47"></a><h2>org.technbolts.jbehave.parser.StoryParserTest:parse_case5_exampleTable</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m48"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_with2Parameters_before2ndParameter_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m49"></a><h2>org.technbolts.util.CharTreeTest:lookup_missing</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m50"></a><h2>org.technbolts.util.ParametrizedStringTest:getParameters</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m51"></a><h2>org.technbolts.jbehave.parser.StoryParserTest:parse_case7_exampleTable</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m52"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_noParameter_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m53"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withParameter_beforeParameter_invalidLiteral</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m54"></a><h2>org.technbolts.util.ParametrizedStringTest:matches_noParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m55"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_noParameter_ex3</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m56"></a><h2>org.technbolts.util.StringMatcherTest:two_includes_no_excludes</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m57"></a><h2>org.technbolts.util.StringEnhancerTest:isTheStartOfOneOf</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m58"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:containsExampleTable_withTableAndComment</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m59"></a><h2>org.technbolts.util.ParametrizedStringTest:getParameters_parameterAtEnd</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m60"></a><h2>org.technbolts.util.StringMatcherTest:no_include_two_excludes</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m61"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:removeComment_onlyOneComment</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m62"></a><h2>org.technbolts.util.ParametrizedStringTest:matches_withTwoParameters</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m63"></a><h2>org.technbolts.eclipse.jbehave.StepParserTest:usecase_ex3</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m64"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:containsExampleTable_withTable</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m65"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:removeComment_onlySeveralComments</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m66"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_with2Parameters_after2ndParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m67"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m68"></a><h2>org.technbolts.util.RegexTest:usecaseEx1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m69"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:splitLine_startsWithNL</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m70"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m71"></a><h2>org.technbolts.eclipse.jbehave.StepParserTest:usecase_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m72"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withParameter_insideParameter</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m73"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:containsExampleTable_withTable_edgeCase2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m74"></a><h2>org.technbolts.util.StringsTest:getSubLineUntilOffset</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m75"></a><h2>org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest:useCase_exampleTableWithComment_case2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m76"></a><h2>org.technbolts.jbehave.parser.StoryParserTest:parse_case4</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m77"></a><h2>org.technbolts.eclipse.util.TemplateUtilsTest:templatizeVariables_</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m78"></a><h2>org.technbolts.eclipse.jbehave.StepParserTest:usecase_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m79"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_noParameter_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m80"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_noParameter_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m81"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_withParameter_fullMatch</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m82"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_withParameter_fullMatch</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m83"></a><h2>org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyledTest:useCase_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m84"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:splitLine</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m85"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_withParameter_beforeParameter_insideLiteral_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m86"></a><h2>org.technbolts.util.StringMatcherTest:no_includes_no_excludes</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m87"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:containsExampleTable_noTableButComment</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m88"></a><h2>org.technbolts.util.ParametrizedStringTest:weightChain_with2Parameters_before2ndParameter_ex2</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m89"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_withParameter_fullMatch</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m90"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:containsExampleTable_withTable_edgeCase1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m91"></a><h2>org.technbolts.jbehave.parser.StoryParserTest:parse_case1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m92"></a><h2>org.technbolts.util.ParametrizedStringTest:complete_withParameter_beforeParameter_fullLiteral</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m93"></a><h2>org.technbolts.eclipse.jbehave.StepParserTest:usecase_ex05_exampleTable</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m94"></a><h2>org.technbolts.eclipse.jbehave.PartitionScannerTest:usecase_ex1</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m95"></a><h2>org.technbolts.jbehave.parser.ConstantsTest:containsExampleTable_noTable</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+<a id="m96"></a><h2>org.technbolts.util.ParametrizedStringTest:acceptsInputPart_withParameter_beforeParameter_invalidLiteral</h2>
+<p class="totop"><a href="#summary">back to summary</a></p>
+</body></html>

@@ -3,14 +3,14 @@ package org.technbolts.util;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class StringMatcherTest {
     
     private StringMatcher matcher;
     
-    @Before
+    @BeforeMethod
     public void setup () {
         matcher = new StringMatcher();
     }

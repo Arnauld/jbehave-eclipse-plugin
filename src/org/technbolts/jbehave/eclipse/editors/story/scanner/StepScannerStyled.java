@@ -9,6 +9,7 @@ import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.parser.Constants;
+import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.ParametrizedString;
@@ -77,20 +78,23 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
         
         // remove any trailing newlines, and keep track to insert 
         // corresponding token in place
-        String afterKeyword = stepContent.substring(stepSep+1);
-        String stepSentence = Strings.removeTrailingNewlines(afterKeyword);
+        String rawAfterKeyword = stepContent.substring(stepSep+1);
+        ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(
+                Constants.commentLineMatcher, rawAfterKeyword);
         
-        PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(stepSentence);
+        String cleanedAfterKeyword = emitter.contentWithoutIgnorables();
+        String cleanedStepSentence = Strings.removeTrailingNewlines(cleanedAfterKeyword);
         
+        PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(cleanedStepSentence);
         if(potentialStep==null) {
             logln("parseStep() no step found");
-            emitVariables(afterKeyword, offset);
-            offset += afterKeyword.length();
+            emitVariables(emitter, cleanedAfterKeyword, offset);
+            offset += rawAfterKeyword.length();
         }
         else if(potentialStep.hasVariable()) {
 
             ParametrizedString pString = potentialStep.getParametrizedString();
-            WeightChain chain = pString.calculateWeightChain(stepSentence);
+            WeightChain chain = pString.calculateWeightChain(cleanedStepSentence);
             List<String> chainTokens = chain.tokenize();
             
             logln("parseStep() step found with variable " + chainTokens.size() + " tokens in chain");
@@ -99,42 +103,44 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
                 org.technbolts.util.ParametrizedString.Token pToken = pString.getToken(i);
                 String content = chainTokens.get(i);
                 
+                logln("token content: length: " + content.length() + " >>" + content.replace("\n", "\\n") + "<<");
+                
                 if(pToken.isIdentifier) {
                     
-                    logln("token is an identifier content: >>" + content.replace("\n", "\\n") + "<<");
+                    logln("token is an identifier");
                     
                     if(content.startsWith("$")) {
-                        emit(parameterToken, offset, content.length());
+                        emit(emitter, parameterToken, offset, content.length());
                     }
                     else {
                         if(Constants.containsExampleTable(content)) {
-                            emitTable(getDefaultToken(), offset, content);
+                            emitTable(emitter, getDefaultToken(), offset, content);
                         }
                         else {
-                            emit(parameterValueToken, offset, content.length());
+                            emit(emitter, parameterValueToken, offset, content.length());
                         }
                     }
                 }
                 else {
-                    emitCommentAware(getDefaultToken(), offset, content);
+                    emit(emitter, getDefaultToken(), offset, content.length());
                 }
                 offset += content.length();
             }
         }
         else {
             logln("parseStep(" + stepContent + ") step found without variable");
-            emit(getDefaultToken(), offset, afterKeyword.length());
-            offset += afterKeyword.length();
+            emit(emitter, getDefaultToken(), offset, cleanedAfterKeyword.length());
+            offset += rawAfterKeyword.length();
         }
         
         // insert if trailings whitespace have been removed
-        int expectedOffset = initialOffset+stepContent.length();
+        int expectedOffset = initialOffset+(stepSep+1 + cleanedAfterKeyword.length());
         if(offset < expectedOffset) {
-            emit(getDefaultToken(), offset, expectedOffset-offset);
+            emit(emitter, getDefaultToken(), offset, expectedOffset-offset);
         }
     }
 
-    private void emitVariables(String content, int offset) {
+    private void emitVariables(ContentWithIgnorableEmitter emitter, String content, int offset) {
         logln("emitVariables(offset: " + offset + ", content.length: " + content.length() + " >>" + content + "<<");
         int tokenStart = 0;
         boolean escaped = false;
@@ -152,7 +158,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
                 }
                 
                 // emit previous
-                emit(token, offset + tokenStart, i-tokenStart);
+                emit(emitter, token, offset + tokenStart, i-tokenStart);
                 inVariable = true;
                 tokenStart = i;
             }
@@ -160,7 +166,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
                 if(Character.isJavaIdentifierPart(c))
                     continue;
                 // emit previous
-                emit(parameterToken, offset + tokenStart, i-tokenStart);
+                emit(emitter, parameterToken, offset + tokenStart, i-tokenStart);
                 inVariable = false;
                 tokenStart = i;
             }
@@ -174,7 +180,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
             }
             
             // emit remaining
-            emit(token, offset + tokenStart, i-tokenStart);
+            emit(emitter, token, offset + tokenStart, i-tokenStart);
         }
     }
     

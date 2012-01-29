@@ -3,6 +3,8 @@ package org.technbolts.jbehave.eclipse.editors.story.scanner;
 import org.eclipse.jface.text.rules.IToken;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
+import org.technbolts.jbehave.parser.Constants;
+import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.jbehave.support.JBPartition;
@@ -42,10 +44,16 @@ public class ExampleTableScanner extends AbstractStoryPartBasedScanner {
         if(content.startsWith(kwString)) {
             emit(keywordToken, offset, kwString.length());
             offset += kwString.length();
-            emitTable(getDefaultToken(), offset, content.substring(kwString.length()));
+            
+            String rawAfterKeyword = content.substring(kwString.length());
+            ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(Constants.commentLineMatcher, rawAfterKeyword);
+            String cleanedAfterKeyword = emitter.contentWithoutIgnorables();
+            emitTable(emitter, getDefaultToken(), offset, cleanedAfterKeyword);
         }
         else {
-            emit(getDefaultToken(), offset, content.length());
+            ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(Constants.commentLineMatcher, content);
+            String cleanedContent = emitter.contentWithoutIgnorables();
+            emit(emitter, getDefaultToken(), offset, cleanedContent.length());
         }
     }
 

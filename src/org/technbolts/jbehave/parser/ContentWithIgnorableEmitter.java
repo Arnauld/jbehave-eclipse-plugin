@@ -16,7 +16,8 @@ public class ContentWithIgnorableEmitter {
     private List<Fragment> fragments;
     private int accumulatedDelta = 0;
     private int lastFragmentUsed = 0;
-    private String content;
+    private final String content;
+    
     public ContentWithIgnorableEmitter(Pattern ignorablePattern, String content) {
         this.content = content;
         this.fragments = generateFragments(ignorablePattern, content);
@@ -37,29 +38,32 @@ public class ContentWithIgnorableEmitter {
     }
     
     public <T> void emitNext(int offsetInIgnoredSpace, int length, Callback<T> sink, T arg) {
+        int offset = offsetInIgnoredSpace;
         int contentToEmit = length;
         for(int i=lastFragmentUsed; i<fragments.size(); i++) {
             Fragment f = fragments.get(i);
             if(f.isIgnorable) {
-                sink.emitIgnorable(accumulatedDelta, f.length());
+                sink.emitIgnorable(accumulatedDelta+(offset), f.length());
                 accumulatedDelta += f.length();
+                lastFragmentUsed++;
                 continue;
             }
+            
             int consumed = f.consume(contentToEmit);
             if(consumed>0) {
-                sink.emit(arg, accumulatedDelta, consumed);
-                accumulatedDelta += consumed;
+                sink.emit(arg, accumulatedDelta+(offset), consumed);
+                offset += consumed;
+                contentToEmit -= consumed;
             }
-            contentToEmit -= consumed;
-            if(contentToEmit==0)
+            if(contentToEmit==0 && f.hasRemaining())
                 return;
+            
             lastFragmentUsed++;
         }
         
         // remaining?
         if(contentToEmit>0)
-            sink.emit(arg, accumulatedDelta+offsetInIgnoredSpace, contentToEmit);
-        accumulatedDelta += contentToEmit;
+            sink.emit(arg, accumulatedDelta+(offsetInIgnoredSpace), contentToEmit);
     }
     
     public static List<Fragment> generateFragments(Pattern ignorablePattern, String content) {

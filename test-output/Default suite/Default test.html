@@ -1,0 +1,559 @@
+<html>
+<head>
+<title>TestNG:  Default test</title>
+<link href="../testng.css" rel="stylesheet" type="text/css" />
+<link href="../my-testng.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+.log { display: none;} 
+.stack-trace { display: none;} 
+</style>
+<script type="text/javascript">
+<!--
+function flip(e) {
+  current = e.style.display;
+  if (current == 'block') {
+    e.style.display = 'none';
+    return 0;
+  }
+  else {
+    e.style.display = 'block';
+    return 1;
+  }
+}
+
+function toggleBox(szDivId, elem, msg1, msg2)
+{
+  var res = -1;  if (document.getElementById) {
+    res = flip(document.getElementById(szDivId));
+  }
+  else if (document.all) {
+    // this is the way old msie versions work
+    res = flip(document.all[szDivId]);
+  }
+  if(elem) {
+    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;
+  }
+
+}
+
+function toggleAllBoxes() {
+  if (document.getElementsByTagName) {
+    d = document.getElementsByTagName('div');
+    for (i = 0; i < d.length; i++) {
+      if (d[i].className == 'log') {
+        flip(d[i]);
+      }
+    }
+  }
+}
+
+// -->
+</script>
+
+</head>
+<body>
+<h2 align='center'>Default test</h2><table border='1' align="center">
+<tr>
+<td>Tests passed/Failed/Skipped:</td><td>96/0/0</td>
+</tr><tr>
+<td>Started on:</td><td>Sun Jan 29 14:57:21 CET 2012</td>
+</tr>
+<tr><td>Total time:</td><td>3 seconds (3503 ms)</td>
+</tr><tr>
+<td>Included groups:</td><td></td>
+</tr><tr>
+<td>Excluded groups:</td><td></td>
+</tr>
+</table><p/>
+<small><i>(Hover the method name to see the test class name)</i></small><p/>
+<table width='100%' border='1' class='invocation-passed'>
+<tr><td colspan='4' align='center'><b>PASSED TESTS</b></td></tr>
+<tr><td><b>Test method</b></td>
+<td width="30%"><b>Exception</b></td>
+<td width="10%"><b>Time (seconds)</b></td>
+<td><b>Instance</b></td>
+</tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_noParameter()'><b>acceptsInputPart_noParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_with2Parameters_after2ndParameter()'><b>acceptsInputPart_with2Parameters_after2ndParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_with2Parameters_before2ndParameter()'><b>acceptsInputPart_with2Parameters_before2ndParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_with2Parameters_fullMatch()'><b>acceptsInputPart_with2Parameters_fullMatch</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_with2Parameters_inside2ndParameter()'><b>acceptsInputPart_with2Parameters_inside2ndParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_withParameter_afterParameter()'><b>acceptsInputPart_withParameter_afterParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_withParameter_beforeParameter_fullLiteral()'><b>acceptsInputPart_withParameter_beforeParameter_fullLiteral</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex1()'><b>acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex2()'><b>acceptsInputPart_withParameter_beforeParameter_insideLiteral_ex2</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_withParameter_beforeParameter_invalidLiteral()'><b>acceptsInputPart_withParameter_beforeParameter_invalidLiteral</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_withParameter_fullMatch()'><b>acceptsInputPart_withParameter_fullMatch</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.acceptsInputPart_withParameter_insideParameter()'><b>acceptsInputPart_withParameter_insideParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.support.JBKeywordTest.asString()'><b>asString</b><br>Test class: org.technbolts.jbehave.support.JBKeywordTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.support.JBKeywordTest@73da669c</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_noParameter_ex1()'><b>complete_noParameter_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_noParameter_ex2()'><b>complete_noParameter_ex2</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_noParameter_ex3()'><b>complete_noParameter_ex3</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_with2Parameters_after2ndParameter()'><b>complete_with2Parameters_after2ndParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_with2Parameters_before2ndParameter_ex1()'><b>complete_with2Parameters_before2ndParameter_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_with2Parameters_before2ndParameter_ex2()'><b>complete_with2Parameters_before2ndParameter_ex2</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_with2Parameters_fullMatch()'><b>complete_with2Parameters_fullMatch</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_with2Parameters_inside2ndParameter()'><b>complete_with2Parameters_inside2ndParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_withParameter_afterParameter()'><b>complete_withParameter_afterParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_withParameter_beforeParameter_fullLiteral()'><b>complete_withParameter_beforeParameter_fullLiteral</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_withParameter_beforeParameter_insideLiteral_ex1()'><b>complete_withParameter_beforeParameter_insideLiteral_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_withParameter_beforeParameter_insideLiteral_ex2()'><b>complete_withParameter_beforeParameter_insideLiteral_ex2</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_withParameter_beforeParameter_invalidLiteral()'><b>complete_withParameter_beforeParameter_invalidLiteral</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_withParameter_fullMatch()'><b>complete_withParameter_fullMatch</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.complete_withParameter_insideParameter()'><b>complete_withParameter_insideParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.containsExampleTable_noTable()'><b>containsExampleTable_noTable</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.containsExampleTable_noTableButComment()'><b>containsExampleTable_noTableButComment</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.containsExampleTable_withTable()'><b>containsExampleTable_withTable</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.containsExampleTable_withTableAndComment()'><b>containsExampleTable_withTableAndComment</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.containsExampleTable_withTable_edgeCase1()'><b>containsExampleTable_withTable_edgeCase1</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.containsExampleTable_withTable_edgeCase2()'><b>containsExampleTable_withTable_edgeCase2</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.getParameters()'><b>getParameters</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.getParameters_parameterAtEnd()'><b>getParameters_parameterAtEnd</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.StringsTest.getSubLineUntilOffset()'><b>getSubLineUntilOffset</b><br>Test class: org.technbolts.util.StringsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringsTest@45d6a56e</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.getTokens()'><b>getTokens</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.getTokens_ex1()'><b>getTokens_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.StringEnhancerTest.isTheStartOfOneOf()'><b>isTheStartOfOneOf</b><br>Test class: org.technbolts.util.StringEnhancerTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringEnhancerTest@221fd5e2</td></tr>
+<tr>
+<td title='org.technbolts.util.CharTreeTest.lookup()'><b>lookup</b><br>Test class: org.technbolts.util.CharTreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.CharTreeTest@217f242c</td></tr>
+<tr>
+<td title='org.technbolts.util.CharTreeTest.lookup_missing()'><b>lookup_missing</b><br>Test class: org.technbolts.util.CharTreeTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.CharTreeTest@217f242c</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.matches_noParameter()'><b>matches_noParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.matches_withOneParameter()'><b>matches_withOneParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.matches_withTwoParameters()'><b>matches_withTwoParameters</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.StringMatcherTest.no_include_one_exclude()'><b>no_include_one_exclude</b><br>Test class: org.technbolts.util.StringMatcherTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringMatcherTest@5812f9ee</td></tr>
+<tr>
+<td title='org.technbolts.util.StringMatcherTest.no_include_two_excludes()'><b>no_include_two_excludes</b><br>Test class: org.technbolts.util.StringMatcherTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringMatcherTest@5812f9ee</td></tr>
+<tr>
+<td title='org.technbolts.util.StringMatcherTest.no_includes_no_excludes()'><b>no_includes_no_excludes</b><br>Test class: org.technbolts.util.StringMatcherTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringMatcherTest@5812f9ee</td></tr>
+<tr>
+<td title='org.technbolts.util.StringMatcherTest.one_include_no_excludes()'><b>one_include_no_excludes</b><br>Test class: org.technbolts.util.StringMatcherTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringMatcherTest@5812f9ee</td></tr>
+<tr>
+<td title='org.technbolts.util.StringMatcherTest.one_include_one_exclude()'><b>one_include_one_exclude</b><br>Test class: org.technbolts.util.StringMatcherTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringMatcherTest@5812f9ee</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.StoryParserTest.parse_case1()'><b>parse_case1</b><br>Test class: org.technbolts.jbehave.parser.StoryParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.StoryParserTest@57a7ddcf</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.StoryParserTest.parse_case2()'><b>parse_case2</b><br>Test class: org.technbolts.jbehave.parser.StoryParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.StoryParserTest@57a7ddcf</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.StoryParserTest.parse_case4()'><b>parse_case4</b><br>Test class: org.technbolts.jbehave.parser.StoryParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.StoryParserTest@57a7ddcf</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.StoryParserTest.parse_case5_exampleTable()'><b>parse_case5_exampleTable</b><br>Test class: org.technbolts.jbehave.parser.StoryParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.StoryParserTest@57a7ddcf</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.StoryParserTest.parse_case6_exampleTable()'><b>parse_case6_exampleTable</b><br>Test class: org.technbolts.jbehave.parser.StoryParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.StoryParserTest@57a7ddcf</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.StoryParserTest.parse_case7_exampleTable()'><b>parse_case7_exampleTable</b><br>Test class: org.technbolts.jbehave.parser.StoryParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.StoryParserTest@57a7ddcf</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.removeComment_ex1()'><b>removeComment_ex1</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.removeComment_noComment()'><b>removeComment_noComment</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.removeComment_onlyOneComment()'><b>removeComment_onlyOneComment</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.removeComment_onlySeveralComments()'><b>removeComment_onlySeveralComments</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.splitLine()'><b>splitLine</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.splitLine_startsWithNL()'><b>splitLine_startsWithNL</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.eclipse.util.TemplateUtilsTest.templatizeVariables_()'><b>templatizeVariables_</b><br>Test class: org.technbolts.eclipse.util.TemplateUtilsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.eclipse.util.TemplateUtilsTest@207f5580</td></tr>
+<tr>
+<td title='org.technbolts.util.StringsTest.tet_removeTrailingNewline()'><b>tet_removeTrailingNewline</b><br>Test class: org.technbolts.util.StringsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringsTest@45d6a56e</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ConstantsTest.tokenize_()'><b>tokenize_</b><br>Test class: org.technbolts.jbehave.parser.ConstantsTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ConstantsTest@643ae941</td></tr>
+<tr>
+<td title='org.technbolts.util.StringMatcherTest.two_includes_no_excludes()'><b>two_includes_no_excludes</b><br>Test class: org.technbolts.util.StringMatcherTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.StringMatcherTest@5812f9ee</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyledTest.useCase_ex1()'><b>useCase_ex1</b><br>Test class: org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyledTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyledTest@3acafb56</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest.useCase_exampleTableWithComment_case1()'><b>useCase_exampleTableWithComment_case1</b><br>Test class: org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest@4dd36dfe</td></tr>
+<tr>
+<td title='org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest.useCase_exampleTableWithComment_case2()'><b>useCase_exampleTableWithComment_case2</b><br>Test class: org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.jbehave.parser.ContentWithIgnorableEmitterTest@4dd36dfe</td></tr>
+<tr>
+<td title='org.technbolts.util.ProcessGroupTest.usecase()'><b>usecase</b><br>Test class: org.technbolts.util.ProcessGroupTest</td>
+<td></td>
+<td>2</td>
+<td>org.technbolts.util.ProcessGroupTest@f06fc94</td></tr>
+<tr>
+<td title='org.technbolts.util.RegexTest.usecaseEx1()'><b>usecaseEx1</b><br>Test class: org.technbolts.util.RegexTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.RegexTest@13b06041</td></tr>
+<tr>
+<td title='org.technbolts.util.RegexTest.usecaseEx2()'><b>usecaseEx2</b><br>Test class: org.technbolts.util.RegexTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.RegexTest@13b06041</td></tr>
+<tr>
+<td title='org.technbolts.eclipse.jbehave.StepParserTest.usecase_ex04_exampleTable()'><b>usecase_ex04_exampleTable</b><br>Test class: org.technbolts.eclipse.jbehave.StepParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.eclipse.jbehave.StepParserTest@7c6572b</td></tr>
+<tr>
+<td title='org.technbolts.eclipse.jbehave.StepParserTest.usecase_ex05_exampleTable()'><b>usecase_ex05_exampleTable</b><br>Test class: org.technbolts.eclipse.jbehave.StepParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.eclipse.jbehave.StepParserTest@7c6572b</td></tr>
+<tr>
+<td title='org.technbolts.eclipse.jbehave.PartitionScannerTest.usecase_ex1()'><b>usecase_ex1</b><br>Test class: org.technbolts.eclipse.jbehave.PartitionScannerTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.eclipse.jbehave.PartitionScannerTest@4026e9f9</td></tr>
+<tr>
+<td title='org.technbolts.eclipse.jbehave.StepParserTest.usecase_ex1()'><b>usecase_ex1</b><br>Test class: org.technbolts.eclipse.jbehave.StepParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.eclipse.jbehave.StepParserTest@7c6572b</td></tr>
+<tr>
+<td title='org.technbolts.eclipse.jbehave.StepParserTest.usecase_ex2()'><b>usecase_ex2</b><br>Test class: org.technbolts.eclipse.jbehave.StepParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.eclipse.jbehave.StepParserTest@7c6572b</td></tr>
+<tr>
+<td title='org.technbolts.eclipse.jbehave.StepParserTest.usecase_ex3()'><b>usecase_ex3</b><br>Test class: org.technbolts.eclipse.jbehave.StepParserTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.eclipse.jbehave.StepParserTest@7c6572b</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_ex1()'><b>weightChain_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_noParameter_ex1()'><b>weightChain_noParameter_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_noParameter_ex2()'><b>weightChain_noParameter_ex2</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_noParameter_ex3()'><b>weightChain_noParameter_ex3</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_with2Parameters_after2ndParameter()'><b>weightChain_with2Parameters_after2ndParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_with2Parameters_before2ndParameter_ex1()'><b>weightChain_with2Parameters_before2ndParameter_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_with2Parameters_before2ndParameter_ex2()'><b>weightChain_with2Parameters_before2ndParameter_ex2</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_with2Parameters_fullMatch()'><b>weightChain_with2Parameters_fullMatch</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_with2Parameters_inside2ndParameter()'><b>weightChain_with2Parameters_inside2ndParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withNewlines()'><b>weightChain_withNewlines</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withNewlines_noParameterBefore()'><b>weightChain_withNewlines_noParameterBefore</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withParameter_afterParameter()'><b>weightChain_withParameter_afterParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withParameter_beforeParameter_fullLiteral()'><b>weightChain_withParameter_beforeParameter_fullLiteral</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withParameter_beforeParameter_insideLiteral_ex1()'><b>weightChain_withParameter_beforeParameter_insideLiteral_ex1</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withParameter_beforeParameter_insideLiteral_ex2()'><b>weightChain_withParameter_beforeParameter_insideLiteral_ex2</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withParameter_beforeParameter_invalidLiteral()'><b>weightChain_withParameter_beforeParameter_invalidLiteral</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withParameter_fullMatch()'><b>weightChain_withParameter_fullMatch</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+<tr>
+<td title='org.technbolts.util.ParametrizedStringTest.weightChain_withParameter_insideParameter()'><b>weightChain_withParameter_insideParameter</b><br>Test class: org.technbolts.util.ParametrizedStringTest</td>
+<td></td>
+<td>0</td>
+<td>org.technbolts.util.ParametrizedStringTest@786c730</td></tr>
+</table><p>
+</body>
+</html>

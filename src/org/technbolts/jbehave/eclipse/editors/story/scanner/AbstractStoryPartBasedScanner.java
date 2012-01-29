@@ -17,6 +17,8 @@ import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.Constants.TokenizerCallback;
+import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter;
+import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter.Callback;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.util.New;
@@ -148,6 +150,27 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     
     protected abstract void emitPart(StoryPart part);
     
+    protected void emit(ContentWithIgnorableEmitter emitter, IToken token, int offset, int length) {
+        emitter.emitNext(offset, length, emitterCallback(), token);
+    }
+    
+    private Callback<IToken> emitterCallback;
+    private Callback<IToken> emitterCallback() {
+        if(emitterCallback==null) {
+            emitterCallback = new Callback<IToken>() {
+                @Override
+                public void emit(IToken arg, int offset, int length) {
+                    AbstractStoryPartBasedScanner.this.emit(arg, offset, length);
+                }
+                @Override
+                public void emitIgnorable(int offset, int length) {
+                    emit(commentToken, offset, length);
+                }
+            };
+        }
+        return emitterCallback;
+    }
+
     protected void emit(IToken token, int offset, int length) {
         logln("emit(" + token.getData() + ", offset: " + offset + ", length: " + length + ")");
         
@@ -158,8 +181,8 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
             // check no hole
             int requiredOffset = previous.offset+previous.length;
             if(offset != requiredOffset) {
-                logln("emit() hole completion, offset: " +  offset + ", length: " + length + "; previous offset: " + previous.offset + ", length: " + previous.length);
-                emit(getDefaultToken(), requiredOffset, requiredOffset-offset);
+                logln("emit() **hole completion**, offset: " +  offset + "(vs required: " + requiredOffset + "), length: " + length + "; previous offset: " + previous.offset + ", length: " + previous.length);
+                emit(getDefaultToken(), requiredOffset, offset-requiredOffset);
                 previous = getLastFragment();
             }
             
@@ -178,18 +201,14 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
         return fragments.get(fragments.size()-1);
     }
     
-    protected void emitTable(final IToken defaultToken, final int offset, String content) {
+    protected void emitTable(final ContentWithIgnorableEmitter emitter, final IToken defaultToken, final int offset, String content) {
         Constants.splitLine(content, new TokenizerCallback() {
             @Override
             public void token(int startOffset, int endOffset, String line, boolean isDelimiter) {
                 if(isDelimiter)
-                    emit(defaultToken, offset + startOffset, line.length());
-                else if(line.trim().startsWith("!--")) {
-                    emit(commentToken, offset + startOffset, line.length());
-                }
-                else {
-                    emitTableRow(defaultToken, offset + startOffset, line);
-                }
+                    emit(emitter, defaultToken, offset + startOffset, line.length());
+                else
+                    emitTableRow(emitter, defaultToken, offset + startOffset, line);
             }
         });
     }
@@ -215,7 +234,7 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
         };
     }
     
-    protected void emitTableRow(IToken defaultToken, int offset, String line) {
+    protected void emitTableRow(ContentWithIgnorableEmitter emitter, IToken defaultToken, int offset, String line) {
         StringTokenizer tokenizer = new StringTokenizer(line, "|", true);
         int remaining = tokenizer.countTokens();
         boolean isFirst = true;
@@ -225,13 +244,13 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
             int length = tok.length();
             
             if(tok.equals("|")) {
-                emit(exampleTableSepToken, offset, length);
+                emit(emitter, exampleTableSepToken, offset, length);
             }
             else if(isLast || isFirst) {
-                emit(defaultToken, offset, length);
+                emit(emitter, defaultToken, offset, length);
             }
             else {
-                emit(exampleTableCellToken, offset, length);
+                emit(emitter, exampleTableCellToken, offset, length);
             }
             
             offset += length;

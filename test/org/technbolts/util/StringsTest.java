@@ -2,13 +2,12 @@ package org.technbolts.util;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.technbolts.util.Strings.removeTrailingNewlines;
 
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 public class StringsTest {
     @Test
@@ -20,6 +19,10 @@ public class StringsTest {
         assertEquals("a", removeTrailingNewlines("a\r"));
         assertEquals("a", removeTrailingNewlines("a\r\r"));
         assertEquals("a\nb", removeTrailingNewlines("a\nb\n"));
+    }
+    
+    private static <T> void assertEquals(T expected, T actual) {
+        assertThat(actual, equalTo(expected));
     }
     
     @Test

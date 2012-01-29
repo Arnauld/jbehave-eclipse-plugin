@@ -8,9 +8,9 @@ import static org.technbolts.jbehave.parser.Constants.removeComment;
 
 import java.util.List;
 
-import org.junit.Test;
 import org.technbolts.jbehave.parser.Constants.TokenizerCallback;
 import org.technbolts.util.New;
+import org.testng.annotations.Test;
 
 public class ConstantsTest {
     
