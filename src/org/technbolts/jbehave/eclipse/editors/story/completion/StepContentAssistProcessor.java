@@ -23,6 +23,7 @@ import org.eclipse.jface.text.templates.TemplateContextType;
 import org.jbehave.core.configuration.Keywords;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.TemplateUtils;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
@@ -112,7 +113,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                     complete = pStep.potentialStep.fullStep();
                     if(isAndCase) {
                         int kwIndex = complete.indexOf(' ');
-                        complete = "And" + complete.substring(kwIndex);
+                        complete = JBehaveProject.lAnd(false) + complete.substring(kwIndex);
                     }
                     templateContext = contextFullLine;
                     replacementRegion = regionComplete;
