@@ -190,7 +190,7 @@ public class JBehaveProject {
     }
     
     @SuppressWarnings("unchecked")
-    private static <T> T getValue(IMemberValuePair[] memberValuePairs, String key) {
+    public static <T> T getValue(IMemberValuePair[] memberValuePairs, String key) {
         for(IMemberValuePair kv : memberValuePairs) {
             if(kv.getMemberName().equalsIgnoreCase(key))
                 return (T)kv.getValue();
