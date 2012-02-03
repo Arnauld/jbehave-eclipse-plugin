@@ -1,9 +1,14 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -18,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
@@ -236,15 +242,34 @@ public class MarkingStoryValidator {
             List<PotentialStep> candidates = potentials.get(key);
             int count = candidates.size();
             log.debug("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
-            if (count == 0)
-                part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
-            else if (count > 1)
-                part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: "
-                        + candidates);
+			if (count == 0)
+				part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
+			else if (count > 1) {
+				@SuppressWarnings("unchecked")
+				Collection<Integer> collectedPrios = CollectionUtils.collect(candidates, new PotentialStepPrioTransformer());
+
+				Set<Integer> uniquePrios = new HashSet<Integer>(collectedPrios);
+				if (uniquePrios.size() != collectedPrios.size()) {
+					part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+				}
+			}
         }
     }
 
-    class Part {
+	static final class PotentialStepPrioTransformer implements Transformer {
+		@Override
+		public Object transform(Object potentialStep) {
+			try {
+				Integer prioValue = JBehaveProject.getValue(((PotentialStep) potentialStep).annotation.getMemberValuePairs(), "priority");
+				return prioValue == null ? Integer.valueOf(0) : prioValue;
+			} catch (JavaModelException e) {
+				return Integer.valueOf(0);
+			}
+
+		}
+	}
+
+	class Part {
         private List<MarkData> marks = New.arrayList();
         private StoryPart storyPart;
 
