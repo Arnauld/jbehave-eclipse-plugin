@@ -86,12 +86,12 @@ public class PotentialStep {
             builder.append('#').append(method.getElementName());
             
             try {
-				Integer prio = JBehaveProject.getValue(annotation.getMemberValuePairs(), "priority");
-				if (prio != null && prio.intValue() != 0) {
-					builder.append(", priority ").append(prio);
-				}
-			} catch (JavaModelException e) {
-			}
+                Integer prio = JBehaveProject.getValue(annotation.getMemberValuePairs(), "priority");
+                if (prio != null && prio.intValue() != 0) {
+                    builder.append(", priority ").append(prio);
+                }
+            } catch (JavaModelException e) {
+            }
         }
         return builder.toString();
     }

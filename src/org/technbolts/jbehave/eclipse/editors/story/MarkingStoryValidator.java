@@ -242,34 +242,34 @@ public class MarkingStoryValidator {
             List<PotentialStep> candidates = potentials.get(key);
             int count = candidates.size();
             log.debug("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
-			if (count == 0)
-				part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
-			else if (count > 1) {
-				@SuppressWarnings("unchecked")
-				Collection<Integer> collectedPrios = CollectionUtils.collect(candidates, new PotentialStepPrioTransformer());
+            if (count == 0)
+                part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
+            else if (count > 1) {
+                @SuppressWarnings("unchecked")
+                Collection<Integer> collectedPrios = CollectionUtils.collect(candidates, new PotentialStepPrioTransformer());
 
-				Set<Integer> uniquePrios = new HashSet<Integer>(collectedPrios);
-				if (uniquePrios.size() != collectedPrios.size()) {
-					part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
-				}
-			}
+                Set<Integer> uniquePrios = new HashSet<Integer>(collectedPrios);
+                if (uniquePrios.size() != collectedPrios.size()) {
+                    part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+                }
+            }
         }
     }
 
-	static final class PotentialStepPrioTransformer implements Transformer {
-		@Override
-		public Object transform(Object potentialStep) {
-			try {
-				Integer prioValue = JBehaveProject.getValue(((PotentialStep) potentialStep).annotation.getMemberValuePairs(), "priority");
-				return prioValue == null ? Integer.valueOf(0) : prioValue;
-			} catch (JavaModelException e) {
-				return Integer.valueOf(0);
-			}
+    static final class PotentialStepPrioTransformer implements Transformer {
+        @Override
+        public Object transform(Object potentialStep) {
+            try {
+                Integer prioValue = JBehaveProject.getValue(((PotentialStep) potentialStep).annotation.getMemberValuePairs(), "priority");
+                return prioValue == null ? Integer.valueOf(0) : prioValue;
+            } catch (JavaModelException e) {
+                return Integer.valueOf(0);
+            }
 
-		}
-	}
+        }
+    }
 
-	class Part {
+    class Part {
         private List<MarkData> marks = New.arrayList();
         private StoryPart storyPart;
 
