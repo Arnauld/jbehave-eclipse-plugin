@@ -8,9 +8,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
 import org.technbolts.util.ParametrizedString.Token;
 import org.technbolts.util.ParametrizedString.WeightChain;
+import org.testng.annotations.Test;
 
 public class ParametrizedStringTest {
 
@@ -407,9 +407,10 @@ public class ParametrizedStringTest {
         
         WeightChain chain = s.calculateWeightChain(content);
         List<String> tokenList = chain.tokenize();
-        for(String token : tokenList) {
-            System.out.println(">>"+token+"<<");
-        }
+        
+        //for(String token : tokenList) {
+        //    System.out.println(">>"+escapeNL(token)+"<<");
+        //}
         assertThat(tokenList.subList(0, 3), equalTo(Arrays.asList("a user named ", "Bob", " with the following properties ")));
         assertThat(tokenList.get(3), equalTo("\n" +
                          "|key|value|\n" +
@@ -427,9 +428,9 @@ public class ParametrizedStringTest {
         
         WeightChain chain = s.calculateWeightChain(content);
         List<String> tokenList = chain.tokenize();
-        for(String token : tokenList) {
-            System.out.println(">>"+token+"<<");
-        }
+        //for(String token : tokenList) {
+        //    System.out.println(">>"+escapeNL(token)+"<<");
+        //}
         assertThat(tokenList.get(0), equalTo("a user named Bob with the following properties "));
         assertThat(tokenList.get(1), equalTo("\n" +
                          "|key|value|\n" +

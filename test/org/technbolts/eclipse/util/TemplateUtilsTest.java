@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.technbolts.eclipse.util.TemplateUtils.templatizeVariables;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 public class TemplateUtilsTest {
 

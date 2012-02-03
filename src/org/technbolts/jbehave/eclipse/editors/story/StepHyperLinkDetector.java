@@ -8,6 +8,7 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
+import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.util.Ref;
 
@@ -27,13 +28,13 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
         final StoryPart part = found.get();
         if (!part.isStepPart())
             return NONE;
-        final String step = part.extractStepSentenceAndRemoveTrailingNewlines();
-
+        final String step = part.extractStepSentence();
+        final String partCleaned = Constants.removeTrailingComment(part.getContent());
         IHyperlink link = new IHyperlink() {
 
             @Override
             public IRegion getHyperlinkRegion() {
-                return new Region(part.getOffset(), part.getLength());
+                return new Region(part.getOffset(), partCleaned.length());
             }
 
             @Override

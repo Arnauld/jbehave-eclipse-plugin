@@ -136,6 +136,6 @@ public class StepLocator {
     }
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
-        JBehaveProjectRegistry.get().getProject(project).traverseSteps(visitor);
+        JBehaveProjectRegistry.get().getOrCreateProject(project).traverseSteps(visitor);
     }
 }

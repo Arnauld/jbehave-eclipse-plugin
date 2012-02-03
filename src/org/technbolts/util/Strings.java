@@ -15,6 +15,10 @@ public class Strings {
         return lines[lineNo];
     }
     
+    public static String escapeNL(String token) {
+        return token.replace("\n", "\\n").replace("\r", "\\r");
+    }
+    
     public static String[] toArray(Collection<String> values) {
         if(values==null)
             return new String[0];

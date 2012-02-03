@@ -20,19 +20,29 @@ Preference page:
 
 * Story syntax coloring settings
 
-Daughter 1st Birthday - Release notes 1.0.5.SNAPSHOT
-----------------------------------------------------
+Daughter 1st Birthday - Release notes (1.0.5)
+---------------------------------------------
+
+Download here [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
 
 * Fix and unify code for **jump to declaration** behavior (mouse and keybord shortcut use the same code, supports multiline steps and should not be anymore sensible to trailing newlines) [Brathax's followup on Issue 6](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/6#issuecomment-3395767).
 * Complete refactoring of the Java Scanner [Issue 15](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15)
   * **All the classpath is now scanned**: source folders and libraries
   * Classes and packages scanned can be **filtered** to reduce overhead: a **new preference page** has been added to configure the filters. Filters can be setup globally through *preferences*, or by project through the *project properties*.
-  * Step cache is now fully operational and not anymore recalculated each time: rebuild is triggered on JDT change, and the cache sub-hierarchy is only recalculated if required.
+  * Step cache is now fully operational and not anymore recalculated each time: rebuild is triggered on JDT change, and the cache sub-hierarchy is only recalculated if required (see implementation notes [here](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15#issuecomment-3478376))
 * Plugin has now a dedicated log file [Issue 16](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/16) available at `<workspace>/.metadata/.plugins/technbolts-jbehave-eclipse-plugin/plugin.log`. `logback.xml` in plugin jar file is used to configure logger (whereas appenders are removed and configured programatically).
-
-
+* Integrate step variants feature by [dschneller](https://github.com/dschneller) [Issue 18](https://github.com/Arnauld/jbehave-eclipse-plugin/pull/18). **Your project requires to use a suitable version of jbehave in order for the steps to be recognize at runtime too**. `@When("$A {+|plus|is added to} $B")` would then fits
+  * `When 3 + 4`
+  * `When 3 plus 4`
+  * `When 3 is added to 4`
 
 Thanks to [brathax](https://github.com/brathax) for his help in solving [Issue 6](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/6#issuecomment-3395767).
+
+Thanks to [dschneller](https://github.com/dschneller) for his integration of the [step variants](http://jira.codehaus.org/browse/JBEHAVE-702?focusedCommentId=288852&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-288852) in both [jbehave-core](https://github.com/jbehave/jbehave-core) and this project.
+
+
+Note: the embedded `jbehave-core` library is build from the [jbehave-core](https://github.com/jbehave/jbehave-core) master branch (commit 3bf29212b6). Since this library is used only by the plugin itself, and not the project that uses the plugin, this should have no impact on projects.
+
 
 Christmas 2011 & Happy new year 2012 - Release notes (1.0.4)
 ------------------------------------------------------------
@@ -56,6 +66,7 @@ Download
 * [1.0.0.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar)
 * [1.0.3.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.3.SNAPSHOT.jar)
 * [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
+* [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
 
 Installation
 ------------

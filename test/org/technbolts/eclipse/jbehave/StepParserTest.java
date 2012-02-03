@@ -1,6 +1,7 @@
 package org.technbolts.eclipse.jbehave;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,17 +14,17 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.jbehave.core.steps.StepType;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
-import org.technbolts.jbehave.eclipse.editors.story.StepScannerStyled;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyled;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepLocator.Provider;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class StepParserTest {
     
@@ -41,7 +42,7 @@ public class StepParserTest {
     private int offset;
     private TextAttribute exampleTableCell;
     
-    @Before
+    @BeforeMethod
     public void setUp () throws IOException {
         defaultAttr = mock(TextAttribute.class);
         keywordAttr = mock(TextAttribute.class);
@@ -116,7 +117,7 @@ public class StepParserTest {
         checkToken(scanner, document, paramValueAttr);
         checkToken(scanner, document, defaultAttr);
         
-        assertEquals(document.getLength(), offset);
+        assertThat(offset, equalTo(document.getLength()));
     }
     
     @Test
@@ -161,7 +162,7 @@ public class StepParserTest {
         
         consumeRemaining(document, scanner);
         
-        assertEquals(document.getLength(), offset);
+        assertThat(offset, equalTo(document.getLength()));
     }
     
     @Test
@@ -204,7 +205,7 @@ public class StepParserTest {
         
         consumeRemaining(document, scanner);
         
-        assertEquals(document.getLength(), offset);
+        assertThat(offset, equalTo(document.getLength()));
     }
     
     @Test
@@ -231,27 +232,26 @@ public class StepParserTest {
         
         checkToken(scanner, document, keywordAttr);
         checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramAttr);
-        checkToken(scanner, document, defaultAttr);
         
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramAttr);
-        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
         
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramValueAttr);
-        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, defaultAttr); // NL
+
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
         
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramValueAttr);
-        checkToken(scanner, document, defaultAttr);
-        
+        checkToken(scanner, document, defaultAttr); // NL
+
         consumeRemaining(document, scanner);
         
-        assertEquals(document.getLength(), offset);
+        assertThat(offset, equalTo(document.getLength()));
     }
     
     @Test
@@ -278,30 +278,29 @@ public class StepParserTest {
         
         checkToken(scanner, document, keywordAttr);
         checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramAttr);
-        checkToken(scanner, document, defaultAttr);
+
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
         
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramAttr);
-        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, defaultAttr); // NL
         
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramValueAttr);
-        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
+        checkToken(scanner, document, exampleTableCell);
+        checkToken(scanner, document, exampleTableSep);
         
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        checkToken(scanner, document, paramValueAttr);
         checkToken(scanner, document, defaultAttr);
         
         consumeRemaining(document, scanner);
         
-        assertEquals(document.getLength(), offset);
+        assertThat(offset, equalTo(document.getLength()));
     }
     
-    @Test
+    @Test(enabled=false)
     public void usecase_ex4() throws Exception {
         storyAsText = IOUtils.toString(getClass().getResourceAsStream("/domain/i_can_login_using_parameters_table.story"));
         
@@ -326,10 +325,10 @@ public class StepParserTest {
         
         consumeRemaining(document, scanner);
         
-        assertEquals(document.getLength(), offset);
+        assertThat(offset, equalTo(document.getLength()));
     }
     
-    @Test
+    @Test(enabled=false)
     public void usecase_ex5() throws Exception {
         PotentialStep seeHomePage = thenStep("agent see the application home page");
         when(locator.findFirstStep("agent see the application home page")).thenReturn(seeHomePage);
@@ -344,15 +343,9 @@ public class StepParserTest {
         checkToken(scanner, document, keywordAttr);
         checkToken(scanner, document, defaultAttr);
         
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        
-        checkToken(scanner, document, keywordAttr);
-        checkToken(scanner, document, defaultAttr);
-        
         consumeRemaining(document, scanner);
         
-        assertEquals(477+179, offset);
+        assertThat(offset, equalTo(477+179));
     }
 
     private void consumeRemaining(IDocument document, StepScannerStyled scanner) throws BadLocationException {
@@ -368,8 +361,9 @@ public class StepParserTest {
         System.out.print(jk + " > ");
         IToken token = scanner.nextToken();
         dumpState(scanner, document);
-        assertEquals(jk, token.getData());
-        assertEquals(offset, scanner.getTokenOffset());
+
+        assertThat(token.getData(), equalTo(jk));
+        assertThat(offset, equalTo(scanner.getTokenOffset()));
         offset += scanner.getTokenLength();
     }
     

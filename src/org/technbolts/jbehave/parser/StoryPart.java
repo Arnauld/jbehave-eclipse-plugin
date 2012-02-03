@@ -23,8 +23,20 @@ public class StoryPart {
         return content.length();
     }
     
+    public String getContentWithoutComment() {
+        return Constants.removeComment(content);
+    }
+    
     public String getContent() {
         return content;
+    }
+    
+
+    /**
+     * @return
+     */
+    public String extractStepSentence() {
+        return LineParser.extractStepSentence(getContent());
     }
     
     /**

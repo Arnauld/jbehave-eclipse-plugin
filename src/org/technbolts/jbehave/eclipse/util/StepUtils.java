@@ -12,8 +12,10 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.PartInitException;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.UIUtils;
+import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.util.Ref;
+import org.technbolts.util.Strings;
 
 public class StepUtils {
     
@@ -43,8 +45,13 @@ public class StepUtils {
             UIUtils.show("Step not found", "No project found.");
             return false;
         }
+        
+        // step can contain comment, make sure there are removed:
+        String cleanedStep = Constants.removeComment(step);
+        // comment removed: there can be trailing new lines...
+        cleanedStep = Strings.removeTrailingNewlines(cleanedStep);
 
-        IJavaElement methodToJump = StepLocator.getStepLocator(project).findMethod(step);
+        IJavaElement methodToJump = StepLocator.getStepLocator(project).findMethod(cleanedStep);
         // jump to method
         if (methodToJump != null) {
             JavaUI.openInEditor(methodToJump);

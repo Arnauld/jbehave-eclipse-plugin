@@ -55,10 +55,14 @@ public class JBehaveProjectRegistry {
     }
     
     protected void notifyProjectChanges(IProject project, IJavaElementDelta delta) {
-        getProject(project).notifyChanges(delta);
+        // don't call getOrCreateProject
+        JBehaveProject jproject = projectCache.get(project);
+        if(jproject!=null) {
+            jproject.notifyChanges(delta);
+        }
     }
     
-    public JBehaveProject getProject(IProject project) {
+    public JBehaveProject getOrCreateProject(IProject project) {
         JBehaveProject cache = projectCache.get(project);
         if(cache==null) {
             JBehaveProject newCache = new JBehaveProject (project);

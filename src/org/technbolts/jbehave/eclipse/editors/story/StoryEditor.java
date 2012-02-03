@@ -150,6 +150,8 @@ public class StoryEditor extends TextEditor {
 	@Override
 	protected void editorSaved() {
 	    super.editorSaved();
+      
+	    getSourceViewer().invalidateTextPresentation();
 	    validateAndMark();
 	}
 	

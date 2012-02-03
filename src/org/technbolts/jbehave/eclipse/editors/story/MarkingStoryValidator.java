@@ -1,9 +1,14 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -14,11 +19,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.IDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
+import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.New;
@@ -30,6 +39,9 @@ import fj.F;
 
 public class MarkingStoryValidator {
     public static final String MARKER_ID = Activator.PLUGIN_ID + ".storyMarker";
+    
+    private static Logger log = LoggerFactory.getLogger(MarkingStoryValidator.class);
+
 
     private IFile file;
     private IDocument document;
@@ -159,7 +171,10 @@ public class MarkingStoryValidator {
                     }
                 }
             }
-            else if(keyword != JBKeyword.Ignorable) {
+            else if( keyword != JBKeyword.Ignorable
+                  && keyword != JBKeyword.Meta
+                  && keyword != JBKeyword.MetaProperty
+                  && keyword != JBKeyword.GivenStories) {
                 nonNarrativeOrIgnorable = true;
             }
         }
@@ -205,7 +220,9 @@ public class MarkingStoryValidator {
         final Map<String, List<PotentialStep>> potentials = New.hashMap();
         for (Part part : steps) {
             List<PotentialStep> list = New.arrayList();
-            potentials.put(part.extractStepSentenceAndRemoveTrailingNewlines(), list);
+            String stepSentence = part.extractStepSentenceAndRemoveTrailingNewlines();
+            log.debug("To analyse: >>" + Strings.escapeNL(stepSentence) + "<<");
+            potentials.put(stepSentence, list);
         }
 
         StepLocator locator = StepLocator.getStepLocator(project);
@@ -224,11 +241,31 @@ public class MarkingStoryValidator {
             String key = part.extractStepSentenceAndRemoveTrailingNewlines();
             List<PotentialStep> candidates = potentials.get(key);
             int count = candidates.size();
+            log.debug("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
             if (count == 0)
                 part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
-            else if (count > 1)
-                part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: "
-                        + candidates);
+            else if (count > 1) {
+                @SuppressWarnings("unchecked")
+                Collection<Integer> collectedPrios = CollectionUtils.collect(candidates, new PotentialStepPrioTransformer());
+
+                Set<Integer> uniquePrios = new HashSet<Integer>(collectedPrios);
+                if (uniquePrios.size() != collectedPrios.size()) {
+                    part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+                }
+            }
+        }
+    }
+
+    static final class PotentialStepPrioTransformer implements Transformer {
+        @Override
+        public Object transform(Object potentialStep) {
+            try {
+                Integer prioValue = JBehaveProject.getValue(((PotentialStep) potentialStep).annotation.getMemberValuePairs(), "priority");
+                return prioValue == null ? Integer.valueOf(0) : prioValue;
+            } catch (JavaModelException e) {
+                return Integer.valueOf(0);
+            }
+
         }
     }
 
@@ -242,7 +279,10 @@ public class MarkingStoryValidator {
         }
 
         public String extractStepSentenceAndRemoveTrailingNewlines() {
-            return storyPart.extractStepSentenceAndRemoveTrailingNewlines();
+            String stepSentence = storyPart.extractStepSentence();
+            // remove any comment that can still be within the step
+            String cleaned = Constants.removeComment(stepSentence);
+            return Strings.removeTrailingNewlines(cleaned);
         }
 
         public synchronized void addMark(int code, String message) {

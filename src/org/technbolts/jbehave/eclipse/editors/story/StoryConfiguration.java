@@ -13,6 +13,12 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistant;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.ExampleTableScanner;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.MiscScanner;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.NarrativeScanner;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.ScenarioScanner;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.SingleTokenScanner;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyled;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.support.JBPartition;
@@ -24,8 +30,11 @@ public class StoryConfiguration extends SourceViewerConfiguration {
     private ITokenScanner commentScanner;
     private ITokenScanner scenarioScanner;
     private ITokenScanner narrativeScanner;
+    private ITokenScanner miscScanner;
+    private ITokenScanner exampleTableScanner;
     private TextAttributeProvider textAttributeProvider;
     private StoryEditor storyEditor;
+    private PresentationReconciler reconciler;
 
     public StoryConfiguration(StoryEditor storyEditor, TextAttributeProvider textAttributeProvider) {
         this.storyEditor = storyEditor;
@@ -71,7 +80,6 @@ public class StoryConfiguration extends SourceViewerConfiguration {
                     return StepLocator.getStepLocator(storyEditor.getProject());
                 }
             }, textAttributeProvider);
-//            stepScanner = new StepScanner(textAttributeProvider);
         }
         return stepScanner;
     }
@@ -96,6 +104,20 @@ public class StoryConfiguration extends SourceViewerConfiguration {
         }
         return narrativeScanner;
     }
+    
+    protected ITokenScanner getMiscScanner() {
+        if (miscScanner == null) {
+            miscScanner = new MiscScanner(textAttributeProvider);
+        }
+        return miscScanner;
+    }
+    
+    protected ITokenScanner getExampleTableScanner() {
+        if (exampleTableScanner == null) {
+            exampleTableScanner = new ExampleTableScanner(textAttributeProvider);
+        }
+        return exampleTableScanner;
+    }
 
     private ITokenScanner createScanner(String attributeKey) {
         return new SingleTokenScanner(textAttributeProvider, attributeKey);
@@ -106,7 +128,7 @@ public class StoryConfiguration extends SourceViewerConfiguration {
      */
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        PresentationReconciler reconciler = new PresentationReconciler();
+        reconciler = new PresentationReconciler();
 
         DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getDefaultScanner());
         reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
@@ -128,7 +150,14 @@ public class StoryConfiguration extends SourceViewerConfiguration {
         reconciler.setDamager(dr, JBPartition.Narrative.name());
         reconciler.setRepairer(dr, JBPartition.Narrative.name());
         
+        dr = new DefaultDamagerRepairer(getExampleTableScanner());
+        reconciler.setDamager(dr, JBPartition.ExampleTable.name());
+        reconciler.setRepairer(dr, JBPartition.ExampleTable.name());
+        
+        dr = new DefaultDamagerRepairer(getMiscScanner());
+        reconciler.setDamager(dr, JBPartition.Misc.name());
+        reconciler.setRepairer(dr, JBPartition.Misc.name());
+        
         return reconciler;
     }
-
 }

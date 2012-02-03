@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Technbolts-jbehave-eclipse-plugin
 Bundle-SymbolicName: technbolts-jbehave-eclipse-plugin; singleton:=true
-Bundle-Version: 1.0.5.SNAPSHOT
+Bundle-Version: 1.0.6.SNAPSHOT
 Bundle-Activator: org.technbolts.jbehave.eclipse.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -15,22 +15,25 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide;bundle-version="3.3.1",
  org.eclipse.core.filesystem
 Bundle-ClassPath: .,
- lib/functionaljava-3.0.jar,
  lib/commons-collections-3.2.1.jar,
- lib/freemarker-2.3.16.jar,
- lib/jbehave-core-3.4.jar,
- lib/plexus-utils-2.0.5.jar,
  lib/commons-io-2.1.jar,
- lib/junit-dep-4.8.2.jar,
- lib/xpp3_min-1.1.4c.jar,
  lib/commons-lang-2.5.jar,
- lib/hamcrest-all-1.1.jar,
- lib/paranamer-2.3.jar,
- lib/xstream-1.3.1.jar,
+ lib/freemarker-2.3.16.jar,
+ lib/functionaljava-3.0.jar,
  lib/guava-10.0.1.jar,
+ lib/hamcrest-core-1.1.jar,
+ lib/hamcrest-integration-1.1.jar,
+ lib/hamcrest-library-1.1.jar,
+ lib/jbehave-core-3.6-SNAPSHOT.jar,
  lib/jsr305-1.3.9.jar,
  lib/logback-classic-1.0.0.jar,
  lib/logback-core-1.0.0.jar,
- lib/slf4j-api-1.6.4.jar
+ lib/mockito-all-1.8.4.jar,
+ lib/paranamer-2.4.jar,
+ lib/plexus-utils-2.0.5.jar,
+ lib/testng-6.3.1.jar,
+ lib/slf4j-api-1.6.4.jar,
+ lib/xpp3_min-1.1.4c.jar,
+ lib/xstream-1.3.1.jar
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

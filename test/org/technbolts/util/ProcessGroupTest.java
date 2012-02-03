@@ -1,19 +1,20 @@
 package org.technbolts.util;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import junit.framework.Assert;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class ProcessGroupTest {
 
     private ProcessGroup<Integer> group;
     
-    @Before
+    @BeforeMethod
     public void setUp () {
         group = new ProcessGroup<Integer>(Executors.newFixedThreadPool(4));
     }
@@ -36,7 +37,7 @@ public class ProcessGroupTest {
             });
         }
         group.awaitTermination();
-        Assert.assertEquals(NB*NB_TASKS, counter.get());
+        assertThat(counter.get(), equalTo(NB*NB_TASKS));
     }
     
     private Random random = new Random(13L);

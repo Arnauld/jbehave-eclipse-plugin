@@ -1,19 +1,21 @@
 package org.technbolts.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.technbolts.jbehave.support.JBKeyword.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.technbolts.jbehave.support.JBKeyword.Given;
+import static org.technbolts.jbehave.support.JBKeyword.InOrderTo;
+import static org.technbolts.jbehave.support.JBKeyword.Narrative;
 
 import org.jbehave.core.i18n.LocalizedKeywords;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 import org.technbolts.jbehave.support.JBKeyword;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 public class CharTreeTest {
     
     private CharTree<JBKeyword> cn;
 
-    @Before
+    @BeforeMethod
     public void setUp () {
         LocalizedKeywords keywords = new LocalizedKeywords();
         cn = new CharTree<JBKeyword>('/', null);
@@ -22,11 +24,6 @@ public class CharTreeTest {
         
     }
     
-    @Test
-    @Ignore
-    public void print () {
-        cn.print(0);
-    }
     
     @Test
     public void lookup() {
@@ -36,6 +33,11 @@ public class CharTreeTest {
         assertEquals(InOrderTo, cn.lookup("In order to be more communicative"));
     }
     
+    private void assertEquals(JBKeyword expected, JBKeyword actual) {
+        assertThat(actual, equalTo(expected));
+    }
+
+
     @Test
     public void lookup_missing() {
         assertEquals(null, cn.lookup("Gaven"));

@@ -1,18 +1,15 @@
-package org.technbolts.jbehave.eclipse.editors.story;
+package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.StringTokenizer;
 
-import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
-import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
+import org.technbolts.jbehave.parser.Constants;
+import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.ParametrizedString;
@@ -32,48 +29,29 @@ import org.technbolts.util.Strings;
  */
 public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     
-    private TextAttributeProvider textAttributeProvider;
     //
     private IToken keywordToken;
     private IToken parameterToken;
     private IToken parameterValueToken;
-    private Token exampleTableSepToken;
-    private Token exampleTableCellToken;
     //
     private StepLocator.Provider locatorProvider;
 
     public StepScannerStyled(StepLocator.Provider locatorProvider, TextAttributeProvider textAttributeProvider) {
-        this.textAttributeProvider = textAttributeProvider;
+        super(textAttributeProvider);
         initialize();
-        textAttributeProvider.addObserver(new Observer() {
-            @Override
-            public void update(Observable o, Object arg) {
-                initialize();
-            }
-        });
         this.locatorProvider = locatorProvider;
     }
     
-    private void initialize() {
-        System.out.println("StepScannerStyled.initialize()****\n****\n****");
+    @Override
+    protected void initialize() {
+        super.initialize();
         
-        TextAttribute textAttribute = textAttributeProvider.get(TextStyle.STEP_DEFAULT);
-        setDefaultToken(new Token(textAttribute));
-        
-        textAttribute = textAttributeProvider.get(TextStyle.STEP_KEYWORD);
-        keywordToken = new Token(textAttribute);
-        
-        textAttribute = textAttributeProvider.get(TextStyle.STEP_PARAMETER);
-        parameterToken = new Token(textAttribute);
-        
-        textAttribute = textAttributeProvider.get(TextStyle.STEP_PARAMETER_VALUE);
-        parameterValueToken = new Token(textAttribute);
-        
-        textAttribute = textAttributeProvider.get(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR);
-        exampleTableSepToken = new Token(textAttribute);
-        
-        textAttribute = textAttributeProvider.get(TextStyle.STEP_EXAMPLE_TABLE_CELL);
-        exampleTableCellToken = new Token(textAttribute);
+        setDefaultToken(newToken(TextStyle.STEP_DEFAULT));
+        keywordToken = newToken(TextStyle.STEP_KEYWORD);
+        parameterToken = newToken(TextStyle.STEP_PARAMETER);
+        parameterValueToken = newToken(TextStyle.STEP_PARAMETER_VALUE);
+        exampleTableSepToken = newToken(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR);
+        exampleTableCellToken = newToken(TextStyle.STEP_EXAMPLE_TABLE_CELL);
     }
     
     @Override
@@ -89,7 +67,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     protected void emitPart(StoryPart part) {
         parseStep(part.getContent(), part.getOffset());
     }
-
+    
     private void parseStep(String stepContent, final int initialOffset) {
         logln("parseStep(" + stepContent + ", offset: " + initialOffset + ", stepLine.length: " + stepContent.length());
         int offset = initialOffset;
@@ -100,20 +78,23 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
         
         // remove any trailing newlines, and keep track to insert 
         // corresponding token in place
-        String afterKeyword = stepContent.substring(stepSep+1);
-        String stepSentence = Strings.removeTrailingNewlines(afterKeyword);
+        String rawAfterKeyword = stepContent.substring(stepSep+1);
+        ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(
+                Constants.commentLineMatcher, rawAfterKeyword);
         
-        PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(stepSentence);
+        String cleanedAfterKeyword = emitter.contentWithoutIgnorables();
+        String cleanedStepSentence = Strings.removeTrailingNewlines(cleanedAfterKeyword);
         
+        PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(cleanedStepSentence);
         if(potentialStep==null) {
             logln("parseStep() no step found");
-            emitVariables(afterKeyword, offset);
-            offset += afterKeyword.length();
+            emitVariables(emitter, cleanedAfterKeyword, offset);
+            offset += rawAfterKeyword.length();
         }
         else if(potentialStep.hasVariable()) {
 
             ParametrizedString pString = potentialStep.getParametrizedString();
-            WeightChain chain = pString.calculateWeightChain(stepSentence);
+            WeightChain chain = pString.calculateWeightChain(cleanedStepSentence);
             List<String> chainTokens = chain.tokenize();
             
             logln("parseStep() step found with variable " + chainTokens.size() + " tokens in chain");
@@ -122,73 +103,44 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
                 org.technbolts.util.ParametrizedString.Token pToken = pString.getToken(i);
                 String content = chainTokens.get(i);
                 
+                logln("token content: length: " + content.length() + " >>" + content.replace("\n", "\\n") + "<<");
+                
                 if(pToken.isIdentifier) {
                     
-                    logln("token is an identifier content: >>" + content.replace("\n", "\\n") + "<<");
+                    logln("token is an identifier");
                     
                     if(content.startsWith("$")) {
-                        emit(parameterToken, offset, content.length());
+                        emit(emitter, parameterToken, offset, content.length());
                     }
                     else {
-                        String trimmed = content.trim();
-                        
-                        logln("trimmed: >>" + trimmed.replace("\n", "\\n") + "<<");
-
-                        if(trimmed.startsWith("|")) {
-                            emitTable(offset, content);
+                        if(Constants.containsExampleTable(content)) {
+                            emitTable(emitter, getDefaultToken(), offset, content);
                         }
                         else {
-                            emit(parameterValueToken, offset, content.length());
+                            emit(emitter, parameterValueToken, offset, content.length());
                         }
                     }
                 }
                 else {
-                    emit(getDefaultToken(), offset, content.length());
+                    emit(emitter, getDefaultToken(), offset, content.length());
                 }
                 offset += content.length();
             }
         }
         else {
             logln("parseStep(" + stepContent + ") step found without variable");
-            emit(getDefaultToken(), offset, afterKeyword.length());
-            offset += afterKeyword.length();
+            emit(emitter, getDefaultToken(), offset, cleanedAfterKeyword.length());
+            offset += rawAfterKeyword.length();
         }
         
         // insert if trailings whitespace have been removed
-        int expectedOffset = initialOffset+stepContent.length();
+        int expectedOffset = initialOffset+(stepSep+1 + cleanedAfterKeyword.length());
         if(offset < expectedOffset) {
-            emit(getDefaultToken(), offset, expectedOffset-offset);
+            emit(emitter, getDefaultToken(), offset, expectedOffset-offset);
         }
     }
 
-    private void emitTable(int offset, String content) {
-        StringTokenizer tokenizer = new StringTokenizer(content, "|", true);
-        int remaining = tokenizer.countTokens();
-        boolean isFirst = true;
-        while(tokenizer.hasMoreTokens()) {
-            boolean isLast = (remaining==1);
-            String tok = tokenizer.nextToken();
-            int length = tok.length();
-            
-            logln("StepScannerStyled.emitTable(token: >>" +tok.replace("\n", "\\n") + "<<");
-            
-            if(tok.equals("|")) {
-                emit(exampleTableSepToken, offset, length);
-            }
-            else if(isLast || isFirst) {
-                emit(getDefaultToken(), offset, length);
-            }
-            else {
-                emit(exampleTableCellToken, offset, length);
-            }
-            
-            offset += length;
-            remaining--;
-            isFirst = false;
-        }
-    }
-
-    private void emitVariables(String content, int offset) {
+    private void emitVariables(ContentWithIgnorableEmitter emitter, String content, int offset) {
         logln("emitVariables(offset: " + offset + ", content.length: " + content.length() + " >>" + content + "<<");
         int tokenStart = 0;
         boolean escaped = false;
@@ -206,7 +158,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
                 }
                 
                 // emit previous
-                emit(token, offset + tokenStart, i-tokenStart);
+                emit(emitter, token, offset + tokenStart, i-tokenStart);
                 inVariable = true;
                 tokenStart = i;
             }
@@ -214,7 +166,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
                 if(Character.isJavaIdentifierPart(c))
                     continue;
                 // emit previous
-                emit(parameterToken, offset + tokenStart, i-tokenStart);
+                emit(emitter, parameterToken, offset + tokenStart, i-tokenStart);
                 inVariable = false;
                 tokenStart = i;
             }
@@ -228,7 +180,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
             }
             
             // emit remaining
-            emit(token, offset + tokenStart, i-tokenStart);
+            emit(emitter, token, offset + tokenStart, i-tokenStart);
         }
     }
     

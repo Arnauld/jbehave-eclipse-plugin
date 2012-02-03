@@ -11,6 +11,7 @@ import org.eclipse.ui.editors.text.FileDocumentProvider;
 import org.eclipse.ui.part.FileEditorInput;
 import org.technbolts.eclipse.util.ProjectAwareFastPartitioner;
 import org.technbolts.eclipse.util.UIUtils;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.StoryPartitionScanner;
 import org.technbolts.jbehave.support.JBPartition;
 import org.technbolts.util.Strings;
 
