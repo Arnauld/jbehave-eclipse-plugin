@@ -20,6 +20,38 @@ Preference page:
 
 * Story syntax coloring settings
 
+Download
+========================
+
+* [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
+* [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
+
+Previous (for posterity)
+
+* [1.0.3.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.3.SNAPSHOT.jar)
+* [1.0.0.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar)
+
+Installation
+------------
+
+Simply drop the jar in your eclipse `plugins/` directory and restart your ide.
+
+
+RELEASE NOTES
+=============
+
+
+Valentine's Day - Release notes (1.0.6-SNAPSHOT)
+------------------------------------------------
+
+** in progress **
+
+* Thanks to [dschneller](https://github.com/dschneller) priority is now taken into account to disambiguate step during validation phase ([Issue 27](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/27))
+
+
+Thanks to [dschneller](https://github.com/dschneller) for creating issue and provide fix!!
+
+
 Daughter 1st Birthday - Release notes (1.0.5)
 ---------------------------------------------
 
@@ -59,19 +91,6 @@ Christmas 2011 & Happy new year 2012 - Release notes (1.0.4)
 * Add validation for narrative keywords: check for uniqueness and presence of all keywords.
 * Add preferences page to modify the editor color settings ([Issue 12](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/12))
 
-
-Download
-========================
-
-* [1.0.0.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar)
-* [1.0.3.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.3.SNAPSHOT.jar)
-* [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
-* [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
-
-Installation
-------------
-
-Simply drop the jar in your eclipse `plugins/` directory and restart your ide.
 
 Inspiration
 ========================
