@@ -15,8 +15,8 @@ public class MarkerResolutionGenerator implements IMarkerResolutionGenerator2 {
     @Override
     public boolean hasResolutions(IMarker marker) {
         switch(Marks.getCode(marker)) {
-            case Marks.MultipleMatchingSteps:
-            case Marks.NoMatchingStep: {
+            case MultipleMatchingSteps:
+            case NoMatchingStep: {
                 return true;
             }
         }
@@ -27,11 +27,11 @@ public class MarkerResolutionGenerator implements IMarkerResolutionGenerator2 {
     public IMarkerResolution[] getResolutions(IMarker marker) {
         List<IMarkerResolution> resolutions = New.arrayList();
         switch(Marks.getCode(marker)) {
-            case Marks.MultipleMatchingSteps: {
+            case MultipleMatchingSteps: {
                 resolutions.add(new UhUhResolution());
                 break;
             }
-            case Marks.NoMatchingStep: {
+            case NoMatchingStep: {
                 resolutions.add(new UhUhResolution());
                 break;
             }

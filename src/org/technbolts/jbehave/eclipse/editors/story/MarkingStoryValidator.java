@@ -127,43 +127,43 @@ public class MarkingStoryValidator {
             if(keyword.isNarrative()) {
                 // narrative must be the first
                 if(nonNarrativeOrIgnorable) {
-                    part.addMark(Marks.InvalidNarrativePosition, "Narrative section must be the first one");
+                    part.addErrorMark(Marks.Code.InvalidNarrativePosition, "Narrative section must be the first one");
                 }
                 else {
                     switch(keyword) {
                         case Narrative:
                             if(narrative!=null)
-                                part.addMark(Marks.InvalidNarrativeSequence_multipleNarrative, "Only one 'Narrative:' element is allowed");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_multipleNarrative, "Only one 'Narrative:' element is allowed");
                             else
                                 narrative = part;
                             break;
                         case InOrderTo:
                             if(narrative==null)
-                                part.addMark(Marks.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
                             else if(inOrderTo!=null)
-                                part.addMark(Marks.InvalidNarrativeSequence_multipleInOrderTo, "Only one 'In order to ' element is allowed");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_multipleInOrderTo, "Only one 'In order to ' element is allowed");
                             else
                                 inOrderTo = part;
                             break;
                         case AsA:
                             if(narrative==null)
-                                part.addMark(Marks.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
                             else if(inOrderTo==null)
-                                part.addMark(Marks.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
                             else if(asA!=null)
-                                part.addMark(Marks.InvalidNarrativeSequence_multipleAsA, "Only one 'As a ' element is allowed");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_multipleAsA, "Only one 'As a ' element is allowed");
                             else
                                 asA = part;
                             break;
                         case IWantTo:
                             if(narrative==null)
-                                part.addMark(Marks.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingNarrative, "Missing 'Narrative:' element");
                             else if(inOrderTo==null)
-                                part.addMark(Marks.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
                             else if(asA==null)
-                                part.addMark(Marks.InvalidNarrativeSequence_missingAsA, "Missing 'As a ' element");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingAsA, "Missing 'As a ' element");
                             else if(iWantTo!=null)
-                                part.addMark(Marks.InvalidNarrativeSequence_multipleIWantTo, "Only one 'I want to ' element is allowed");
+                                part.addErrorMark(Marks.Code.InvalidNarrativeSequence_multipleIWantTo, "Only one 'I want to ' element is allowed");
                             else
                                 iWantTo = part;
                             break;
@@ -183,15 +183,15 @@ public class MarkingStoryValidator {
             if(inOrderTo!=null) {
                 if(asA!=null) {
                     if(iWantTo==null) {
-                      asA.addMark(Marks.InvalidNarrativeSequence_missingIWantTo, "Missing 'I want to ' element");
+                      asA.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingIWantTo, "Missing 'I want to ' element");
                     }
                 }
                 else {
-                    inOrderTo.addMark(Marks.InvalidNarrativeSequence_missingAsA, "Missing 'As a ' element");
+                    inOrderTo.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingAsA, "Missing 'As a ' element");
                 }
             }
             else {
-                narrative.addMark(Marks.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
+                narrative.addErrorMark(Marks.Code.InvalidNarrativeSequence_missingInOrderTo, "Missing 'In order to ' element");
             }
         }
         
@@ -242,16 +242,18 @@ public class MarkingStoryValidator {
             int count = candidates.size();
             log.debug("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
             if (count == 0)
-                part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
+                part.addErrorMark(Marks.Code.NoMatchingStep, "No step is matching <" + key + ">");
             else if (count > 1) {
                 
                 fj.data.List<Integer> collectedPrios = iterableList(candidates).map(new PotentialStepPrioTransformer());
                 int max = collectedPrios.maximum(Ord.intOrd);
                 int countWithMax = collectedPrios.filter(Equal.intEqual.eq(max)).length();
                 if (countWithMax>1) {
-                    part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+                    part.addErrorMark(Marks.Code.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
                 }
                 else {
+                    part.addInfoMark(Marks.Code.MultipleMatchingSteps_PrioritySelection, 
+                            "Multiple steps matching, but only one with the highest priority for <" + key + ">");
                     log.debug("#{} matching steps but only one with the highest priority for {}", candidates.size(), key);
                 }
             }
@@ -286,13 +288,22 @@ public class MarkingStoryValidator {
             return Strings.removeTrailingNewlines(cleaned);
         }
 
-        public synchronized void addMark(int code, String message) {
-            marks.add(new MarkData()//
-                    .severity(IMarker.SEVERITY_ERROR)//
+        public synchronized void addErrorMark(Marks.Code code, String message) {
+            addMark(code, message, IMarker.SEVERITY_ERROR);
+        }
+        
+        public synchronized void addInfoMark(Marks.Code code, String message) {
+            addMark(code, message, IMarker.SEVERITY_INFO);
+        }
+        
+        public synchronized void addMark(Marks.Code code, String message, int severity) {
+            MarkData markData = new MarkData()//
+                    .severity(severity)//
                     .message(message)//
                     .offsetStart(storyPart.getOffsetStart())//
-                    .offsetEnd(storyPart.getOffsetEnd())
-                    .attribute(Marks.ERROR_CODE, code));
+                    .offsetEnd(storyPart.getOffsetEnd());
+            Marks.putCode(markData, code);
+            marks.add(markData);
         }
 
         public void applyMarks() {
