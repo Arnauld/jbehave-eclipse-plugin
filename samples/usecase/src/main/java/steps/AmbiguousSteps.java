@@ -13,7 +13,7 @@ public class AmbiguousSteps {
 	public void noop2(@Named("X") String X) {
 	}
 	
-	@Given(value = "noop <$X", priority = 1)
+	@Given(value = "noop #$X#", priority = 1)
 	public void noop3(@Named("X") String X) {
 	}
 }
