@@ -1,14 +1,11 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import java.util.Collection;
-import java.util.HashSet;
+import static fj.data.List.iterableList;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -35,7 +32,9 @@ import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.Strings;
 import org.technbolts.util.Visitor;
 
+import fj.Equal;
 import fj.F;
+import fj.Ord;
 
 public class MarkingStoryValidator {
     public static final String MARKER_ID = Activator.PLUGIN_ID + ".storyMarker";
@@ -245,27 +244,29 @@ public class MarkingStoryValidator {
             if (count == 0)
                 part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
             else if (count > 1) {
-                @SuppressWarnings("unchecked")
-                Collection<Integer> collectedPrios = CollectionUtils.collect(candidates, new PotentialStepPrioTransformer());
-
-                Set<Integer> uniquePrios = new HashSet<Integer>(collectedPrios);
-                if (uniquePrios.size() != collectedPrios.size()) {
+                
+                fj.data.List<Integer> collectedPrios = iterableList(candidates).map(new PotentialStepPrioTransformer());
+                int max = collectedPrios.maximum(Ord.intOrd);
+                int countWithMax = collectedPrios.filter(Equal.intEqual.eq(max)).length();
+                if (countWithMax>1) {
                     part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+                }
+                else {
+                    log.debug("#{} matching steps but only one with the highest priority for {}", candidates.size(), key);
                 }
             }
         }
     }
 
-    static final class PotentialStepPrioTransformer implements Transformer {
+    static final class PotentialStepPrioTransformer extends F<PotentialStep,Integer> {
         @Override
-        public Object transform(Object potentialStep) {
+        public Integer f(PotentialStep pStep) {
             try {
-                Integer prioValue = JBehaveProject.getValue(((PotentialStep) potentialStep).annotation.getMemberValuePairs(), "priority");
+                Integer prioValue = JBehaveProject.getValue(pStep.annotation.getMemberValuePairs(), "priority");
                 return prioValue == null ? Integer.valueOf(0) : prioValue;
             } catch (JavaModelException e) {
                 return Integer.valueOf(0);
             }
-
         }
     }
 
