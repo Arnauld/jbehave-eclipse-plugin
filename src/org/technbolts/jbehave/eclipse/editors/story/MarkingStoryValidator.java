@@ -1,11 +1,14 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -34,6 +37,9 @@ import org.technbolts.util.New;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.Strings;
 import org.technbolts.util.Visitor;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 
 import fj.F;
 
@@ -243,30 +249,32 @@ public class MarkingStoryValidator {
             int count = candidates.size();
             log.debug("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
             if (count == 0)
-                part.addMark(Marks.NoMatchingStep, "No step is matching <" + key + ">");
+                part.addMark(Marks.NoMatchingStep, "No step is matching <"
+                        + key + ">");
             else if (count > 1) {
-                @SuppressWarnings("unchecked")
-                Collection<Integer> collectedPrios = CollectionUtils.collect(candidates, new PotentialStepPrioTransformer());
-
-                Set<Integer> uniquePrios = new HashSet<Integer>(collectedPrios);
-                if (uniquePrios.size() != collectedPrios.size()) {
-                    part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+                List<PotentialStep> maxPrioSteps = getMaxPrioSteps(candidates);
+                if (maxPrioSteps.size() > 1) {
+                    part.addMark(Marks.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + maxPrioSteps);
+                } else {
+                    log.debug("{} steps matched but only one with the highest priority for {}", candidates.size(), key);
                 }
             }
         }
     }
 
-    static final class PotentialStepPrioTransformer implements Transformer {
-        @Override
-        public Object transform(Object potentialStep) {
-            try {
-                Integer prioValue = JBehaveProject.getValue(((PotentialStep) potentialStep).annotation.getMemberValuePairs(), "priority");
-                return prioValue == null ? Integer.valueOf(0) : prioValue;
-            } catch (JavaModelException e) {
-                return Integer.valueOf(0);
-            }
-
+    List<PotentialStep> getMaxPrioSteps(List<PotentialStep> candidates)
+            throws JavaModelException {
+        ListMultimap<Integer, PotentialStep> prioMap = ArrayListMultimap.create();
+        for (PotentialStep step : candidates) {
+            Integer prioValue = JBehaveProject.getValue(((PotentialStep) step).annotation.getMemberValuePairs(), "priority");
+            prioValue = prioValue == null ? 0 : prioValue;
+            prioMap.put(prioValue, step);
         }
+        
+        SortedSet<Integer> sortedPrios = new TreeSet<Integer>(prioMap.keySet());
+        Integer maxPrio = sortedPrios.last();
+        List<PotentialStep> maxPrioSteps = prioMap.get(maxPrio);
+        return maxPrioSteps;
     }
 
     class Part {
