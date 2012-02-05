@@ -12,6 +12,7 @@ import org.technbolts.jbehave.eclipse.PotentialStep;
 public class Marks {
     public static final String ERROR_CODE = "errorCode";
     public static final String STEPS_HTML = "stepsHtml";
+    public static final String MESSAGE = "message";
 
     public enum Code {
         Unknown(-1),

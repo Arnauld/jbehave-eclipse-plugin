@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
-import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
+import org.technbolts.jbehave.eclipse.util.PotentialStepPrioTransformer;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.Constants;
@@ -258,18 +258,6 @@ public class MarkingStoryValidator {
                     Marks.putStepsAsHtml(mark, candidates);
                     log.debug("#{} matching steps but only one with the highest priority for {}", candidates.size(), key);
                 }
-            }
-        }
-    }
-
-    static final class PotentialStepPrioTransformer extends F<PotentialStep,Integer> {
-        @Override
-        public Integer f(PotentialStep pStep) {
-            try {
-                Integer prioValue = JBehaveProject.getValue(pStep.annotation.getMemberValuePairs(), "priority");
-                return prioValue == null ? Integer.valueOf(0) : prioValue;
-            } catch (JavaModelException e) {
-                return Integer.valueOf(0);
             }
         }
     }

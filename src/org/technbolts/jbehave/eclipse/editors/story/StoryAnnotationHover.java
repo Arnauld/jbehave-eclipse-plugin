@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.ui.PreferenceConstants;
@@ -148,7 +149,12 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
                     case MultipleMatchingSteps:
                     case MultipleMatchingSteps_PrioritySelection: {
                         String html = (String)marker.getAttribute(Marks.STEPS_HTML);
-                        return "<b>Multiple step matching:</b><br><br>"+html;
+                        String message = (String) marker.getAttribute(Marks.MESSAGE);
+                        if (message == null) {
+                            message = "<b>Multiple steps matching:</b>";
+                        }
+                        message = StringEscapeUtils.escapeHtml(message);
+                        return String.format("%s<br><br>%s", message, html);
                     }
                 }
             }
