@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
+import org.technbolts.eclipse.util.JDTUtils;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 
@@ -55,27 +54,21 @@ public class Marks {
         StringBuilder builder = new StringBuilder();
         builder.append("<ul>");
         for(PotentialStep pStep : candidates) {
-            ICompilationUnit cu= (ICompilationUnit)pStep.method.getAncestor(IJavaElement.COMPILATION_UNIT);
+            String qualifiedName = JDTUtils.formatQualifiedName(pStep.method);
             builder
                 .append("<li>")
                 .append("<b>")
                 .append(StringEscapeUtils.escapeHtml(pStep.stepPattern))
                 .append("</b>")
-                .append(" (<code><a href=\"");
-            if (cu != null) {
-                builder.append(cu.getElementName()).append("#");
-            }
-            builder.append(pStep.method.getElementName());
-            builder.append("\">");
-            if (cu != null) {
-                builder.append(cu.getElementName()).append("#");
-            }
-            builder
-                .append(pStep.method.getElementName())
-                .append("</a></code>)")
+                .append(" (<code>")
+                .append("<a href=\"").append(qualifiedName).append("\">")
+                .append(qualifiedName)
+                .append("</a>")
+                .append("</code>)")
                 .append("</li>");
         }
         builder.append("</ul>");
         return mark.attribute(STEPS_HTML, builder.toString());
     }
+
 }

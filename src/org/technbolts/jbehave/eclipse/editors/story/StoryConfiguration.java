@@ -164,7 +164,7 @@ public class StoryConfiguration extends SourceViewerConfiguration {
     
     @Override
     public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-        return new StoryAnnotationHover();
+        return new StoryAnnotationHover(storyEditor);
     }
     
 }

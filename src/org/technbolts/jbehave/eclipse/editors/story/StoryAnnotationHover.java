@@ -1,12 +1,16 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import static org.apache.commons.lang.StringUtils.removeStart;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.text.BadLocationException;
@@ -27,27 +31,39 @@ import org.eclipse.jface.text.source.projection.AnnotationBag;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.technbolts.jbehave.eclipse.util.StepUtils;
 import org.technbolts.util.New;
 
+@SuppressWarnings("restriction")
 public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverExtension {
 
     private static Logger log = LoggerFactory.getLogger(StoryAnnotationHover.class);
 
-
+    private StoryEditor storyEditor;
+    
     /**
      * Creates a new default annotation hover.
+     * @param storyEditor 
      *
      */
-    public StoryAnnotationHover() {
+    public StoryAnnotationHover(StoryEditor storyEditor) {
+        this.storyEditor = storyEditor;
     }
 
     /*
      * @see org.eclipse.jface.text.source.IAnnotationHover#getHoverInfo(org.eclipse.jface.text.source.ISourceViewer, int)
      */
     public String getHoverInfo(ISourceViewer sourceViewer, int lineNumber) {
+        String nfo = hoverInfo(sourceViewer, lineNumber);
+        System.out.println("StoryAnnotationHover.enclosing_method(" + nfo + ")");
+        return nfo;
+    }
+    
+    private String hoverInfo(ISourceViewer sourceViewer, int lineNumber) {
         List<Annotation> javaAnnotations= getAnnotationsForLine(sourceViewer, lineNumber);
         if (javaAnnotations != null) {
 
@@ -83,25 +99,10 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
     @Override
     public IInformationControlCreator getHoverControlCreator() {
         return new IInformationControlCreator() {
-            @SuppressWarnings("restriction")
             public IInformationControl createInformationControl(
                     final Shell parent) {
                 if (BrowserInformationControl.isAvailable(parent)) {
-                    String font= PreferenceConstants.APPEARANCE_JAVADOC_FONT;
-                    BrowserInformationControl iControl= new BrowserInformationControl(parent, font, "Press 'F2' for focus");
-                    iControl.setStatusText("Press 'F2' for focus");
-                    iControl.addLocationListener(new LocationListener() {
-                        @Override
-                        public void changing(LocationEvent event) {
-                            System.out.println("StoryAnnotationHover.getHoverControlCreator().new IInformationControlCreator() {...}.createInformationControl(...).new LocationListener() {...}.changing(" + event + ")");
-                        }
-                        
-                        @Override
-                        public void changed(LocationEvent event) {
-                            System.out.println("StoryAnnotationHover.getHoverControlCreator().new IInformationControlCreator() {...}.createInformationControl(...).new LocationListener() {...}.changed(" + event + ")");
-                        }
-                    });
-                    return iControl;
+                    return newInformationControl(parent);
                 } else {
                     return new DefaultInformationControl(parent, true);
                 }
@@ -154,6 +155,7 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
                             message = "<b>Multiple steps matching:</b>";
                         }
                         message = StringEscapeUtils.escapeHtml(message);
+                        System.out.println("StoryAnnotationHover.getMessageFrom(" + message + "/" + html + ")");
                         return String.format("%s<br><br>%s", message, html);
                     }
                 }
@@ -271,6 +273,37 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
         }
 
         return javaAnnotations;
+    }
+
+    protected BrowserInformationControl newInformationControl(final Shell parent) {
+        String font= PreferenceConstants.APPEARANCE_JAVADOC_FONT;
+        BrowserInformationControl iControl= new BrowserInformationControl(parent, font, "Press 'F2' for focus");
+        iControl.addLocationListener(new LocationListener() {
+            @Override
+            public void changing(LocationEvent event) {
+                boolean initial = "about:blank".equals(event.location);
+                if(!initial) {
+                    try {
+                        String qname = removeStart(event.location, "file:///");
+                        StepUtils.jumpToMethod(getProject(), qname);
+                    } catch (PartInitException e) {
+                        log.error("Failed to jump to <" + event.location + ">", e);
+                    } catch (JavaModelException e) {
+                        log.error("Failed to jump to <" + event.location + ">", e);
+                    }
+                }
+                event.doit = initial;
+            }
+
+            private IProject getProject() {
+                return storyEditor.getProject();
+            }
+            
+            @Override
+            public void changed(LocationEvent event) {
+            }
+        });
+        return iControl;
     }
     
 }

@@ -154,7 +154,32 @@ public class StepLocator {
             return null;
     }
     
+    public IJavaElement findMethodByQualifiedName(final String qualifiedName) {
+        try {
+            Visitor<PotentialStep, PotentialStep> findOne = new Visitor<PotentialStep, PotentialStep>() {
+                @Override
+                public void visit(PotentialStep candidate) {
+                    String qName = JDTUtils.formatQualifiedName(candidate.method);
+                    if(qName.equals(qualifiedName)) {
+                        add(candidate);
+                        done();
+                    }
+                }
+            };
+            traverseSteps(findOne);
+            PotentialStep first = findOne.getFirst();
+            if(first==null)
+                return null;
+            return first.method;
+        } catch (JavaModelException e) {
+            Activator.logError("Failed to find candidates for method <" + qualifiedName + ">", e);
+        }
+        return null;
+    }
+
+    
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
         JBehaveProjectRegistry.get().getOrCreateProject(project).traverseSteps(visitor);
     }
+
 }
