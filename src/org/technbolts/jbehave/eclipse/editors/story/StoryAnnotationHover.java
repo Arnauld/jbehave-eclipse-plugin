@@ -92,12 +92,12 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
                     iControl.addLocationListener(new LocationListener() {
                         @Override
                         public void changing(LocationEvent event) {
-                            //System.out.println("StoryAnnotationHover.getHoverControlCreator().new IInformationControlCreator() {...}.createInformationControl(...).new LocationListener() {...}.changing(" + event + ")");
+                            System.out.println("StoryAnnotationHover.getHoverControlCreator().new IInformationControlCreator() {...}.createInformationControl(...).new LocationListener() {...}.changing(" + event + ")");
                         }
                         
                         @Override
                         public void changed(LocationEvent event) {
-                            //System.out.println("StoryAnnotationHover.getHoverControlCreator().new IInformationControlCreator() {...}.createInformationControl(...).new LocationListener() {...}.changed(" + event + ")");
+                            System.out.println("StoryAnnotationHover.getHoverControlCreator().new IInformationControlCreator() {...}.createInformationControl(...).new LocationListener() {...}.changed(" + event + ")");
                         }
                     });
                     return iControl;

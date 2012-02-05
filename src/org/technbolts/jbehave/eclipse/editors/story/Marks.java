@@ -54,13 +54,18 @@ public class Marks {
         StringBuilder builder = new StringBuilder();
         builder.append("<ul>");
         for(PotentialStep pStep : candidates) {
+            ICompilationUnit cu= (ICompilationUnit)pStep.method.getAncestor(IJavaElement.COMPILATION_UNIT);
             builder
                 .append("<li>")
                 .append("<b>")
                 .append(StringEscapeUtils.escapeHtml(pStep.stepPattern))
                 .append("</b>")
-                .append(" (<code><a href=\"#\">");
-            ICompilationUnit cu= (ICompilationUnit)pStep.method.getAncestor(IJavaElement.COMPILATION_UNIT);
+                .append(" (<code><a href=\"");
+            if (cu != null) {
+                builder.append(cu.getElementName()).append("#");
+            }
+            builder.append(pStep.method.getElementName());
+            builder.append("\">");
             if (cu != null) {
                 builder.append(cu.getElementName()).append("#");
             }
