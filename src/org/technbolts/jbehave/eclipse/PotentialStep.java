@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.jbehave.core.parsers.RegexPrefixCapturingPatternParser;
 import org.jbehave.core.parsers.StepMatcher;
 import org.jbehave.core.steps.StepType;
@@ -83,6 +84,14 @@ public class PotentialStep {
             else
                 builder.append("<type-unknown>");
             builder.append('#').append(method.getElementName());
+            
+            try {
+                Integer prio = JBehaveProject.getValue(annotation.getMemberValuePairs(), "priority");
+                if (prio != null && prio.intValue() != 0) {
+                    builder.append(", priority ").append(prio);
+                }
+            } catch (JavaModelException e) {
+            }
         }
         return builder.toString();
     }
