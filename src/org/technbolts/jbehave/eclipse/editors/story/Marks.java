@@ -1,10 +1,17 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.util.List;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.technbolts.eclipse.util.MarkData;
+import org.technbolts.jbehave.eclipse.PotentialStep;
 
 public class Marks {
     public static final String ERROR_CODE = "errorCode";
+    public static final String STEPS_HTML = "stepsHtml";
 
     public enum Code {
         Unknown(-1),
@@ -41,5 +48,28 @@ public class Marks {
     
     public static Code getCode(IMarker marker) {
         return Code.lookup(marker.getAttribute(ERROR_CODE, -1), Code.Unknown);
+    }
+
+    public static MarkData putStepsAsHtml(MarkData mark, List<PotentialStep> candidates) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<ul>");
+        for(PotentialStep pStep : candidates) {
+            builder
+                .append("<li>")
+                .append("<b>")
+                .append(StringEscapeUtils.escapeHtml(pStep.stepPattern))
+                .append("</b>")
+                .append(" (<code><a href=\"#\">");
+            ICompilationUnit cu= (ICompilationUnit)pStep.method.getAncestor(IJavaElement.COMPILATION_UNIT);
+            if (cu != null) {
+                builder.append(cu.getElementName()).append("#");
+            }
+            builder
+                .append(pStep.method.getElementName())
+                .append("</a></code>)")
+                .append("</li>");
+        }
+        builder.append("</ul>");
+        return mark.attribute(STEPS_HTML, builder.toString());
     }
 }

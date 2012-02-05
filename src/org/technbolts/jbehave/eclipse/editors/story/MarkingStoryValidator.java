@@ -249,11 +249,13 @@ public class MarkingStoryValidator {
                 int max = collectedPrios.maximum(Ord.intOrd);
                 int countWithMax = collectedPrios.filter(Equal.intEqual.eq(max)).length();
                 if (countWithMax>1) {
-                    part.addErrorMark(Marks.Code.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+                    MarkData mark = part.addErrorMark(Marks.Code.MultipleMatchingSteps, "Ambiguous step: " + count + " steps are matching <" + key + "> got: " + candidates);
+                    Marks.putStepsAsHtml(mark, candidates);
                 }
                 else {
-                    part.addInfoMark(Marks.Code.MultipleMatchingSteps_PrioritySelection, 
+                    MarkData mark = part.addInfoMark(Marks.Code.MultipleMatchingSteps_PrioritySelection, 
                             "Multiple steps matching, but only one with the highest priority for <" + key + ">");
+                    Marks.putStepsAsHtml(mark, candidates);
                     log.debug("#{} matching steps but only one with the highest priority for {}", candidates.size(), key);
                 }
             }
@@ -288,15 +290,15 @@ public class MarkingStoryValidator {
             return Strings.removeTrailingNewlines(cleaned);
         }
 
-        public synchronized void addErrorMark(Marks.Code code, String message) {
-            addMark(code, message, IMarker.SEVERITY_ERROR);
+        public synchronized MarkData addErrorMark(Marks.Code code, String message) {
+            return addMark(code, message, IMarker.SEVERITY_ERROR);
         }
         
-        public synchronized void addInfoMark(Marks.Code code, String message) {
-            addMark(code, message, IMarker.SEVERITY_INFO);
+        public synchronized MarkData addInfoMark(Marks.Code code, String message) {
+            return addMark(code, message, IMarker.SEVERITY_INFO);
         }
         
-        public synchronized void addMark(Marks.Code code, String message, int severity) {
+        public synchronized MarkData addMark(Marks.Code code, String message, int severity) {
             MarkData markData = new MarkData()//
                     .severity(severity)//
                     .message(message)//
@@ -304,6 +306,7 @@ public class MarkingStoryValidator {
                     .offsetEnd(storyPart.getOffsetEnd());
             Marks.putCode(markData, code);
             marks.add(markData);
+            return markData;
         }
 
         public void applyMarks() {
