@@ -46,10 +46,10 @@ Valentine's Day - Release notes (1.0.6-SNAPSHOT)
 
 ** in progress **
 
-* Thanks to [dschneller](https://github.com/dschneller) priority is now taken into account to disambiguate step during validation phase ([Issue 27](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/27))
+* Thanks to [dschneller](https://github.com/dschneller) priority is now taken into account to disambiguate steps during validation phase ([Issue 27](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/27))
 
 
-Thanks to [dschneller](https://github.com/dschneller) for creating issue and provide fix!!
+Thanks to [dschneller](https://github.com/dschneller) for creating issue and providing corresponding fix!!
 
 
 Daughter 1st Birthday - Release notes (1.0.5)
