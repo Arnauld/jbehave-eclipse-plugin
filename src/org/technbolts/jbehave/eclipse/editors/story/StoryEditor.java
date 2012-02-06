@@ -31,6 +31,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.technbolts.eclipse.util.ColorManager;
+import org.technbolts.eclipse.util.ProjectAwareFastPartitioner;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.Activator;
@@ -151,7 +152,11 @@ public class StoryEditor extends TextEditor {
 	protected void editorSaved() {
 	    super.editorSaved();
       
-	    getSourceViewer().invalidateTextPresentation();
+        ProjectAwareFastPartitioner partitioner = 
+                (ProjectAwareFastPartitioner) getInputDocument().getDocumentPartitioner();
+        if(partitioner!=null) {
+            partitioner.invalidatePartitions();
+        }
 	    validateAndMark();
 	}
 	

@@ -4,11 +4,10 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITypedRegion;
-import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.technbolts.jbehave.eclipse.Activator;
 
-public class ProjectAwareFastPartitioner extends FastPartitioner {
+public class ProjectAwareFastPartitioner extends CustomFastPartitioner {
     IProject project;
 
     public ProjectAwareFastPartitioner(IPartitionTokenScanner scanner,
@@ -19,6 +18,10 @@ public class ProjectAwareFastPartitioner extends FastPartitioner {
     
     public IProject getProject() {
         return project;
+    }
+    
+    public void invalidatePartitions () {
+        invalidate();
     }
     
     @Override
