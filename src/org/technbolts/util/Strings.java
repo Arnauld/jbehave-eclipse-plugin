@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 public class Strings {
     
     public static String getSubLineUntilOffset(String text, int offset) {
-        String analyzedPart = text.substring(0, offset);
+        String analyzedPart = text.substring(0, Math.min(offset, text.length()));
         String[] lines = analyzedPart.split("[\\n\\r]+");
         int lineNo = lines.length - 1;
         return lines[lineNo];
