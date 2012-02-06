@@ -102,6 +102,15 @@ public class CustomFastPartitioner implements IDocumentPartitioner, IDocumentPar
         fPositionCategory= CONTENT_TYPES_CATEGORY + hashCode();
         fPositionUpdater= new DefaultPositionUpdater(fPositionCategory);
     }
+    
+    public void invalidate () {
+        try {
+            if(fDocument.containsPositionCategory(fPositionCategory))
+                fDocument.removePositionCategory(fPositionCategory);
+        } catch (BadPositionCategoryException e) {
+        }
+        fDocument.addPositionCategory(fPositionCategory);
+    }
 
     /*
      * @see org.eclipse.jface.text.IDocumentPartitionerExtension2#getManagingPositionCategories()
@@ -603,7 +612,7 @@ public class CustomFastPartitioner implements IDocumentPartitioner, IDocumentPar
      */
     public ITypedRegion[] computePartitioning(int offset, int length, boolean includeZeroLengthPartitions) {
         checkInitialization();
-        List list= new ArrayList();
+        List<TypedRegion> list= new ArrayList<TypedRegion>();
 
         try {
 
@@ -620,15 +629,17 @@ public class CustomFastPartitioner implements IDocumentPartitioner, IDocumentPar
             for (int i= startIndex; i < endIndex; i++) {
 
                 current= (TypedPosition) category[i];
-
+                
                 gapOffset= (previous != null) ? previous.getOffset() + previous.getLength() : 0;
                 gap.setOffset(gapOffset);
-                gap.setLength(current.getOffset() - gapOffset);
-                if ((includeZeroLengthPartitions && overlapsOrTouches(gap, offset, length)) ||
-                        (gap.getLength() > 0 && gap.overlapsWith(offset, length))) {
-                    start= Math.max(offset, gapOffset);
-                    end= Math.min(endOffset, gap.getOffset() + gap.getLength());
-                    list.add(new TypedRegion(start, end - start, IDocument.DEFAULT_CONTENT_TYPE));
+                if(current.getOffset() > gapOffset) {
+                    gap.setLength(current.getOffset() - gapOffset);
+                    if ((includeZeroLengthPartitions && overlapsOrTouches(gap, offset, length)) ||
+                            (gap.getLength() > 0 && gap.overlapsWith(offset, length))) {
+                        start= Math.max(offset, gapOffset);
+                        end= Math.min(endOffset, gap.getOffset() + gap.getLength());
+                        list.add(new TypedRegion(start, end - start, IDocument.DEFAULT_CONTENT_TYPE));
+                    }
                 }
 
                 if (current.overlapsWith(offset, length)) {
@@ -643,12 +654,14 @@ public class CustomFastPartitioner implements IDocumentPartitioner, IDocumentPar
             if (previous != null) {
                 gapOffset= previous.getOffset() + previous.getLength();
                 gap.setOffset(gapOffset);
-                gap.setLength(fDocument.getLength() - gapOffset);
-                if ((includeZeroLengthPartitions && overlapsOrTouches(gap, offset, length)) ||
-                        (gap.getLength() > 0 && gap.overlapsWith(offset, length))) {
-                    start= Math.max(offset, gapOffset);
-                    end= Math.min(endOffset, fDocument.getLength());
-                    list.add(new TypedRegion(start, end - start, IDocument.DEFAULT_CONTENT_TYPE));
+                if(fDocument.getLength() > gapOffset) {
+                    gap.setLength(fDocument.getLength() - gapOffset);
+                    if ((includeZeroLengthPartitions && overlapsOrTouches(gap, offset, length)) ||
+                            (gap.getLength() > 0 && gap.overlapsWith(offset, length))) {
+                        start= Math.max(offset, gapOffset);
+                        end= Math.min(endOffset, fDocument.getLength());
+                        list.add(new TypedRegion(start, end - start, IDocument.DEFAULT_CONTENT_TYPE));
+                    }
                 }
             }
 
