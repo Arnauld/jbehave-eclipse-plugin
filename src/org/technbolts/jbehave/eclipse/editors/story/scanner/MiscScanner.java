@@ -27,6 +27,7 @@ public class MiscScanner extends AbstractStoryPartBasedScanner {
     
     @Override
     protected void initialize() {
+        super.initialize();
         setDefaultToken(newToken(TextStyle.META_DEFAULT));
         keywordToken = newToken(TextStyle.META_KEYWORD);
         metaPropertyToken = newToken(TextStyle.META_KEYWORD);
