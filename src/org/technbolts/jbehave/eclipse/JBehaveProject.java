@@ -139,12 +139,15 @@ public class JBehaveProject {
         StepType stepType = null;
         for(IAnnotation annotation : method.getAnnotations()) {
             String elementName = annotation.getElementName();
+            IMemberValuePair[] annotationAttributes = annotation.getMemberValuePairs();
+            Integer priority = Integer.valueOf(0);
             
             List<String> patterns = new ArrayList<String>();
             if(StringEnhancer.enhanceString(elementName).endsWithOneOf("Given", "When", "Then")) {
                 // TODO check import declaration matches org.jbehave...
                 stepType = StepType.valueOf(elementName.toUpperCase());
-                String stepPattern = getValue(annotation.getMemberValuePairs(), "value");
+                String stepPattern = getValue(annotationAttributes, "value");
+                priority = getValue(annotationAttributes, "priority");
                 PatternVariantBuilder b = new PatternVariantBuilder(stepPattern);
                 for (String variant : b.allVariants()) {
                 	patterns.add(variant);
@@ -152,7 +155,7 @@ public class JBehaveProject {
             }
             else if(StringEnhancer.enhanceString(elementName).endsWithOneOf("Aliases")) {
                 // TODO check import declaration matches org.jbehave...
-                Object aliases = getValue(annotation.getMemberValuePairs(), "values");
+                Object aliases = getValue(annotationAttributes, "values");
                 if(aliases instanceof Object[]) {
                     for(Object o : (Object[])aliases) {
                         if(o instanceof String) {
@@ -168,7 +171,7 @@ public class JBehaveProject {
             }
             else if(StringEnhancer.enhanceString(elementName).endsWithOneOf("Alias")) {
                 // TODO check import declaration matches org.jbehave...
-                String stepPattern = getValue(annotation.getMemberValuePairs(), "value");
+                String stepPattern = getValue(annotationAttributes, "value");
                 PatternVariantBuilder b = new PatternVariantBuilder(stepPattern);
                 for (String variant : b.allVariants()) {
                 	patterns.add(variant);
@@ -183,7 +186,7 @@ public class JBehaveProject {
                 for(String stepPattern : patterns) {
                     if(stepPattern==null)
                         continue;
-                    container.add(new PotentialStep(method, annotation, stepType, stepPattern));
+                    container.add(new PotentialStep(method, annotation, stepType, stepPattern, priority));
                 }
             }
         }
