@@ -30,6 +30,7 @@ import org.eclipse.jface.text.source.LineRange;
 import org.eclipse.jface.text.source.projection.AnnotationBag;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
@@ -155,10 +156,10 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
                             message = "<b>Multiple steps matching:</b>";
                         }
                         message = StringEscapeUtils.escapeHtml(message);
-                        System.out.println("StoryAnnotationHover.getMessageFrom(" + message + "/" + html + ")");
                         return String.format("%s<br><br>%s", message, html);
                     }
                 }
+                return annotation.getText();
             }
         } catch (CoreException e) {
             log.warn("Unable to retrieve information from marker (" + annotation.getText() + ")", e);
@@ -277,7 +278,19 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
 
     protected BrowserInformationControl newInformationControl(final Shell parent) {
         String font= PreferenceConstants.APPEARANCE_JAVADOC_FONT;
-        BrowserInformationControl iControl= new BrowserInformationControl(parent, font, "Press 'F2' for focus");
+        BrowserInformationControl iControl= new BrowserInformationControl(parent, font, "Press 'F2' for focus") {
+            @Override
+            public Point computeSizeHint() {
+                Point size = super.computeSizeHint();
+                int x = size.x;
+                if(x<120)
+                    x = 120;
+                int y = size.y;
+                if(y<100)
+                    y = 100;
+                return new Point(x,y);
+            }
+        };
         iControl.addLocationListener(new LocationListener() {
             @Override
             public void changing(LocationEvent event) {
