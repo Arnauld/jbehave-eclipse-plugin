@@ -52,7 +52,7 @@ public class StepScannerStyledTest {
         document = new Document(GIVEN1);
         IMethod method = null;
         IAnnotation annotation = null;
-        potentialStep = new PotentialStep(method, annotation, StepType.GIVEN, STEP1);
+        potentialStep = new PotentialStep(method, annotation, StepType.GIVEN, STEP1, 0);
     }
     
     @Test
