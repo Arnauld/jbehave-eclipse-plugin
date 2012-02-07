@@ -14,6 +14,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.IDocument;
 import org.slf4j.Logger;
@@ -46,6 +47,8 @@ public class MarkingStoryValidator {
     private IDocument document;
     private IProject project;
 
+    private boolean applyMarkAsynchronously;
+
     public MarkingStoryValidator(IProject project, IFile file, IDocument document) {
         super();
         this.project = project;
@@ -56,18 +59,18 @@ public class MarkingStoryValidator {
     public void removeExistingMarkers() {
         try {
             file.deleteMarkers(MARKER_ID, true, IResource.DEPTH_ZERO);
-        } catch (CoreException e1) {
-            Activator.logError("MarkingStoryValidator:Error while deleting existing marks", e1);
+        } catch (CoreException e) {
+            log.error("MarkingStoryValidator:Error while deleting existing marks", e);
         }
     }
 
-    public void validate() {
+    public void validate(Runnable afterApplyCallback) {
         List<StoryPart> parts = StoryPartDocumentUtils.getStoryParts(document);
-        analyzeParts(parts);
+        analyzeParts(parts, afterApplyCallback);
     }
 
-    private void analyzeParts(final List<StoryPart> storyParts) {
-        final fj.data.List<Part> parts = fj.data.List.iterableList(storyParts).map(new F<StoryPart,Part>() {
+    private void analyzeParts(final List<StoryPart> storyParts, final Runnable afterApplyCallback) {
+        final fj.data.List<Part> parts = iterableList(storyParts).map(new F<StoryPart,Part>() {
             @Override
             public Part f(StoryPart storyPart) {
                 return new Part(storyPart);
@@ -86,12 +89,19 @@ public class MarkingStoryValidator {
 
         IWorkspaceRunnable r = new IWorkspaceRunnable() {
             public void run(IProgressMonitor monitor) throws CoreException {
-                for (Part part : parts)
+                monitor.beginTask("Applying marks", parts.length());
+                for (Part part : parts) {
                     part.applyMarks();
+                    monitor.worked(1);
+                }
+                afterApplyCallback.run();
             }
         };
         try {
-            file.getWorkspace().run(r, null, IWorkspace.AVOID_UPDATE, null);
+            if(applyMarkAsynchronously)
+                file.getWorkspace().run(r, null, IWorkspace.AVOID_UPDATE, null);
+            else
+                r.run(new NullProgressMonitor());
         } catch (CoreException e) {
             Activator.logError("MarkingStoryValidator:Error while applying marks on <" + file + ">", e);
         }
@@ -329,4 +339,5 @@ public class MarkingStoryValidator {
         }
 
     }
+
 }

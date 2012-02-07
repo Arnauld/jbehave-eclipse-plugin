@@ -52,6 +52,7 @@ import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
+import org.technbolts.util.Runnables;
 import org.technbolts.util.Visitor;
 
 public class StoryEditor extends TextEditor {
@@ -94,14 +95,13 @@ public class StoryEditor extends TextEditor {
         textWidget.setForeground(colorManager.getColor(theme.getForegroundOrDefault()));
         
         adjustCurrentLineColor(theme);
-        
         getSourceViewer().invalidateTextPresentation();
     }
 
     private static TextStyle getTheme() {
         return TextStylePreferences.getTheme(getStore());
     }
-
+    
     @Override
     public void dispose() {
         getStore().removePropertyChangeListener(listener);
@@ -147,12 +147,6 @@ public class StoryEditor extends TextEditor {
     }
 
 	@Override
-	protected void setDocumentProvider(IEditorInput input) {
-	    super.setDocumentProvider(input);
-        validateAndMark();
-	}
-	
-	@Override
 	protected void editorSaved() {
 	    super.editorSaved();
       
@@ -162,6 +156,12 @@ public class StoryEditor extends TextEditor {
             partitioner.invalidatePartitions();
         }
 	    validateAndMark();
+	    getSourceViewer().getTextWidget().getDisplay().asyncExec(new Runnable() {
+	        @Override
+	        public void run() {
+	            getSourceViewer().invalidateTextPresentation();
+	        }
+	    });
 	}
 	
 	protected void validateAndMark()
@@ -175,14 +175,14 @@ public class StoryEditor extends TextEditor {
             final IProject project = getInputFile().getProject();
             MarkingStoryValidator validator = new MarkingStoryValidator (project, getInputFile(), document);
             validator.removeExistingMarkers();
-            validator.validate();
+            validator.validate(Runnables.noop());
         }
         catch (Exception e)
         {
             Activator.logError("Failed to validate content", e);
         }
     }
-
+	
     protected IDocument getInputDocument()
     {
         return getDocumentProvider().getDocument(getEditorInput());

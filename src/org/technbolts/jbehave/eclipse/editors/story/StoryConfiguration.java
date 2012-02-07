@@ -167,4 +167,5 @@ public class StoryConfiguration extends SourceViewerConfiguration {
         return new StoryAnnotationHover(storyEditor);
     }
     
+    
 }
