@@ -44,6 +44,8 @@ public class Activator extends AbstractUIPlugin {
     private ContributionTemplateStore fStore;
 
     private String version;
+
+    private boolean replaceFileBasedAppenders = false;
     
     /** Key to store custom templates. */
     private static final String CUSTOM_TEMPLATES_KEY = "org.technbolts.jbehave.customtemplates"; //$NON-NLS-1$
@@ -99,7 +101,8 @@ public class Activator extends AbstractUIPlugin {
 
 	    // attach the rolling file appender to the logger of your choice
 	    Logger logbackLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-	    logbackLogger.detachAndStopAllAppenders();
+	    if(replaceFileBasedAppenders)
+	        logbackLogger.detachAndStopAllAppenders();
 	    logbackLogger.addAppender(rfAppender);
 	    
 	    logInfo("Log file at " + logFile);
