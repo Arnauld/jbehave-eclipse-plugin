@@ -20,6 +20,42 @@ Preference page:
 
 * Story syntax coloring settings
 
+Download
+========================
+
+* [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
+* [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
+
+Previous (for posterity)
+
+* [1.0.3.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.3.SNAPSHOT.jar)
+* [1.0.0.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar)
+
+Installation
+------------
+
+Simply drop the jar in your eclipse `plugins/` directory and restart your ide.
+
+
+RELEASE NOTES
+=============
+
+
+Valentine's Day - Release notes (1.0.6-SNAPSHOT)
+------------------------------------------------
+
+** in progress **
+
+* Thanks to [dschneller](https://github.com/dschneller) priority is now taken into account to disambiguate steps during validation phase ([Issue 27](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/27)) and on aliases too ([Issue 33](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/33)).
+* Outline view is available and story is displayed as tree ([Issue 22](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/22) and [Issue 8](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/8)), double click allows a quick jump into the corresponding part in the story.
+* Syntax highlighting has been enhanced to support **meta** properties. **Comments** should now be highlighted within an `ExampleTable`. ([Issue 21](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/21))
+* Validation of the story's structure has been relaxed to allow meta definition before Narratives ([Issue 20](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/20))
+* Several enhancements and fixes see [here](https://github.com/Arnauld/jbehave-eclipse-plugin/issues?milestone=3&sort=created&direction=desc&state=closed) for a more complete list.
+
+
+Thanks to [dschneller](https://github.com/dschneller) for creating issues, providing fixes and contributing to the project!!
+
+
 Daughter 1st Birthday - Release notes (1.0.5)
 ---------------------------------------------
 
@@ -59,19 +95,6 @@ Christmas 2011 & Happy new year 2012 - Release notes (1.0.4)
 * Add validation for narrative keywords: check for uniqueness and presence of all keywords.
 * Add preferences page to modify the editor color settings ([Issue 12](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/12))
 
-
-Download
-========================
-
-* [1.0.0.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar)
-* [1.0.3.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.3.SNAPSHOT.jar)
-* [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
-* [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
-
-Installation
-------------
-
-Simply drop the jar in your eclipse `plugins/` directory and restart your ide.
 
 Inspiration
 ========================

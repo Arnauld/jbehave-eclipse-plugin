@@ -17,6 +17,7 @@ public class ScenarioScanner extends AbstractStoryPartBasedScanner {
     
     @Override
     protected void initialize() {
+        super.initialize();
         setDefaultToken(newToken(TextStyle.SCENARIO_DEFAULT));
         keywordToken = newToken(TextStyle.SCENARIO_KEYWORD);
     }

@@ -61,4 +61,15 @@ public class StepUtils {
             return false;
         }
     }
+
+    public static boolean jumpToMethod(IProject project, String qualifiedName) throws PartInitException, JavaModelException {
+        IJavaElement methodToJump = StepLocator.getStepLocator(project).findMethodByQualifiedName(qualifiedName);
+        // jump to method
+        if (methodToJump != null) {
+            JavaUI.openInEditor(methodToJump);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

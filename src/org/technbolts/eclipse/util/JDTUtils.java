@@ -1,12 +1,29 @@
 package org.technbolts.eclipse.util;
 
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 
 public class JDTUtils {
+    
+    public static String formatQualifiedName(IMethod method) {
+        StringBuilder builder = new StringBuilder();
+        ICompilationUnit cu= (ICompilationUnit)method.getAncestor(IJavaElement.COMPILATION_UNIT);
+        if (cu != null) {
+            builder //
+                .append(cu.getParent().getElementName()) //
+                .append('.') //
+                .append(cu.getElementName()) //
+                .append("#");
+        }
+        builder.append(method.getElementName());
+        return builder.toString();
+    }
 
     public static String getJavadocOf(IMember member) throws JavaModelException, BadLocationException {
         String javadoc = getRawJavadocOf(member);

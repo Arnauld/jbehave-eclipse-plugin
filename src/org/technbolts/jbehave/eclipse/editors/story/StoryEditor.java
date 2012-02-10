@@ -11,6 +11,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
@@ -30,7 +31,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.technbolts.eclipse.util.ColorManager;
+import org.technbolts.eclipse.util.ProjectAwareFastPartitioner;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.Activator;
@@ -43,11 +46,13 @@ import org.technbolts.jbehave.eclipse.editors.story.actions.ShowOutlineAction;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModel;
 import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineModelBuilder;
+import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineView;
 import org.technbolts.jbehave.eclipse.preferences.PreferenceConstants;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
+import org.technbolts.util.Runnables;
 import org.technbolts.util.Visitor;
 
 public class StoryEditor extends TextEditor {
@@ -58,6 +63,7 @@ public class StoryEditor extends TextEditor {
     private QuickSearchAction quickSearch;
     private IPropertyChangeListener listener;
     private TextAttributeProvider textAttributeProvider;
+    private Object outlineView;
 
 	public StoryEditor() {
 		super();
@@ -89,14 +95,13 @@ public class StoryEditor extends TextEditor {
         textWidget.setForeground(colorManager.getColor(theme.getForegroundOrDefault()));
         
         adjustCurrentLineColor(theme);
-        
         getSourceViewer().invalidateTextPresentation();
     }
 
     private static TextStyle getTheme() {
         return TextStylePreferences.getTheme(getStore());
     }
-
+    
     @Override
     public void dispose() {
         getStore().removePropertyChangeListener(listener);
@@ -142,17 +147,21 @@ public class StoryEditor extends TextEditor {
     }
 
 	@Override
-	protected void setDocumentProvider(IEditorInput input) {
-	    super.setDocumentProvider(input);
-        validateAndMark();
-	}
-	
-	@Override
 	protected void editorSaved() {
 	    super.editorSaved();
       
-	    getSourceViewer().invalidateTextPresentation();
+        ProjectAwareFastPartitioner partitioner = 
+                (ProjectAwareFastPartitioner) getInputDocument().getDocumentPartitioner();
+        if(partitioner!=null) {
+            partitioner.invalidatePartitions();
+        }
 	    validateAndMark();
+	    getSourceViewer().getTextWidget().getDisplay().asyncExec(new Runnable() {
+	        @Override
+	        public void run() {
+	            getSourceViewer().invalidateTextPresentation();
+	        }
+	    });
 	}
 	
 	protected void validateAndMark()
@@ -166,14 +175,14 @@ public class StoryEditor extends TextEditor {
             final IProject project = getInputFile().getProject();
             MarkingStoryValidator validator = new MarkingStoryValidator (project, getInputFile(), document);
             validator.removeExistingMarkers();
-            validator.validate();
+            validator.validate(Runnables.noop());
         }
         catch (Exception e)
         {
             Activator.logError("Failed to validate content", e);
         }
     }
-
+	
     protected IDocument getInputDocument()
     {
         return getDocumentProvider().getDocument(getEditorInput());
@@ -279,6 +288,28 @@ public class StoryEditor extends TextEditor {
     public List<OutlineModel> getOutlineModels() {
         OutlineModelBuilder builder = new OutlineModelBuilder(getInputDocument());
         return builder.build();
+    }
+
+    public void addTextListener(ITextListener textListener) {
+        getSourceViewer().addTextListener(textListener);
+    }
+
+    public void removeTextListener(ITextListener textListener) {
+        getSourceViewer().removeTextListener(textListener);
+    }
+    
+    @Override
+    public synchronized Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
+        if (adapter.equals(IContentOutlinePage.class)){
+            if(outlineView==null)
+                outlineView = new OutlineView(this, Activator.getDefault().getImageRegistry());
+            return outlineView;
+        }
+        return super.getAdapter(adapter);
+    }
+
+    public synchronized void outlinePageClosed() {
+        outlineView = null;
     }
     
 }

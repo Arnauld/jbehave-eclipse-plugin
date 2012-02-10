@@ -24,6 +24,11 @@ public class QuickOutlineTreeContentProvider implements ITreeContentProvider {
             List<OutlineModel> models = (List<OutlineModel>)parent;
             return models.toArray();
         }
+        else if(parent instanceof OutlineModel) {
+            OutlineModel model = (OutlineModel)parent;
+            if(model.hasChildren())
+                return model.getChildren().toArray();
+        }
         return NO_CHILDREN;
     }
 
@@ -43,6 +48,10 @@ public class QuickOutlineTreeContentProvider implements ITreeContentProvider {
             @SuppressWarnings("unchecked")
             List<OutlineModel> models = (List<OutlineModel>)parent;
             return !models.isEmpty();
+        }
+        else if(parent instanceof OutlineModel) {
+            OutlineModel model = (OutlineModel)parent;
+            return model.hasChildren();
         }
         return false;
     }

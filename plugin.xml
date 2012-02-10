@@ -71,11 +71,13 @@
    <extension
 	   id="storyMarker"
 	   point="org.eclipse.core.resources.markers"
-	   name="JBehave error">
+	   name="JBehave marker">
 	   <super type="org.eclipse.core.resources.problemmarker"/>
 	   <super type="org.eclipse.core.resources.textmarker"/>
 	   <persistent value="true"/>
 	   <attribute name="errorCode"/>
+	   <attribute name="message"/>
+	   <attribute name="stepsHtml"/>
 	</extension>
 	
 	<extension point="org.eclipse.ui.ide.markerResolution"> 

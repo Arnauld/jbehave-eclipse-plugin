@@ -14,6 +14,8 @@ public class StoryDocument extends Document {
     
     protected void fireDocumentChanged(DocumentEvent event) {
         invalidateStoryParts();
+        
+        // ... continue processing
         super.fireDocumentChanged(event);
     }
 

@@ -52,7 +52,7 @@ public class ContentWithIgnorableEmitterTest {
     public void setUp () {
         IMethod method = null;
         IAnnotation annotation = null;
-        potentialStep = new PotentialStep(method, annotation, StepType.GIVEN, STEP1);
+        potentialStep = new PotentialStep(method, annotation, StepType.GIVEN, STEP1, 0);
         pString = potentialStep.getParametrizedString();
         
         collector = new Collector();

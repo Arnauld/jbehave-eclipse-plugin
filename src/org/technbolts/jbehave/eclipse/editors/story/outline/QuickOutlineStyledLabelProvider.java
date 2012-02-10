@@ -73,7 +73,17 @@ public class QuickOutlineStyledLabelProvider extends StyledCellLabelProvider imp
                 key = ImageIds.SCENARIO;
                 break;
             case Step:
-                key = ImageIds.STEP_GIVEN;
+                switch(model.getKeyword()) {
+                    case Given:
+                        key = ImageIds.STEP_GIVEN;
+                        break;
+                    case When:
+                        key = ImageIds.STEP_WHEN;
+                        break;
+                    case Then:
+                        key = ImageIds.STEP_THEN;
+                        break;
+                }
         }
 
         if (key != null) {

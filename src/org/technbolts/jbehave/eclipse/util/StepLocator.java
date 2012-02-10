@@ -11,6 +11,9 @@ import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.util.HasHTMLComment;
 import org.technbolts.util.Visitor;
 
+import fj.Ord;
+import static fj.data.List.iterableList;
+
 public class StepLocator {
     
     public interface Provider {
@@ -101,7 +104,7 @@ public class StepLocator {
     }
     
     /**
-     * Returns the first {@link PotentialStep} found that match the step.
+     * Returns the first {@link PotentialStep} found that match the step, ordered by priority.
      * Be careful that there can be several other {@link PotentialStep}s that fulfill the step too.
      * 
      * @param step
@@ -109,22 +112,38 @@ public class StepLocator {
      */
     public PotentialStep findFirstStep(final String step) {
         try {
-            Visitor<PotentialStep, PotentialStep> findOne = new Visitor<PotentialStep, PotentialStep>() {
+            Visitor<PotentialStep, PotentialStep> matchingStepVisitor = new Visitor<PotentialStep, PotentialStep>() {
                 @Override
                 public void visit(PotentialStep candidate) {
                     boolean matches = candidate.matches(step);
                     if(matches) {
                         add(candidate);
-                        done();
                     }
                 }
             };
-            traverseSteps(findOne);
-            return findOne.getFirst();
+            traverseSteps(matchingStepVisitor);
+            return getFirstStepWithHighestPrio(matchingStepVisitor.getFounds());
         } catch (JavaModelException e) {
             Activator.logError("Failed to find candidates for step <" + step + ">", e);
         }
         return null;
+    }
+
+    /**
+     * 
+     * @param findOne
+     * @return
+     */
+    PotentialStep getFirstStepWithHighestPrio(Iterable<PotentialStep> potentialSteps) {
+        fj.data.List<Integer> collectedPrios = iterableList(potentialSteps).map(new PotentialStepPrioTransformer());
+        if (collectedPrios.isEmpty()) {
+            return null;
+        }
+        
+        final int maxPrio = collectedPrios.maximum(Ord.intOrd);
+        fj.data.List<PotentialStep> maxPrioSteps = iterableList(potentialSteps).filter(new PotentialStepPrioFilter(maxPrio));
+        
+        return maxPrioSteps.head();
     }
     
     public IJavaElement findMethod(final String step) {
@@ -135,7 +154,32 @@ public class StepLocator {
             return null;
     }
     
+    public IJavaElement findMethodByQualifiedName(final String qualifiedName) {
+        try {
+            Visitor<PotentialStep, PotentialStep> findOne = new Visitor<PotentialStep, PotentialStep>() {
+                @Override
+                public void visit(PotentialStep candidate) {
+                    String qName = JDTUtils.formatQualifiedName(candidate.method);
+                    if(qName.equals(qualifiedName)) {
+                        add(candidate);
+                        done();
+                    }
+                }
+            };
+            traverseSteps(findOne);
+            PotentialStep first = findOne.getFirst();
+            if(first==null)
+                return null;
+            return first.method;
+        } catch (JavaModelException e) {
+            Activator.logError("Failed to find candidates for method <" + qualifiedName + ">", e);
+        }
+        return null;
+    }
+
+    
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
         JBehaveProjectRegistry.get().getOrCreateProject(project).traverseSteps(visitor);
     }
+
 }

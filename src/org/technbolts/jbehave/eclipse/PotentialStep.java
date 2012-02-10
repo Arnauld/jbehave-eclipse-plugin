@@ -27,13 +27,15 @@ public class PotentialStep {
     public final StepType stepType;
     public final String stepPattern;
     private ParametrizedString parametrizedString;
+    public final Integer priority;
     
-    public PotentialStep(IMethod method, IAnnotation annotation, StepType stepType, String stepPattern) {
+    public PotentialStep(IMethod method, IAnnotation annotation, StepType stepType, String stepPattern, Integer priority) {
         super();
         this.method = method;
         this.annotation = annotation;
         this.stepType = stepType;
         this.stepPattern = stepPattern;
+        this.priority = (priority==null)?Integer.valueOf(0):priority.intValue();
     }
     
     public float weightOf(String input) {
