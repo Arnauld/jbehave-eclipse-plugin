@@ -44,6 +44,8 @@ import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyleTreeBuilder;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyleTreeContentProvider;
 import org.technbolts.util.New;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.jface.viewers.ComboViewer;
 
 public class EditorPreferencePage extends PreferencePage implements org.eclipse.ui.IWorkbenchPreferencePage {
 
@@ -76,19 +78,20 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
      */
     public void init(IWorkbench workbench) {
         // Initialize the preference page
-        setPreferenceStore(Activator.getDefault().getPreferenceStore());        
+        setPreferenceStore(Activator.getDefault().getPreferenceStore());
     }
 
     /**
      * Create contents of the preference page.
+     * 
      * @param parent
      */
     @Override
     public Control createContents(Composite parent) {
-        
+
         colorManager = new ColorManager();
         styleRangeConverter = new StyleRangeConverter(colorManager);
-        
+
         SelectionListener styleChangedListener = new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -100,57 +103,65 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
             public void widgetDefaultSelected(SelectionEvent event) {
             }
         };
-        
+
         IPropertyChangeListener styleChangedPropertyListener = new IPropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent event) {
-                ColorSelector selector = (ColorSelector)event.getSource();
+                ColorSelector selector = (ColorSelector) event.getSource();
                 selector.getButton().setToolTipText(selector.getColorValue().toString());
                 adjustButtonStatusAndColors();
                 updatePreview();
             }
         };
-        
+
         ResourceBundle bundle = PreferencesMessages.getBundle();
-        
+
         Composite container = new Composite(parent, SWT.NULL);
-        container.setLayout(new GridLayout(6, false));
-        
+        container.setLayout(new GridLayout(4, false));
+
+        Label lblLanguage = new Label(container, SWT.NONE);
+        lblLanguage.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        lblLanguage.setText("Story Language");
+
+        Combo languageCombo = new Combo(container, SWT.READ_ONLY);
+        languageCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+
         Label lblTheme = new Label(container, SWT.NONE);
-        lblTheme.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+        lblTheme.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
         lblTheme.setText("Theme");
-        
-        themeCombo = new Combo(container, SWT.NONE|SWT.READ_ONLY);
-        themeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 4, 1));
+
+        themeCombo = new Combo(container, SWT.NONE | SWT.READ_ONLY);
+        themeCombo.setToolTipText("Pick a prepared color scheme");
+        themeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
         themeCombo.addSelectionListener(new SelectionListener() {
-           @Override
+            @Override
             public void widgetDefaultSelected(SelectionEvent event) {
-               widgetSelected(event);
+                widgetSelected(event);
             }
-           @Override
+
+            @Override
             public void widgetSelected(SelectionEvent event) {
-               int selectionIndex = themeCombo.getSelectionIndex();
-               setCurrentTheme(themeCombo.getItem(selectionIndex));
+                int selectionIndex = themeCombo.getSelectionIndex();
+                setCurrentTheme(themeCombo.getItem(selectionIndex));
             }
         });
-        new Label(container, SWT.NONE);
-        
+
         Label lblCurrentLine = new Label(container, SWT.NONE);
-        lblCurrentLine.setText("Current line");
-        
+        lblCurrentLine.setToolTipText("Change caret position in the preview for feedback");
+        lblCurrentLine.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
+        lblCurrentLine.setText("Current line marker");
         currentLineColor = new ColorSelector(container);
         currentLineColor.addListener(styleChangedPropertyListener);
-        currentLineColor.getButton().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-        Label lblCurrentLineToolTip = new Label(container, SWT.NONE);
-        lblCurrentLineToolTip.setText("(Change the caret position in the preview for feedback)");
+        currentLineColor.getButton().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+
         new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
-        
-        keywordTree = new TreeViewer(container, SWT.SINGLE |SWT.BORDER);
+
+        keywordTree = new TreeViewer(container, SWT.SINGLE | SWT.BORDER);
         Tree tree = keywordTree.getTree();
-        
-        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 4, 5);
-        gridData.widthHint = 80;
+
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 5);
+        gridData.widthHint = 90;
         gridData.heightHint = 30;
         tree.setLayoutData(gridData);
         keywordTree.setLabelProvider(new TextStyleLabelProvider(bundle, "text-style."));
@@ -159,83 +170,82 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
             @Override
             public void selectionChanged(SelectionChangedEvent event) {
                 ISelection selection = event.getSelection();
-                if(selection instanceof IStructuredSelection) {
-                    IStructuredSelection structured = (IStructuredSelection)selection;
+                if (selection instanceof IStructuredSelection) {
+                    IStructuredSelection structured = (IStructuredSelection) selection;
                     Object firstElement = structured.getFirstElement();
-                    setCurrentTextStyle((TextStyle)firstElement);
+                    setCurrentTextStyle((TextStyle) firstElement);
                 }
             }
         });
-        
+
         customForegroundChk = new Button(container, SWT.CHECK);
+        customForegroundChk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         customForegroundChk.setText("Foreground");
         customForegroundChk.addSelectionListener(styleChangedListener);
-        
+
         customForegroundButton = new ColorSelector(container);
         customForegroundButton.addListener(styleChangedPropertyListener);
-        
+        customForegroundButton.getButton().setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+
         customBackgroundChk = new Button(container, SWT.CHECK);
+        customBackgroundChk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         customBackgroundChk.setText("Background");
         customBackgroundChk.addSelectionListener(styleChangedListener);
-        
+
         customBackgroundButton = new ColorSelector(container);
         customBackgroundButton.addListener(styleChangedPropertyListener);
+        customForegroundButton.getButton().setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+
+        customBoldChk = new Button(container, SWT.CHECK);
+        customBoldChk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        customBoldChk.setFont(SWTResourceManager.getBoldFont(getFont()));
+        customBoldChk.setText("Bold");
+        customBoldChk.addSelectionListener(styleChangedListener);
+        new Label(container, SWT.NONE);
         
         customItalicChk = new Button(container, SWT.CHECK);
-        customItalicChk.setFont(SWTResourceManager.getFont("Lucida Grande", 11, SWT.ITALIC));
+        customItalicChk.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+        customItalicChk.setFont(SWTResourceManager.getItalicFont(getFont()));
         customItalicChk.setText("Italic");
         customItalicChk.addSelectionListener(styleChangedListener);
         new Label(container, SWT.NONE);
-        
-        customBoldChk = new Button(container, SWT.CHECK);
-        customBoldChk.setFont(SWTResourceManager.getFont("Lucida Grande", 11, SWT.BOLD));
-        customBoldChk.setText("Bold");
-        customBoldChk.addSelectionListener(styleChangedListener);
-        
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        
+
         Label lblPreview = new Label(container, SWT.NONE);
+        lblPreview.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 4, 1));
         lblPreview.setText("Preview");
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        
+
         previewStyledText = new TextViewer(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
+        StyledText styledText = previewStyledText.getTextWidget();
+        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
         GridData gridData2 = new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1);
         gridData2.widthHint = 80;
         gridData2.heightHint = 140;
         previewStyledText.getControl().setLayoutData(gridData2);
-        
+
         cursorLinePainter = new CursorLinePainter(previewStyledText);
         previewStyledText.addPainter(cursorLinePainter);
-        
+
         initialize();
-        
+
         return container;
     }
-    
+
     @Override
     public void dispose() {
         colorManager.dispose();
         super.dispose();
     }
-    
+
     private Color getLineBackground() {
         return colorManager.getColor(currentLineColor.getColorValue());
     }
-    
+
     /**
      * Initial values.
      */
     protected void initialize() {
         previewStyledText.setDocument(new Document(createText()));
-        
+
         IPreferenceStore store = getPreferenceStore();
         String inlinedThemes = store.getString(PreferenceConstants.THEMES);
         String selectedTheme = store.getString(PreferenceConstants.THEME);
@@ -244,76 +254,74 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         themeCombo.select(ArrayUtils.indexOf(themes, selectedTheme));
         setCurrentTheme(selectedTheme);
     }
-    
+
     /**
      * 
      */
     private void setCurrentTheme(String theme) {
         rootStyle = themesLoaded.get(theme);
-        if(rootStyle==null) {
+        if (rootStyle == null) {
             rootStyle = new TextStyleTreeBuilder().createTree(theme);
             TextStylePreferences.load(rootStyle, getPreferenceStore());
             themesLoaded.put(theme, rootStyle);
         }
-        
+
         keywordTree.setInput(new Object[] { rootStyle });
         currentLineColor.setColorValue(rootStyle.getCurrentLineHighlight());
         setCurrentTextStyle(rootStyle);
         updatePreview();
     }
-    
+
     /**
      * 
      */
     private void setCurrentTextStyle(TextStyle textStyle) {
-        if(textStyle==null) {
+        if (textStyle == null) {
             return;
         }
         this.current = textStyle;
-        
+
         customBackgroundChk.setSelection(current.hasBackground());
         customForegroundChk.setSelection(current.hasForeground());
         customBackgroundButton.setColorValue(current.getBackgroundOrDefault());
         customForegroundButton.setColorValue(current.getForegroundOrDefault());
-        
+
         customBoldChk.setSelection(current.isBold());
         customItalicChk.setSelection(current.isItalic());
-        
+
         adjustButtonStatusAndColors();
     }
-    
+
     protected void adjustButtonStatusAndColors() {
         customForegroundButton.setEnabled(customForegroundChk.getSelection());
-        if(customForegroundChk.getSelection()) {
+        if (customForegroundChk.getSelection()) {
             current.setForeground(customForegroundButton.getColorValue());
-        }
-        else {
+        } else {
             current.setForeground(null);
         }
-        
+
         customBackgroundButton.setEnabled(customBackgroundChk.getSelection());
-        if(customBackgroundChk.getSelection()) {
+        if (customBackgroundChk.getSelection()) {
             current.setBackground(customBackgroundButton.getColorValue());
-        }
-        else {
+        } else {
             current.setBackground(null);
         }
-        
+
         current.setBold(customBoldChk.getSelection());
         current.setItalic(customItalicChk.getSelection());
-        
+
         rootStyle.setCurrentLineHighlight(currentLineColor.getColorValue());
     }
-    
+
     protected void storeModifications() {
         IPreferenceStore store = getPreferenceStore();
-        for(TextStyle rootStyle : themesLoaded.values()) {
+        for (TextStyle rootStyle : themesLoaded.values()) {
             TextStylePreferences.store(rootStyle, store);
         }
-        
+
         String theme = rootStyle.getPath();
         store.setValue(PreferenceConstants.THEME, theme);
-        
+
         // fire an overall change, to have a unique property notification hook
         // instead of one per property
         store.firePropertyChangeEvent(PreferenceConstants.THEME_CHANGED, theme, theme);
@@ -324,14 +332,14 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         storeModifications();
         return super.performOk();
     }
-    
+
     private static boolean DumpCurrentStyleOnApply = false;
     private ColorSelector currentLineColor;
     private CursorLinePainter cursorLinePainter;
-    
+
     @Override
     protected void performApply() {
-        if(DumpCurrentStyleOnApply) {
+        if (DumpCurrentStyleOnApply) {
             dumpCurrentStyle();
         }
         storeModifications();
@@ -345,122 +353,87 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         updatePreview();
         super.performDefaults();
     }
-    
+
     private void updatePreview() {
         cursorLinePainter.setHighlightColor(getLineBackground());
         previewStyledText.getTextWidget().setBackground(colorManager.getColor(rootStyle.getBackgroundOrDefault()));
         previewStyledText.getTextWidget().setForeground(colorManager.getColor(rootStyle.getForegroundOrDefault()));
         previewStyledText.getTextWidget().setStyleRanges(createStyleRanges());
     }
-    
+
     /**
-     * Iterate over all fragments and generate corresponding text for the preview.
+     * Iterate over all fragments and generate corresponding text for the
+     * preview.
      */
     private String createText() {
         StringBuilder builder = new StringBuilder();
-        for(Fragment f : fragments()) {
+        for (Fragment f : fragments()) {
             builder.append(f.content);
         }
         return builder.toString();
     }
 
     /**
-     * Iterate over all fragments and generate corresponding styles for the preview.
+     * Iterate over all fragments and generate corresponding styles for the
+     * preview.
      */
     private StyleRange[] createStyleRanges() {
         Map<String, TextStyle> map = rootStyle.createMap();
-        
+
         List<StyleRange> ranges = New.arrayList();
         int offset = 0;
-        for(Fragment f : fragments()) {
+        for (Fragment f : fragments()) {
             TextStyle style = map.get(f.key);
             int length = f.content.length();
-            
+
             StyleRange styleRange = styleRangeConverter.createStyleRange(style, offset, length);
             ranges.add(styleRange);
             offset += length;
         }
-        
+
         return ranges.toArray(new StyleRange[ranges.size()]);
     }
 
     /**
      * The fragments used for the preview: content with its associated style.
+     * 
      * @return
      */
     private List<Fragment> fragments() {
-        return Arrays.asList(
-                f(TextStyle.DEFAULT, "A story is a collection of scenarios\n\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "Narrative:\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "In order to "),
-                f(TextStyle.NARRATIVE_DEFAULT, "communicate effectively to the business some functionality\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "As a "),
-                f(TextStyle.NARRATIVE_DEFAULT, "development team\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "I want to "),
-                f(TextStyle.NARRATIVE_DEFAULT, "use Behaviour-Driven Development\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.SCENARIO_KEYWORD, "Scenario: "),
-                f(TextStyle.SCENARIO_DEFAULT, " A scenario is a collection of executable steps of different type\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.META_KEYWORD, "GivenStories: "),
-                f(TextStyle.META_DEFAULT, "path/to/precondition1.story,\n"),
-                f(TextStyle.META_DEFAULT, "              path/to/precondition1.story,\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.STEP_KEYWORD, "Given "),
-                f(TextStyle.STEP_DEFAULT, "a new user with the following properties:\n"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"firstname"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"Sherlock"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|\n"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"lastname"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"Holmes"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|\n"),
-                f(TextStyle.STEP_KEYWORD, "When "),
-                f(TextStyle.STEP_DEFAULT, "user clicks on "),
-                f(TextStyle.STEP_PARAMETER_VALUE, "login"),
-                f(TextStyle.STEP_DEFAULT, " button\n"),
-                f(TextStyle.STEP_KEYWORD, "And "),
-                f(TextStyle.STEP_DEFAULT, "user clicks on "),
-                f(TextStyle.STEP_PARAMETER, "$button_label"),
-                f(TextStyle.STEP_DEFAULT, " button\n"),
-                f(TextStyle.COMMENT, "!-- Look at this beautiful comment!\n"),
-                f(TextStyle.STEP_KEYWORD, "Then "),
-                f(TextStyle.STEP_DEFAULT, "login page must be displayed\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.EXAMPLE_TABLE_KEYWORD, "ExampleTable:\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "user"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "login"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "Sherlock Holmes"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "sherlock"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "Arsene Lupin"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "arsene"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "Fileas Fogg"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "flogg"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n")
-        );
+        return Arrays.asList(f(TextStyle.DEFAULT, "A story is a collection of scenarios\n\n"), f(TextStyle.NARRATIVE_KEYWORD, "Narrative:\n"),
+                f(TextStyle.NARRATIVE_KEYWORD, "In order to "), f(TextStyle.NARRATIVE_DEFAULT, "communicate effectively to the business some functionality\n"),
+                f(TextStyle.NARRATIVE_KEYWORD, "As a "), f(TextStyle.NARRATIVE_DEFAULT, "development team\n"), f(TextStyle.NARRATIVE_KEYWORD, "I want to "),
+                f(TextStyle.NARRATIVE_DEFAULT, "use Behaviour-Driven Development\n"), f(TextStyle.DEFAULT, "\n"), f(TextStyle.SCENARIO_KEYWORD, "Scenario: "),
+                f(TextStyle.SCENARIO_DEFAULT, " A scenario is a collection of executable steps of different type\n"), f(TextStyle.DEFAULT, "\n"),
+                f(TextStyle.META_KEYWORD, "GivenStories: "), f(TextStyle.META_DEFAULT, "path/to/precondition1.story,\n"),
+                f(TextStyle.META_DEFAULT, "              path/to/precondition1.story,\n"), f(TextStyle.DEFAULT, "\n"), f(TextStyle.STEP_KEYWORD, "Given "),
+                f(TextStyle.STEP_DEFAULT, "a new user with the following properties:\n"), f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR, "|"),
+                f(TextStyle.STEP_EXAMPLE_TABLE_CELL, "firstname"), f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR, "|"),
+                f(TextStyle.STEP_EXAMPLE_TABLE_CELL, "Sherlock"), f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR, "|\n"),
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR, "|"), f(TextStyle.STEP_EXAMPLE_TABLE_CELL, "lastname"),
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR, "|"), f(TextStyle.STEP_EXAMPLE_TABLE_CELL, "Holmes"),
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR, "|\n"), f(TextStyle.STEP_KEYWORD, "When "), f(TextStyle.STEP_DEFAULT, "user clicks on "),
+                f(TextStyle.STEP_PARAMETER_VALUE, "login"), f(TextStyle.STEP_DEFAULT, " button\n"), f(TextStyle.STEP_KEYWORD, "And "),
+                f(TextStyle.STEP_DEFAULT, "user clicks on "), f(TextStyle.STEP_PARAMETER, "$button_label"), f(TextStyle.STEP_DEFAULT, " button\n"),
+                f(TextStyle.COMMENT, "!-- Look at this beautiful comment!\n"), f(TextStyle.STEP_KEYWORD, "Then "),
+                f(TextStyle.STEP_DEFAULT, "login page must be displayed\n"), f(TextStyle.DEFAULT, "\n"), f(TextStyle.EXAMPLE_TABLE_KEYWORD, "ExampleTable:\n"),
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"), f(TextStyle.EXAMPLE_TABLE_CELL, "user"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
+                f(TextStyle.EXAMPLE_TABLE_CELL, "login"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
+                f(TextStyle.EXAMPLE_TABLE_CELL, "Sherlock Holmes"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"), f(TextStyle.EXAMPLE_TABLE_CELL, "sherlock"),
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"), f(TextStyle.EXAMPLE_TABLE_CELL, "Arsene Lupin"),
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"), f(TextStyle.EXAMPLE_TABLE_CELL, "arsene"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"), f(TextStyle.EXAMPLE_TABLE_CELL, "Fileas Fogg"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
+                f(TextStyle.EXAMPLE_TABLE_CELL, "flogg"), f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"));
     }
-    
+
     private static Fragment f(String key, String content) {
         return new Fragment(key, content);
     }
-    
+
     private static class Fragment {
         public String key;
         public String content;
+
         public Fragment(String key, String content) {
             super();
             this.key = key;
@@ -470,22 +443,20 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
 
     private void dumpCurrentStyle() {
         Map<String, TextStyle> map = rootStyle.createMap();
-        for(Map.Entry<String, TextStyle> e : map.entrySet()) {
+        for (Map.Entry<String, TextStyle> e : map.entrySet()) {
             StringBuilder builder = new StringBuilder("define(map, ");
             builder.append('"').append(e.getKey()).append('"').append(", ");
             TextStyle style = e.getValue();
-            if(style.hasBackground()) {
+            if (style.hasBackground()) {
                 RGB rgb = style.getBackgroundOrDefault();
                 builder.append("new RGB(").append(rgb.red).append(",").append(rgb.green).append(",").append(rgb.blue).append(")");
-            }
-            else
+            } else
                 builder.append("null");
             builder.append(", ");
-            if(style.hasForeground()) {
+            if (style.hasForeground()) {
                 RGB rgb = style.getForegroundOrDefault();
                 builder.append("new RGB(").append(rgb.red).append(",").append(rgb.green).append(",").append(rgb.blue).append(")");
-            }
-            else
+            } else
                 builder.append("null");
             builder.append(", ");
             builder.append(style.isItalic()).append(", ").append(style.isBold()).append(")");
