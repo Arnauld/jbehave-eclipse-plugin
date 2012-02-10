@@ -39,7 +39,7 @@ public class ExampleTableScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected void emitPart(StoryPart part) {
         String content = part.getContent();
-        String kwString = JBKeyword.ExamplesTable.asString();
+        String kwString = JBKeyword.ExamplesTable.asLocalizedString();
         int offset = part.getOffset();
         
         if(content.startsWith(kwString)) {

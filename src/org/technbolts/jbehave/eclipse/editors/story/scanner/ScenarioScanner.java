@@ -34,7 +34,7 @@ public class ScenarioScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected void emitPart(StoryPart part) {
         String content = part.getContent();
-        String kwString = JBKeyword.Scenario.asString();
+        String kwString = JBKeyword.Scenario.asLocalizedString();
         int offset = part.getOffset();
         
         if(content.startsWith(kwString)) {
