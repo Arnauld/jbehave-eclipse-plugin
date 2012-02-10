@@ -28,7 +28,7 @@ public class LineParser {
     public static int stepSentenceIndex(String line) {
         if(!isStepIgnoringCase(line))
             return 0;
-        int indexOf = line.indexOf(' ');
+        int indexOf = line.indexOf(' '); // TODO: Handle when keyword contains more than one word
         return indexOf+1;
     }
     
