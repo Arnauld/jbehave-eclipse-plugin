@@ -2,7 +2,6 @@ package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
 import org.eclipse.jface.text.rules.IToken;
 import org.technbolts.eclipse.util.TextAttributeProvider;
-import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter;
