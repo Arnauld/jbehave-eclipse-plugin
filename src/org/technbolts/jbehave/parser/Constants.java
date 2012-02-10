@@ -6,15 +6,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jbehave.core.i18n.LocalizedKeywords;
+import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;
 import org.technbolts.util.New;
 
 public class Constants {
-    private static final CharTree<JBKeyword> kwTree = createKeywordCharTree();
-    
+    private static CharTree<JBKeyword> kwTree = createKeywordCharTree();
+    private static Locale currentLocale; 
     public static CharTree<JBKeyword> sharedKeywordCharTree() {
+        Locale newLocale = Activator.getDefault().getLocale();
+        if (currentLocale == null || !currentLocale.equals(newLocale)) {
+            currentLocale = newLocale;
+            kwTree = createKeywordCharTree();
+        }
         return kwTree;
     }
     

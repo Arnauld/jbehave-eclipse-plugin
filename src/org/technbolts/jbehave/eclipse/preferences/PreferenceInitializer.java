@@ -1,10 +1,23 @@
 package org.technbolts.jbehave.eclipse.preferences;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.swt.graphics.RGB;
+import org.jbehave.core.i18n.LocalizedKeywords;
 import org.osgi.service.prefs.BackingStoreException;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerFilterEntry.ApplyOn;
@@ -33,7 +46,10 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
         store.setDefault(PreferenceConstants.THEMES, darkTheme.getPath() + "," + lightTheme.getPath());
         store.setDefault(PreferenceConstants.THEME, darkTheme.getPath());
-
+        String[] resourceListing = {"de", "en", "fr", "it", "pt", "tr", "zh_TW"};
+        store.setDefault(PreferenceConstants.LANGUAGES,StringUtils.join(resourceListing, ","));
+        store.setDefault(PreferenceConstants.LANGUAGE,"en");
+        
         store.setDefault(PreferenceConstants.CURRENT_LINE_ENABLED, true);
         PreferenceConverter.setDefault(store, PreferenceConstants.CUSTOM_CURRENT_LINE_COLOR, new RGB(70, 70, 70));
 
@@ -67,5 +83,4 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         for(String patterns : patternsSeq)
             prefs.addEntry(patterns, applyOn, exclude);
     }
-
 }

@@ -12,6 +12,7 @@ public class PreferenceConstants {
     
     public static final String CURRENT_LINE_ENABLED = "current_line_enabled";  
     public static final String CUSTOM_CURRENT_LINE_COLOR = "current_line_color";
-	public static final String LOCALE = "locale";  
+    public static final String LANGUAGES = "keyword.languages";  
+    public static final String LANGUAGE = "keyword.language";  
 
 }

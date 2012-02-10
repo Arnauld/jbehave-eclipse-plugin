@@ -45,7 +45,6 @@ import org.technbolts.jbehave.eclipse.textstyle.TextStyleTreeBuilder;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyleTreeContentProvider;
 import org.technbolts.util.New;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.jface.viewers.ComboViewer;
 
 public class EditorPreferencePage extends PreferencePage implements org.eclipse.ui.IWorkbenchPreferencePage {
 
@@ -53,6 +52,7 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
     private StyleRangeConverter styleRangeConverter;
     //
     private Combo themeCombo;
+    private Combo languageCombo;
     private TreeViewer keywordTree;
     private Button customForegroundChk;
     private ColorSelector customForegroundButton;
@@ -64,6 +64,7 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
     //
     private TextStyle current;
     private TextStyle rootStyle;
+    private String language;
     //
     private Map<String, TextStyle> themesLoaded = New.hashMap();
 
@@ -117,19 +118,37 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         ResourceBundle bundle = PreferencesMessages.getBundle();
 
         Composite container = new Composite(parent, SWT.NULL);
-        container.setLayout(new GridLayout(4, false));
+        container.setLayout(new GridLayout(5, false));
 
+        // row 1
         Label lblLanguage = new Label(container, SWT.NONE);
-        lblLanguage.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
         lblLanguage.setText("Story Language");
 
-        Combo languageCombo = new Combo(container, SWT.READ_ONLY);
-        languageCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
+        new Label(container, SWT.NONE);
 
         Label lblTheme = new Label(container, SWT.NONE);
-        lblTheme.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
         lblTheme.setText("Theme");
+        
+        new Label(container, SWT.NONE);
+        
+        new Label(container, SWT.NONE);
 
+        
+        languageCombo = new Combo(container, SWT.READ_ONLY);
+        languageCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        languageCombo.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) {
+                widgetSelected(event);
+            }
+
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+                int selectionIndex = languageCombo.getSelectionIndex();
+                setLanguage(languageCombo.getItem(selectionIndex));
+            }
+        });
+        
         themeCombo = new Combo(container, SWT.NONE | SWT.READ_ONLY);
         themeCombo.setToolTipText("Pick a prepared color scheme");
         themeCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
@@ -145,25 +164,32 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
                 setCurrentTheme(themeCombo.getItem(selectionIndex));
             }
         });
+        
 
+        
+        // row 3
         Label lblCurrentLine = new Label(container, SWT.NONE);
         lblCurrentLine.setToolTipText("Change caret position in the preview for feedback");
-        lblCurrentLine.setLayoutData(new GridData(SWT.LEAD, SWT.CENTER, false, false, 1, 1));
-        lblCurrentLine.setText("Current line marker");
+        lblCurrentLine.setText("Current line marker:");
+        
         currentLineColor = new ColorSelector(container);
         currentLineColor.addListener(styleChangedPropertyListener);
         currentLineColor.getButton().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-
+        
         new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
-
+        new Label(container, SWT.NONE);
+                
+        
+        // row 4
         keywordTree = new TreeViewer(container, SWT.SINGLE | SWT.BORDER);
         Tree tree = keywordTree.getTree();
 
-        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 2, 5);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true, 3, 5);
         gridData.widthHint = 90;
         gridData.heightHint = 30;
         tree.setLayoutData(gridData);
+        
         keywordTree.setLabelProvider(new TextStyleLabelProvider(bundle, "text-style."));
         keywordTree.setContentProvider(new TextStyleTreeContentProvider());
         keywordTree.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -185,8 +211,10 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
 
         customForegroundButton = new ColorSelector(container);
         customForegroundButton.addListener(styleChangedPropertyListener);
-        customForegroundButton.getButton().setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+        customForegroundButton.getButton().setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
 
+        
+        // row 5
         customBackgroundChk = new Button(container, SWT.CHECK);
         customBackgroundChk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         customBackgroundChk.setText("Background");
@@ -194,30 +222,38 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
 
         customBackgroundButton = new ColorSelector(container);
         customBackgroundButton.addListener(styleChangedPropertyListener);
-        customForegroundButton.getButton().setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
+        customForegroundButton.getButton().setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false, 1, 1));
 
+        // row 6
         customBoldChk = new Button(container, SWT.CHECK);
         customBoldChk.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         customBoldChk.setFont(SWTResourceManager.getBoldFont(getFont()));
         customBoldChk.setText("Bold");
         customBoldChk.addSelectionListener(styleChangedListener);
-        new Label(container, SWT.NONE);
         
+        new Label(container, SWT.NONE);
+
+        // row 7
         customItalicChk = new Button(container, SWT.CHECK);
         customItalicChk.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, false, 1, 1));
         customItalicChk.setFont(SWTResourceManager.getItalicFont(getFont()));
         customItalicChk.setText("Italic");
         customItalicChk.addSelectionListener(styleChangedListener);
+        
         new Label(container, SWT.NONE);
-
+        
+        
+        // row 8
         Label lblPreview = new Label(container, SWT.NONE);
-        lblPreview.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 4, 1));
+        lblPreview.setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, false, false, 5, 1));
         lblPreview.setText("Preview");
 
+
+        // row 9
         previewStyledText = new TextViewer(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.READ_ONLY);
         StyledText styledText = previewStyledText.getTextWidget();
-        styledText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 4, 1));
-        GridData gridData2 = new GridData(SWT.FILL, SWT.FILL, true, true, 6, 1);
+        styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 5, 1));
+        GridData gridData2 = new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1);
         gridData2.widthHint = 80;
         gridData2.heightHint = 140;
         previewStyledText.getControl().setLayoutData(gridData2);
@@ -253,6 +289,13 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         themeCombo.setItems(themes);
         themeCombo.select(ArrayUtils.indexOf(themes, selectedTheme));
         setCurrentTheme(selectedTheme);
+        
+        String inlinedLanguages = store.getString(PreferenceConstants.LANGUAGES);
+        String selectedLanguage = store.getString(PreferenceConstants.LANGUAGE);
+        String[] langs = inlinedLanguages.split(",");
+        languageCombo.setItems(langs);
+        languageCombo.select(ArrayUtils.indexOf(langs, selectedLanguage));
+        setLanguage(selectedLanguage);
     }
 
     /**
@@ -272,6 +315,15 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         updatePreview();
     }
 
+    /**
+     * 
+     */
+    private void setLanguage(String language) {
+        this.language = language;
+        updatePreview();
+    }
+
+    
     /**
      * 
      */
@@ -321,6 +373,9 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
 
         String theme = rootStyle.getPath();
         store.setValue(PreferenceConstants.THEME, theme);
+        
+        String language = this.language;
+        store.setValue(PreferenceConstants.LANGUAGE, language);
 
         // fire an overall change, to have a unique property notification hook
         // instead of one per property

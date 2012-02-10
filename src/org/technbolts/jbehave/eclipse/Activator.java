@@ -1,6 +1,7 @@
 package org.technbolts.jbehave.eclipse;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -19,6 +20,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.LoggerFactory;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
+import org.technbolts.jbehave.eclipse.preferences.PreferenceConstants;
 import org.technbolts.util.ProcessGroup;
 
 import ch.qos.logback.classic.Logger;
@@ -135,6 +137,14 @@ public class Activator extends AbstractUIPlugin {
 	public IPreferenceStore getPreferenceStore() {
 	    return super.getPreferenceStore();
 	}
+	
+	public Locale getLocale() {
+        String string = getPreferenceStore().getString(PreferenceConstants.LANGUAGE);
+        if (string != null) {
+            return new Locale(string);
+        }
+        return Locale.ENGLISH;
+    }
 	
 	/**
 	 * Returns the shared instance

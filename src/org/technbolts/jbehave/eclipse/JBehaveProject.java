@@ -23,7 +23,6 @@ import org.technbolts.eclipse.jdt.methodcache.Container;
 import org.technbolts.eclipse.jdt.methodcache.Containers;
 import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
-import org.technbolts.jbehave.eclipse.preferences.JBehavePluginPreferencePage;
 import org.technbolts.util.C2;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.StringEnhancer;
@@ -42,9 +41,9 @@ public class JBehaveProject {
     private static LocalizedKeywords LOCALIZED_KEYWORDS = getLocalizedKeywords();
 
     public static LocalizedKeywords getLocalizedKeywords() {
-    	return new LocalizedKeywords(JBehavePluginPreferencePage.getLocale(Activator.getDefault().getPreferenceStore()));
+    	return new LocalizedKeywords(Activator.getDefault().getLocale());
     }
-    
+
 	private static String plusSpace(String aString, boolean wantSpace) {
 		return wantSpace ? aString + " " : aString;
 	}
