@@ -11,13 +11,16 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 
 public class NarrativeScanner extends RuleBasedScanner {
 
-    private TextAttributeProvider textAttributeProvider;
+    private final JBehaveProject jbehaveProject;
+    private final TextAttributeProvider textAttributeProvider;
 
-    public NarrativeScanner(TextAttributeProvider textAttributeProvider) {
+    public NarrativeScanner(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
+        this.jbehaveProject = jbehaveProject;
         this.textAttributeProvider = textAttributeProvider;
         initialize();
         textAttributeProvider.addObserver(new Observer() {
@@ -36,10 +39,10 @@ public class NarrativeScanner extends RuleBasedScanner {
         IToken keyword = new Token(textAttribute);
         
         IRule[] rules = new IRule[] {
-                lineStartsWithRule("Narrative:", " ", keyword), //
-                lineStartsWithRule("In order to", " ", keyword), //
-                lineStartsWithRule("As a", " ", keyword), //
-                lineStartsWithRule("I want to", " ", keyword) //
+                lineStartsWithRule(jbehaveProject.lNarrative(false), " ", keyword), //
+                lineStartsWithRule(jbehaveProject.lInOrderTo(false), " ", keyword), //
+                lineStartsWithRule(jbehaveProject.lAsA(false), " ", keyword), //
+                lineStartsWithRule(jbehaveProject.lIWantTo(false), " ", keyword) //
         };
         setRules(rules);
     }

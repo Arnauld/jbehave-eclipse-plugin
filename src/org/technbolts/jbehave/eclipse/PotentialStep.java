@@ -1,6 +1,5 @@
 package org.technbolts.jbehave.eclipse;
 
-import static org.technbolts.jbehave.eclipse.JBehaveProject.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -22,6 +21,7 @@ import com.google.common.cache.CacheLoader;
  * Candidate Step, prevent name clash with jbehave thus one uses potential instead.
  */
 public class PotentialStep {
+    private final JBehaveProject project;
     public final IMethod method;
     public final IAnnotation annotation;
     public final StepType stepType;
@@ -29,8 +29,9 @@ public class PotentialStep {
     private ParametrizedString parametrizedString;
     public final Integer priority;
     
-    public PotentialStep(IMethod method, IAnnotation annotation, StepType stepType, String stepPattern, Integer priority) {
+    public PotentialStep(JBehaveProject project, IMethod method, IAnnotation annotation, StepType stepType, String stepPattern, Integer priority) {
         super();
+        this.project = project;
         this.method = method;
         this.annotation = annotation;
         this.stepType = stepType;
@@ -62,11 +63,11 @@ public class PotentialStep {
     
     public String typeWord () {
         switch(stepType) {
-            case WHEN: return lWhen(false);
-            case THEN: return lThen(false);
+            case WHEN: return project.lWhen(false);
+            case THEN: return project.lThen(false);
             case GIVEN:
             default:
-                return lGiven(false);
+                return project.lGiven(false);
         }
     }
     

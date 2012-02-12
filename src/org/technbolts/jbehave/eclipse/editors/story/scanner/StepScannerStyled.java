@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
@@ -34,12 +35,10 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     private IToken parameterToken;
     private IToken parameterValueToken;
     //
-    private StepLocator.Provider locatorProvider;
 
-    public StepScannerStyled(StepLocator.Provider locatorProvider, TextAttributeProvider textAttributeProvider) {
-        super(textAttributeProvider);
+    public StepScannerStyled(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
+        super(jbehaveProject, textAttributeProvider);
         initialize();
-        this.locatorProvider = locatorProvider;
     }
     
     @Override
@@ -85,7 +84,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
         String cleanedAfterKeyword = emitter.contentWithoutIgnorables();
         String cleanedStepSentence = Strings.removeTrailingNewlines(cleanedAfterKeyword);
         
-        PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(cleanedStepSentence);
+        PotentialStep potentialStep = StepLocator.getStepLocator(jbehaveProject).findFirstStep(cleanedStepSentence);
         if(potentialStep==null) {
             logln("parseStep() no step found");
             emitVariables(emitter, cleanedAfterKeyword, offset);

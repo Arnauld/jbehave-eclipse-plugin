@@ -1,18 +1,18 @@
 package org.technbolts.jbehave.eclipse.util;
 
+import static fj.data.List.iterableList;
+
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
 import org.technbolts.eclipse.util.JDTUtils;
 import org.technbolts.jbehave.eclipse.Activator;
-import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.util.HasHTMLComment;
 import org.technbolts.util.Visitor;
 
 import fj.Ord;
-import static fj.data.List.iterableList;
 
 public class StepLocator {
     
@@ -20,12 +20,12 @@ public class StepLocator {
         StepLocator getStepLocator();
     }
     
-    public static StepLocator getStepLocator(IProject project) {
+    public static StepLocator getStepLocator(JBehaveProject project) {
         return new StepLocator(project);
     }
     
-    private IProject project;
-    private StepLocator(IProject project) {
+    private JBehaveProject project;
+    private StepLocator(JBehaveProject project) {
         this.project = project;
     }
     
@@ -69,8 +69,8 @@ public class StepLocator {
     public Iterable<WeightedCandidateStep> findCandidatesStartingWith(final String stepLine) {
         
         try {
-            final String searchedType = LineParser.stepType(stepLine);
-            final String stepEntry = LineParser.extractStepSentence(stepLine);
+            final String searchedType = LineParser.stepType(project, stepLine);
+            final String stepEntry = LineParser.extractStepSentence(project, stepLine);
             
             Visitor<PotentialStep, WeightedCandidateStep> findOne = new Visitor<PotentialStep, WeightedCandidateStep>() {
                 @Override
@@ -179,7 +179,7 @@ public class StepLocator {
 
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
-        JBehaveProjectRegistry.get().getOrCreateProject(project).traverseSteps(visitor);
+        project.traverseSteps(visitor);
     }
 
 }

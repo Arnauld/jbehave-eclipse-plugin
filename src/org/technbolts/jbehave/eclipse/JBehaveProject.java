@@ -2,6 +2,7 @@ package org.technbolts.jbehave.eclipse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,7 +24,11 @@ import org.technbolts.eclipse.jdt.methodcache.Container;
 import org.technbolts.eclipse.jdt.methodcache.Containers;
 import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
+import org.technbolts.jbehave.eclipse.preferences.ProjectPreferences;
+import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.C2;
+import org.technbolts.util.CharTree;
+import org.technbolts.util.LocaleUtils;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.StringEnhancer;
 import org.technbolts.util.Visitor;
@@ -37,66 +42,97 @@ public class JBehaveProject {
     //
     private MethodPerPackageFragmentRootCache<PotentialStep> cache;
 
-    
-    private static LocalizedKeywords LOCALIZED_KEYWORDS = getLocalizedKeywords();
+    private Locale storyLocale;
 
-    public static LocalizedKeywords getLocalizedKeywords() {
-    	return new LocalizedKeywords(Activator.getDefault().getLocale());
-    }
+    private LocalizedKeywords localizedKeywords;
+    
+    private CharTree<JBKeyword> kwTree;
 
 	private static String plusSpace(String aString, boolean wantSpace) {
 		return wantSpace ? aString + " " : aString;
 	}
 	
-	public static String lGiven(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.given(), withTrailingSpace);
-	}
-	public static String lAnd(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.and(), withTrailingSpace);
-	}
-	public static String lAsA(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.asA(), withTrailingSpace);
-	}
-	public static String lExamplesTable(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.examplesTable(), withTrailingSpace);
-	}
-	public static String lGivenStories(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.givenStories(), withTrailingSpace);
-	}
-	public static String lIgnorable(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.ignorable(), withTrailingSpace);
-	}
-	public static String lInOrderTo(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.inOrderTo(), withTrailingSpace);
-	}
-	public static String lIWantTo(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.iWantTo(), withTrailingSpace);
-	}
-	public static String lMeta(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.meta(), withTrailingSpace);
-	}
-	public static String lNarrative(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.narrative(), withTrailingSpace);
-	}
-	public static String lScenario(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.scenario(), withTrailingSpace);
-	}
-	public static String lThen(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.then(), withTrailingSpace);
-	}
-	public static String lWhen(boolean withTrailingSpace) {
-		return plusSpace(LOCALIZED_KEYWORDS.when(), withTrailingSpace);
-	}
-	
-	
     public JBehaveProject(IProject project) {
         this.project = project;
-        LOCALIZED_KEYWORDS = getLocalizedKeywords();
-        this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(
-                newCallback());
+        this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(newCallback());
+        this.reloadProjectPreferences();
+    }
+    
+    private void reloadProjectPreferences() {
+        this.projectPreferences = new ProjectPreferences(getProject());
+        try {
+            projectPreferences.load();
+        } catch (BackingStoreException e) {
+            log.error("Failed to load project preferences", e);
+        }
+        storyLocale = LocaleUtils.createLocaleFromCode(projectPreferences.getStoryLanguage(), Locale.ENGLISH);
+        localizedKeywords = new LocalizedKeywords(storyLocale);
+        kwTree = createKeywordCharTree();
+    }
+    
+    public Locale getLocale() {
+        return storyLocale;
+    }
+    
+    public CharTree<JBKeyword> sharedKeywordCharTree() {
+        return kwTree;
+    }
+    
+     public LocalizedKeywords getLocalizedKeywords() {
+        return localizedKeywords;
+    }
+    
+    public CharTree<JBKeyword> createKeywordCharTree() {
+        LocalizedKeywords keywords = getLocalizedKeywords();
+        CharTree<JBKeyword> cn = new CharTree<JBKeyword>('/', null);
+        for(JBKeyword kw : JBKeyword.values()) {
+            String asString = kw.asString(keywords);
+            cn.push(asString, kw);
+        }
+        return cn;
+    }
+    
+    public String lGiven(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.given(), withTrailingSpace);
+    }
+    public String lAnd(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.and(), withTrailingSpace);
+    }
+    public String lAsA(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.asA(), withTrailingSpace);
+    }
+    public String lExamplesTable(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.examplesTable(), withTrailingSpace);
+    }
+    public String lGivenStories(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.givenStories(), withTrailingSpace);
+    }
+    public String lIgnorable(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.ignorable(), withTrailingSpace);
+    }
+    public String lInOrderTo(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.inOrderTo(), withTrailingSpace);
+    }
+    public String lIWantTo(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.iWantTo(), withTrailingSpace);
+    }
+    public String lMeta(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.meta(), withTrailingSpace);
+    }
+    public String lNarrative(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.narrative(), withTrailingSpace);
+    }
+    public String lScenario(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.scenario(), withTrailingSpace);
+    }
+    public String lThen(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.then(), withTrailingSpace);
+    }
+    public String lWhen(boolean withTrailingSpace) {
+        return plusSpace(localizedKeywords.when(), withTrailingSpace);
     }
 
-    private static C2<IMethod, Container<PotentialStep>> newCallback() {
+    private C2<IMethod, Container<PotentialStep>> newCallback() {
         return new C2<IMethod, Container<PotentialStep>>() {
          public void op(IMethod method, Container<PotentialStep> container) {
              try {
@@ -121,6 +157,8 @@ public class JBehaveProject {
     }
     
     private ReadWriteLock rwLock = new ReentrantReadWriteLock();
+
+    private ProjectPreferences projectPreferences;
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
         boolean rAcquired = true;
@@ -189,7 +227,7 @@ public class JBehaveProject {
         }
     }
     
-    private static void extractMethodSteps(IMethod method, Container<PotentialStep> container) throws JavaModelException {
+    private void extractMethodSteps(IMethod method, Container<PotentialStep> container) throws JavaModelException {
         StepType stepType = null;
         for(IAnnotation annotation : method.getAnnotations()) {
             String elementName = annotation.getElementName();
@@ -240,7 +278,7 @@ public class JBehaveProject {
                 for(String stepPattern : patterns) {
                     if(stepPattern==null)
                         continue;
-                    container.add(new PotentialStep(method, annotation, stepType, stepPattern, priority));
+                    container.add(new PotentialStep(this, method, annotation, stepType, stepPattern, priority));
                 }
             }
         }

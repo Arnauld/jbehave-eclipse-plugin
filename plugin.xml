@@ -95,9 +95,15 @@
       	</page>
         <page
             category="org.technbolts.jbehave.eclipse.preferences"
-         	class="org.technbolts.jbehave.eclipse.preferences.EditorPreferencePage"
+         	class="org.technbolts.jbehave.eclipse.preferences.EditorColorPreferencePage"
           	id="org.technbolts.jbehave.eclipse.preferences.editor"
           	name="Story Editor">
+        </page>
+        <page
+            category="org.technbolts.jbehave.eclipse.preferences"
+         	class="org.technbolts.jbehave.eclipse.preferences.ProjectPreferencePage"
+          	id="org.technbolts.jbehave.eclipse.preferences.project"
+          	name="Project settings">
         </page>
         <page
             category="org.technbolts.jbehave.eclipse.preferences"
@@ -114,7 +120,29 @@
     </extension>
 
 	<extension point="org.eclipse.ui.propertyPages">
+	  <page
+            class="org.technbolts.jbehave.eclipse.preferences.JBehavePluginPreferencePage"
+            id="org.technbolts.jbehave.eclipse.properties"
+            name="JBehave">
+		<enabledWhen>
+ 			<adapt type="org.eclipse.core.resources.IProject">
+		          <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.jdt.core.javanature"/>
+		     </adapt>
+        </enabledWhen>
+      </page>
       <page
+            category="org.technbolts.jbehave.eclipse.properties"
+         	class="org.technbolts.jbehave.eclipse.preferences.ProjectPreferencePage"
+          	id="org.technbolts.jbehave.eclipse.properties.project"
+          	name="Project settings">
+       	<enabledWhen>
+ 			<adapt type="org.eclipse.core.resources.IProject">
+		          <test property="org.eclipse.core.resources.projectNature" value="org.eclipse.jdt.core.javanature"/>
+		     </adapt>
+        </enabledWhen>
+      </page>
+      <page
+            category="org.technbolts.jbehave.eclipse.properties"
             class="org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferencePage"
             id="org.technbolts.jbehave.eclipse.properties.classScanner"
             name="JBehave Class Scanner">

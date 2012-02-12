@@ -1,38 +1,12 @@
 package org.technbolts.jbehave.parser;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jbehave.core.i18n.LocalizedKeywords;
-import org.technbolts.jbehave.eclipse.Activator;
-import org.technbolts.jbehave.eclipse.JBehaveProject;
-import org.technbolts.jbehave.support.JBKeyword;
-import org.technbolts.util.CharTree;
 import org.technbolts.util.New;
 
 public class Constants {
-    private static CharTree<JBKeyword> kwTree = createKeywordCharTree();
-    private static Locale currentLocale; 
-    public static CharTree<JBKeyword> sharedKeywordCharTree() {
-        Locale newLocale = Activator.getDefault().getLocale();
-        if (currentLocale == null || !currentLocale.equals(newLocale)) {
-            currentLocale = newLocale;
-            kwTree = createKeywordCharTree();
-        }
-        return kwTree;
-    }
-    
-    public static CharTree<JBKeyword> createKeywordCharTree() {
-        LocalizedKeywords keywords = JBehaveProject.getLocalizedKeywords();
-        CharTree<JBKeyword> cn = new CharTree<JBKeyword>('/', null);
-        for(JBKeyword kw : JBKeyword.values()) {
-            String asString = kw.asString(keywords);
-            cn.push(asString, kw);
-        }
-        return cn;
-    }
     
     public static Pattern exampleTableFinder = Pattern.compile("^\\s*\\|([^-]|\\-[^-]*)", Pattern.MULTILINE);
     

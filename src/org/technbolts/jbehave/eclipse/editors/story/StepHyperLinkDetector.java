@@ -1,18 +1,23 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import static org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils.findStoryPartAtRegion;
-
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
+import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.util.Ref;
 
 public class StepHyperLinkDetector implements IHyperlinkDetector {
+    
+    private static Logger logger = LoggerFactory.getLogger(StepHyperLinkDetector.class);
 
     private IHyperlink[] NONE = null;// new IHyperlink[0];
 
@@ -20,7 +25,15 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
     public IHyperlink[] detectHyperlinks(final ITextViewer viewer, final IRegion region,
             boolean canShowMultipleHyperlinks) {
 
-        final Ref<StoryPart> found = findStoryPartAtRegion(viewer.getDocument(), region);
+        IDocument document = viewer.getDocument();
+        if(!(document instanceof StoryDocument)) {
+            logger.error("Document is not a story document got: {}, hyperlink detector failed",document.getClass());
+            return NONE;
+        }
+        StoryDocument storyDocument = (StoryDocument)document;
+        final JBehaveProject jbehaveProject = storyDocument.getJBehaveProject();
+        
+        final Ref<StoryPart> found = new StoryPartDocumentUtils(jbehaveProject).findStoryPartAtRegion(document, region);
         if (found.isNull()) {
             return NONE;
         }
@@ -50,7 +63,7 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
             @Override
             public void open() {
                 try {
-                    StepUtils.jumpToDeclaration(viewer, step);
+                    new StepUtils(jbehaveProject).jumpToDeclaration(viewer, step);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

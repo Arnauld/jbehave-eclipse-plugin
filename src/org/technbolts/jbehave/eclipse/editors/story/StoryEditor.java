@@ -37,6 +37,8 @@ import org.technbolts.eclipse.util.ProjectAwareFastPartitioner;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.Activator;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.EditorActionDefinitionIds;
 import org.technbolts.jbehave.eclipse.editors.EditorMessages;
@@ -50,7 +52,6 @@ import org.technbolts.jbehave.eclipse.editors.story.outline.OutlineView;
 import org.technbolts.jbehave.eclipse.preferences.PreferenceConstants;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
-import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
 import org.technbolts.util.Runnables;
 import org.technbolts.util.Visitor;
@@ -172,8 +173,7 @@ public class StoryEditor extends TextEditor {
             if(document==null) {
                 return;
             }
-            final IProject project = getInputFile().getProject();
-            MarkingStoryValidator validator = new MarkingStoryValidator (project, getInputFile(), document);
+            MarkingStoryValidator validator = new MarkingStoryValidator (getJBehaveProject(), getInputFile(), document);
             validator.removeExistingMarkers();
             validator.validate(Runnables.noop());
         }
@@ -222,7 +222,6 @@ public class StoryEditor extends TextEditor {
     }
 
     public Iterable<PotentialStep> getPotentialSteps() {
-        final IProject project = getInputFile().getProject();
         Visitor<PotentialStep, PotentialStep> collector = new Visitor<PotentialStep, PotentialStep>() {
             @Override
             public void visit(PotentialStep step) {
@@ -230,11 +229,16 @@ public class StoryEditor extends TextEditor {
             }
         };
         try {
-            StepLocator.getStepLocator(project).traverseSteps(collector);
+            getJBehaveProject().traverseSteps(collector);
         } catch (JavaModelException e) {
             Activator.logError("Failed to collect PotentialStep", e);
         }
         return collector.getFounds();
+    }
+
+    protected JBehaveProject getJBehaveProject() {
+        final IProject project = getInputFile().getProject();
+        return JBehaveProjectRegistry.get().getOrCreateProject(project);
     }
 
     public void insert(PotentialStep pStep) {
@@ -268,7 +272,7 @@ public class StoryEditor extends TextEditor {
 
     public void jumpToMethod() {
         try {
-            StepUtils.jumpToSelectionDeclaration(getSourceViewer());
+            new StepUtils(getJBehaveProject()).jumpToSelectionDeclaration(getSourceViewer());
         } catch (PartInitException e) {
             Activator.logError("Failed to jump to method", e);
         } catch (JavaModelException e) {
@@ -286,7 +290,7 @@ public class StoryEditor extends TextEditor {
     }
     
     public List<OutlineModel> getOutlineModels() {
-        OutlineModelBuilder builder = new OutlineModelBuilder(getInputDocument());
+        OutlineModelBuilder builder = new OutlineModelBuilder(getJBehaveProject(), getInputDocument());
         return builder.build();
     }
 

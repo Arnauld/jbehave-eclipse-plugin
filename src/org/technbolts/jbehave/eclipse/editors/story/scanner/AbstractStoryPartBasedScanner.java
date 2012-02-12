@@ -13,6 +13,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.Constants;
@@ -36,7 +37,8 @@ import org.technbolts.util.New;
  */
 public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     
-    private TextAttributeProvider textAttributeProvider;
+    private final TextAttributeProvider textAttributeProvider;
+    protected final JBehaveProject jbehaveProject;
     //
     private IToken defaultToken;
     private Token commentToken;
@@ -49,7 +51,8 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     private IDocument document;
     private Region range;
 
-    public AbstractStoryPartBasedScanner(TextAttributeProvider textAttributeProvider) {
+    public AbstractStoryPartBasedScanner(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
+        this.jbehaveProject = jbehaveProject;
         this.textAttributeProvider = textAttributeProvider;
         textAttributeProvider.addObserver(new Observer() {
             @Override
@@ -131,7 +134,7 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
                     emitPart(part); //part are given in the absolute position
             }
         };
-        StoryPartDocumentUtils.traverseStoryParts(document, visitor);
+        new StoryPartDocumentUtils(jbehaveProject).traverseStoryParts(document, visitor);
         
         if(DEBUG) {
             System.out.println(builder);

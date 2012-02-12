@@ -5,13 +5,9 @@ import static fj.data.List.iterableList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -49,11 +45,11 @@ public class MarkingStoryValidator {
 
     private IFile file;
     private IDocument document;
-    private IProject project;
+    private JBehaveProject project;
 
     private boolean applyMarkAsynchronously;
 
-    public MarkingStoryValidator(IProject project, IFile file, IDocument document) {
+    public MarkingStoryValidator(JBehaveProject project, IFile file, IDocument document) {
         super();
         this.project = project;
         this.file = file;
@@ -69,7 +65,7 @@ public class MarkingStoryValidator {
     }
 
     public void validate(Runnable afterApplyCallback) {
-        List<StoryPart> parts = StoryPartDocumentUtils.getStoryParts(document);
+        List<StoryPart> parts = new StoryPartDocumentUtils(project).getStoryParts(document);
         analyzeParts(parts, afterApplyCallback);
     }
 

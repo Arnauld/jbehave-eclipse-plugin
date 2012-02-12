@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.Image;
 import org.jbehave.core.steps.StepType;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.ImageIds;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
@@ -19,6 +20,7 @@ import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
 public class StepCompletionProposalMixin {
 
     public interface Trait {
+        JBehaveProject getJBehaveProject();
         WeightedCandidateStep getWeightedCandidateStep();
         String getComplete();
         String getLabel();
@@ -35,7 +37,7 @@ public class StepCompletionProposalMixin {
         
         String label = trait.getLabel();
         // remove step keyword if any, information is provided through the icon
-        if(LineParser.isStepIgnoringCase(label)) {
+        if(LineParser.isStepIgnoringCase(trait.getJBehaveProject(), label)) {
             int indexOf = label.indexOf(' ');
             label = label.substring(indexOf).trim();
         }

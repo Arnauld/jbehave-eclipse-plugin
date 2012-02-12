@@ -13,6 +13,7 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistant;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.ExampleTableScanner;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.MiscScanner;
@@ -21,7 +22,6 @@ import org.technbolts.jbehave.eclipse.editors.story.scanner.ScenarioScanner;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.SingleTokenScanner;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyled;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
-import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.support.JBPartition;
 
 public class StoryConfiguration extends SourceViewerConfiguration {
@@ -75,14 +75,13 @@ public class StoryConfiguration extends SourceViewerConfiguration {
 
     protected ITokenScanner getStepScanner() {
         if (stepScanner == null) {
-            stepScanner = new StepScannerStyled(new StepLocator.Provider() {
-                @Override
-                public StepLocator getStepLocator() {
-                    return StepLocator.getStepLocator(storyEditor.getProject());
-                }
-            }, textAttributeProvider);
+            stepScanner = new StepScannerStyled(getJBehaveProject(), textAttributeProvider);
         }
         return stepScanner;
+    }
+
+    protected JBehaveProject getJBehaveProject() {
+        return storyEditor.getJBehaveProject();
     }
     
     protected ITokenScanner getCommentScanner() {
@@ -94,28 +93,28 @@ public class StoryConfiguration extends SourceViewerConfiguration {
     
     protected ITokenScanner getScenarioScanner() {
         if (scenarioScanner == null) {
-            scenarioScanner = new ScenarioScanner(textAttributeProvider);
+            scenarioScanner = new ScenarioScanner(getJBehaveProject(), textAttributeProvider);
         }
         return scenarioScanner;
     }
     
     protected ITokenScanner getNarrativeScanner() {
         if (narrativeScanner == null) {
-            narrativeScanner = new NarrativeScanner(textAttributeProvider);
+            narrativeScanner = new NarrativeScanner(getJBehaveProject(), textAttributeProvider);
         }
         return narrativeScanner;
     }
     
     protected ITokenScanner getMiscScanner() {
         if (miscScanner == null) {
-            miscScanner = new MiscScanner(textAttributeProvider);
+            miscScanner = new MiscScanner(getJBehaveProject(), textAttributeProvider);
         }
         return miscScanner;
     }
     
     protected ITokenScanner getExampleTableScanner() {
         if (exampleTableScanner == null) {
-            exampleTableScanner = new ExampleTableScanner(textAttributeProvider);
+            exampleTableScanner = new ExampleTableScanner(getJBehaveProject(), textAttributeProvider);
         }
         return exampleTableScanner;
     }
