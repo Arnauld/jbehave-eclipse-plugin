@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jbehave.core.configuration.Keywords;
@@ -102,7 +103,8 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         new Label(projectComposite, SWT.NONE);
         new Label(projectComposite, SWT.NONE);
         
-        localizedKeywords = new TableViewer(projectComposite, SWT.BORDER | SWT.FULL_SELECTION);
+        localizedKeywords = new TableViewer(projectComposite, SWT.FULL_SELECTION | SWT.H_SCROLL
+                | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
         localizedKeywords.setColumnProperties(new String[] {"English", "Selected" });
         localizedKeywords.setContentProvider(ArrayContentProvider.getInstance());
         localizedKeywords.setLabelProvider(new KeywordTableLabelProvider());
@@ -110,6 +112,18 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         table = localizedKeywords.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
         table.setSize(371, 289);
+        table.setHeaderVisible(true);
+        table.setLinesVisible(true);
+     
+        // 1st column with task Description
+        TableColumn columnEn = new TableColumn(table, SWT.LEFT);
+        columnEn.setText("English");
+        columnEn.setWidth(150);
+        
+        // 1st column with task Description
+        TableColumn columnSel = new TableColumn(table, SWT.LEFT);
+        columnSel.setText("Selected");
+        columnSel.setWidth(150);
         
         reload();
         updatePageWithPrefs();

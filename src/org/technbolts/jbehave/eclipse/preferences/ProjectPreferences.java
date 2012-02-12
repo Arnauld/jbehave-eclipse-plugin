@@ -1,5 +1,6 @@
 package org.technbolts.jbehave.eclipse.preferences;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.osgi.service.prefs.BackingStoreException;
@@ -39,6 +40,7 @@ public class ProjectPreferences {
 
     public void store() throws BackingStoreException {
         helper.putString(LANGUAGE, storyLanguage);
+        helper.putString(LANGUAGES, StringUtils.join(availableStoryLanguages,","));
         helper.putBoolean(USE_PROJECT_SETTINGS, useProjectSettings);
         helper.flush();
     }
