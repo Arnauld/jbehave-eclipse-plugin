@@ -58,6 +58,8 @@ import org.technbolts.util.Visitor;
 
 public class StoryEditor extends TextEditor {
 
+    public static final String EDITOR_ID = "org.technbolts.jbehave.eclipse.editors.story.StoryEditor";
+    
 	private ColorManager colorManager;
     private ShowOutlineAction showOutline;
     private JumpToDeclarationAction jumpToDeclaration;

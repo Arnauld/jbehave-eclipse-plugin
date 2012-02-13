@@ -115,12 +115,12 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
      
-        // 1st column with task Description
+        // English column serves as reference
         TableColumn columnEn = new TableColumn(table, SWT.LEFT);
         columnEn.setText("English");
         columnEn.setWidth(150);
         
-        // 1st column with task Description
+        // selected locale column
         TableColumn columnSel = new TableColumn(table, SWT.LEFT);
         columnSel.setText("Selected");
         columnSel.setWidth(150);

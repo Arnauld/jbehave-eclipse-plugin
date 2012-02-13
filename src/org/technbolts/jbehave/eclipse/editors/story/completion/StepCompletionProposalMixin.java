@@ -37,10 +37,7 @@ public class StepCompletionProposalMixin {
         
         String label = trait.getLabel();
         // remove step keyword if any, information is provided through the icon
-        if(LineParser.isStepIgnoringCase(trait.getJBehaveProject(), label)) {
-            int indexOf = label.indexOf(' ');
-            label = label.substring(indexOf).trim();
-        }
+        label = LineParser.extractStepSentence(trait.getJBehaveProject(), label);
         
         Matcher matcher = parameterPattern.matcher(label);
         int prev = 0;

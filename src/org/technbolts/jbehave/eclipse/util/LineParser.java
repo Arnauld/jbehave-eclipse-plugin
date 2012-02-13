@@ -1,9 +1,11 @@
 package org.technbolts.jbehave.eclipse.util;
 
 import static org.technbolts.util.StringEnhancer.enhanceString;
+import static org.technbolts.util.Strings.s;
 
 import org.jbehave.core.steps.StepType;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.util.StringEnhancer;
 import org.technbolts.util.Strings;
 
 public class LineParser {
@@ -38,10 +40,16 @@ public class LineParser {
 
     
     public static int stepSentenceIndex(JBehaveProject project, String line) {
-        if(!isStepIgnoringCase(project, line))
-            return 0;
-        int indexOf = line.indexOf(' '); // TODO: Handle when keyword contains more than one word
-        return indexOf+1;
+        StringEnhancer enhanced = enhanceString(line);
+        for(String prefix : s(//
+                project.lGiven(true), //
+                project.lWhen(true), //
+                project.lThen(true), //
+                project.lAnd(true))) {
+            if(enhanced.startsIgnoringCaseWith(prefix))
+                return prefix.length();
+        }
+        return 0;
     }
     
     /**
@@ -61,18 +69,13 @@ public class LineParser {
     }
 
     public static String stepType(JBehaveProject project, String stepLine) {
-        if(isStepIgnoringCase(project, stepLine)) {
-            int indexOf = stepLine.indexOf(' ');
-            String localizedKeyword = stepLine.substring(0, indexOf);
-            if (localizedKeyword.equalsIgnoreCase(project.lWhen(false))) {
-            	return StepType.WHEN.name();
-            } else if (localizedKeyword.equalsIgnoreCase(project.lGiven(false))) {
-            	return StepType.GIVEN.name();
-            } else if (localizedKeyword.equalsIgnoreCase(project.lThen(false))) {
-            	return StepType.THEN.name();
-            }
-        }
+        StringEnhancer enhanced = enhanceString(stepLine);
+        if(enhanced.startsIgnoringCaseWith(project.lWhen(true)))
+            return StepType.WHEN.name();
+        else if(enhanced.startsIgnoringCaseWith(project.lGiven(true)))
+            return StepType.GIVEN.name();
+        else if(enhanced.startsIgnoringCaseWith(project.lThen(true)))
+            return StepType.THEN.name();
         return null;
     }
-
 }

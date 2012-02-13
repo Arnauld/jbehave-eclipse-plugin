@@ -8,6 +8,10 @@ import java.util.regex.Pattern;
 
 public class Strings {
     
+    public static String[] s(String...args) {
+        return args;
+    }
+    
     public static String getSubLineUntilOffset(String text, int offset) {
         String analyzedPart = text.substring(0, Math.min(offset, text.length()));
         String[] lines = analyzedPart.split("[\\n\\r]+");

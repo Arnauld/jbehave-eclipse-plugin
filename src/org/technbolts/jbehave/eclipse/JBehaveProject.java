@@ -47,6 +47,11 @@ public class JBehaveProject {
     private LocalizedKeywords localizedKeywords;
     
     private CharTree<JBKeyword> kwTree;
+    //
+    private ReadWriteLock rwLock = new ReentrantReadWriteLock();
+
+    private ProjectPreferences projectPreferences;
+
 
 	private static String plusSpace(String aString, boolean wantSpace) {
 		return wantSpace ? aString + " " : aString;
@@ -155,10 +160,6 @@ public class JBehaveProject {
     public IProject getProject() {
         return project;
     }
-    
-    private ReadWriteLock rwLock = new ReentrantReadWriteLock();
-
-    private ProjectPreferences projectPreferences;
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
         boolean rAcquired = true;

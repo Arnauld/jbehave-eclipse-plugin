@@ -8,6 +8,7 @@ import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
+import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter;
@@ -70,7 +71,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     private void parseStep(String stepContent, final int initialOffset) {
         logln("parseStep(" + stepContent + ", offset: " + initialOffset + ", stepLine.length: " + stepContent.length());
         int offset = initialOffset;
-        int stepSep = stepContent.indexOf(' ');
+        int stepSep = LineParser.stepSentenceIndex(jbehaveProject, stepContent);
          
         emit(keywordToken, offset, stepSep+1);
         offset += stepSep+1;

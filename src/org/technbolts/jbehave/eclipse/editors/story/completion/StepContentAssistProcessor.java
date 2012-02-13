@@ -81,7 +81,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             if(isAndCase) {
                 StoryPart part = new StoryPartDocumentUtils(jbehaveProject).findStoryPartAtOffset(document, offset).get();
                 JBKeyword kw = part.getPreferredKeyword();
-                int indexOf = lineStart.indexOf(' ');
+                int indexOf = jbehaveProject.lAnd(false).length();
                 
                 stepStartUsedForSearch = kw.asString(jbehaveProject.getLocalizedKeywords()) + lineStart.substring(indexOf);
             }
@@ -116,8 +116,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 else {
                     complete = pStep.potentialStep.fullStep();
                     if(isAndCase) {
-                        int kwIndex = complete.indexOf(' ');
-                        complete = jbehaveProject.lAnd(false) + complete.substring(kwIndex);
+                        complete = jbehaveProject.lAnd(false) + " " + pStep.potentialStep.stepPattern;
                     }
                     templateContext = contextFullLine;
                     replacementRegion = regionComplete;

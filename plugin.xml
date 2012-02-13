@@ -153,4 +153,13 @@
         </enabledWhen>
       </page>
     </extension>
+ <extension
+       point="org.eclipse.ui.views">
+    <view
+          class="org.technbolts.jbehave.eclipse.editors.story.StoryView"
+          icon="icons/editor.png"
+          id="org.technbolts.jbehave.eclipse.editors.story.StoryView"
+          name="JBehave">
+    </view>
+ </extension>
 </plugin>
