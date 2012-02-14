@@ -12,14 +12,14 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
 
 public class StepCompletionProposal implements ICompletionProposal,
     ICompletionProposalExtension4,    
     ICompletionProposalExtension5, ICompletionProposalExtension6, StepCompletionProposalMixin.Trait {
 
-    private final JBehaveProject jbehaveProject;
+    private final LocalizedStepSupport jbehaveProject;
     private final Region replacementRegion;
     private final String complete;
     private final String label;
@@ -27,7 +27,7 @@ public class StepCompletionProposal implements ICompletionProposal,
     private StyledString styledString;
     private IContextInformation contextInformation;
 
-    public StepCompletionProposal(JBehaveProject jbehaveProject, Region replacementRegion, String complete, String label, WeightedCandidateStep pStep) {
+    public StepCompletionProposal(LocalizedStepSupport jbehaveProject, Region replacementRegion, String complete, String label, WeightedCandidateStep pStep) {
         super();
         this.jbehaveProject = jbehaveProject;
         this.replacementRegion = replacementRegion;
@@ -37,7 +37,7 @@ public class StepCompletionProposal implements ICompletionProposal,
     }
     
     @Override
-    public JBehaveProject getJBehaveProject() {
+    public LocalizedStepSupport getJBehaveProject() {
         return jbehaveProject;
     }
     

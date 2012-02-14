@@ -1,17 +1,17 @@
 package org.technbolts.jbehave.parser;
 
-import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;
 
 public class StoryPart {
-    private final JBehaveProject project;
+    private final LocalizedStepSupport project;
     private final int offset;
     private final String content;
     private JBKeyword preferredKeyword;
     
-    public StoryPart(JBehaveProject project, int offset, String content) {
+    public StoryPart(LocalizedStepSupport project, int offset, String content) {
         super();
         this.project = project;
         this.offset = offset;

@@ -3,7 +3,7 @@ package org.technbolts.jbehave.eclipse.editors.story.outline;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
-import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
@@ -11,11 +11,11 @@ import org.technbolts.util.New;
 
 public class OutlineModelBuilder extends StoryPartVisitor {
     
-    private final JBehaveProject jbehaveProject;
+    private final LocalizedStepSupport jbehaveProject;
     private final IDocument document;
     private List<OutlineModel> models;
     
-    public OutlineModelBuilder(JBehaveProject jbehaveProject, IDocument document) {
+    public OutlineModelBuilder(LocalizedStepSupport jbehaveProject, IDocument document) {
         this.jbehaveProject = jbehaveProject;
         this.document = document;
     }

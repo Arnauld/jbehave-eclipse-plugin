@@ -5,7 +5,7 @@ import java.util.List;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Region;
-import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.editors.story.StoryDocument;
 import org.technbolts.jbehave.parser.StoryParser;
 import org.technbolts.jbehave.parser.StoryPart;
@@ -15,8 +15,8 @@ import org.technbolts.util.Ref;
 
 public class StoryPartDocumentUtils {
     
-    private JBehaveProject project;
-    public StoryPartDocumentUtils(JBehaveProject project) {
+    private LocalizedStepSupport project;
+    public StoryPartDocumentUtils(LocalizedStepSupport project) {
         super();
         this.project = project;
     }

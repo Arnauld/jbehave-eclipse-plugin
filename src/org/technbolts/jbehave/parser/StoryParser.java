@@ -2,7 +2,7 @@ package org.technbolts.jbehave.parser;
 
 import java.util.List;
 
-import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharIterator;
 import org.technbolts.util.CharIterators;
@@ -10,13 +10,13 @@ import org.technbolts.util.CharTree;
 
 public class StoryParser {
     
-    private final JBehaveProject project;
+    private final LocalizedStepSupport localizedStepSupport;
     
-    public StoryParser(JBehaveProject project) {
+    public StoryParser(LocalizedStepSupport localizedStepSupport) {
         super();
-        if(project==null)
+        if(localizedStepSupport==null)
             throw new IllegalArgumentException();
-        this.project = project;
+        this.localizedStepSupport = localizedStepSupport;
     }
     
     public List<StoryPart> parse(CharSequence content) {
@@ -34,7 +34,7 @@ public class StoryParser {
     }
 
     public void parse(CharIterator it, int baseOffset, StoryPartVisitor visitor) {
-        CharTree<JBKeyword> kwTree = project.sharedKeywordCharTree();
+        CharTree<JBKeyword> kwTree = localizedStepSupport.sharedKeywordCharTree();
         int offset = baseOffset;
         Line line = new Line();
         Block block = new Block();
@@ -78,7 +78,7 @@ public class StoryParser {
         public void emitTo(StoryPartVisitor visitor) {
             if(buffer.length()>0) {
                 String content = buffer.toString();
-                StoryPart part = new StoryPart(project, offset, content);
+                StoryPart part = new StoryPart(localizedStepSupport, offset, content);
                 JBKeyword partKeyword = part.extractKeyword();
                 if(partKeyword!=null && partKeyword.isStep()) {
                     if(partKeyword==JBKeyword.And) {

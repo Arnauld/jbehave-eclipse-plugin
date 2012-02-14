@@ -35,7 +35,7 @@ import org.technbolts.util.Visitor;
 
 import fj.Effect;
 
-public class JBehaveProject {
+public class JBehaveProject implements LocalizedStepSupport {
     private static Logger log = LoggerFactory.getLogger(JBehaveProject.class);
 
     private IProject project;
@@ -75,15 +75,27 @@ public class JBehaveProject {
         kwTree = createKeywordCharTree();
     }
     
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#getLocale()
+     */
+    @Override
     public Locale getLocale() {
         return storyLocale;
     }
     
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#sharedKeywordCharTree()
+     */
+    @Override
     public CharTree<JBKeyword> sharedKeywordCharTree() {
         return kwTree;
     }
     
-     public LocalizedKeywords getLocalizedKeywords() {
+     /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#getLocalizedKeywords()
+     */
+    @Override
+    public LocalizedKeywords getLocalizedKeywords() {
         return localizedKeywords;
     }
     
@@ -97,42 +109,94 @@ public class JBehaveProject {
         return cn;
     }
     
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lGiven(boolean)
+     */
+    @Override
     public String lGiven(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.given(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lAnd(boolean)
+     */
+    @Override
     public String lAnd(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.and(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lAsA(boolean)
+     */
+    @Override
     public String lAsA(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.asA(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lExamplesTable(boolean)
+     */
+    @Override
     public String lExamplesTable(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.examplesTable(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lGivenStories(boolean)
+     */
+    @Override
     public String lGivenStories(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.givenStories(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lIgnorable(boolean)
+     */
+    @Override
     public String lIgnorable(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.ignorable(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lInOrderTo(boolean)
+     */
+    @Override
     public String lInOrderTo(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.inOrderTo(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lIWantTo(boolean)
+     */
+    @Override
     public String lIWantTo(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.iWantTo(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lMeta(boolean)
+     */
+    @Override
     public String lMeta(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.meta(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lNarrative(boolean)
+     */
+    @Override
     public String lNarrative(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.narrative(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lScenario(boolean)
+     */
+    @Override
     public String lScenario(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.scenario(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lThen(boolean)
+     */
+    @Override
     public String lThen(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.then(), withTrailingSpace);
     }
+    /* (non-Javadoc)
+     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lWhen(boolean)
+     */
+    @Override
     public String lWhen(boolean withTrailingSpace) {
         return plusSpace(localizedKeywords.when(), withTrailingSpace);
     }

@@ -10,20 +10,20 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
-import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
 
 public class StepTemplateProposal extends TemplateProposal implements 
         ICompletionProposalExtension4, ICompletionProposalExtension5,
         ICompletionProposalExtension6, StepCompletionProposalMixin.Trait {
     
-    private final JBehaveProject jbehaveProject;
+    private final LocalizedStepSupport jbehaveProject;
     private final String complete;
     private final String label;
     private final WeightedCandidateStep weightedCandidateStep;
 
     public StepTemplateProposal(
-            JBehaveProject jbehaveProject, //
+            LocalizedStepSupport jbehaveProject, //
             Template template, TemplateContext context, IRegion region, 
             String complete, String label, WeightedCandidateStep weightedCandidateStep) {
         super(template, context, region, null, 0);
@@ -34,7 +34,7 @@ public class StepTemplateProposal extends TemplateProposal implements
     }
     
     @Override
-    public JBehaveProject getJBehaveProject() {
+    public LocalizedStepSupport getJBehaveProject() {
         return jbehaveProject;
     }
     

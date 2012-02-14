@@ -21,7 +21,7 @@ import com.google.common.cache.CacheLoader;
  * Candidate Step, prevent name clash with jbehave thus one uses potential instead.
  */
 public class PotentialStep {
-    private final JBehaveProject project;
+    private final LocalizedStepSupport project;
     public final IMethod method;
     public final IAnnotation annotation;
     public final StepType stepType;
@@ -29,7 +29,7 @@ public class PotentialStep {
     private ParametrizedString parametrizedString;
     public final Integer priority;
     
-    public PotentialStep(JBehaveProject project, IMethod method, IAnnotation annotation, StepType stepType, String stepPattern, Integer priority) {
+    public PotentialStep(LocalizedStepSupport project, IMethod method, IAnnotation annotation, StepType stepType, String stepPattern, Integer priority) {
         super();
         this.project = project;
         this.method = method;
