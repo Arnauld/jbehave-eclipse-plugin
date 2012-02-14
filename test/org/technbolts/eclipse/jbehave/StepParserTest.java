@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jface.text.BadLocationException;
@@ -18,6 +19,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyled;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
@@ -37,7 +40,9 @@ public class StepParserTest {
     private StepLocator locator;
     private TextAttributeProvider textAttributeProvider;
     private Provider locatorProvider;
+    private JBehaveProject jbehaveProject;
     //
+    private static LocalizedStepSupport localizedSupport = createLocalizedStepSupport();
 
     private int offset;
     private TextAttribute exampleTableCell;
@@ -71,31 +76,40 @@ public class StepParserTest {
         when(locatorProvider.getStepLocator()).thenReturn(locator);
         
         this.offset = 0;
+        
+        jbehaveProject = mock(JBehaveProject.class);
+        when(jbehaveProject.getLocalizedStepSupport()).thenReturn(localizedSupport);
+    }
+
+    private static LocalizedStepSupport createLocalizedStepSupport() {
+        LocalizedStepSupport localizedSupport = new LocalizedStepSupport();
+        localizedSupport.setStoryLocale(Locale.ENGLISH);
+        return localizedSupport;
     }
 
     private static PotentialStep givenStep(String content) {
-        return new PotentialStep(null, null, StepType.GIVEN, content, 0);
+        return new PotentialStep(localizedSupport, null, null, StepType.GIVEN, content, 0);
     }
     
     private static PotentialStep whenStep(String content) {
-        return new PotentialStep(null, null, StepType.WHEN, content, 0);
+        return new PotentialStep(localizedSupport, null, null, StepType.WHEN, content, 0);
     }
     
     private static PotentialStep thenStep(String content) {
-        return new PotentialStep(null, null, StepType.THEN, content, 0);
+        return new PotentialStep(localizedSupport, null, null, StepType.THEN, content, 0);
     }
     
     @Test
     public void usecase_ex1() throws Exception {
         storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx02.story"));
         
-        when(locator.findFirstStep("a user named \"Bob\"")).thenReturn(new PotentialStep(null, null, StepType.GIVEN, "a user named \"$name\"", 0));
-        when(locator.findFirstStep("'Bob' clicks on the 'login' button")).thenReturn(new PotentialStep(null, null, StepType.WHEN, "'$who' clicks on the '$button' button", 0));
-        when(locator.findFirstStep("the 'password' field becomes 'red'")).thenReturn(new PotentialStep(null, null, StepType.THEN, "the '$field' field becomes '$color'", 0));
+        when(locator.findFirstStep("a user named \"Bob\"")).thenReturn(givenStep("a user named \"$name\""));
+        when(locator.findFirstStep("'Bob' clicks on the 'login' button")).thenReturn(whenStep("'$who' clicks on the '$button' button"));
+        when(locator.findFirstStep("the 'password' field becomes 'red'")).thenReturn(thenStep("the '$field' field becomes '$color'"));
         
         IDocument document= new Document(storyAsText);
         
-        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
         scanner.setRange(document, 0, document.getLength());
 
         checkToken(scanner, document, keywordAttr);
@@ -137,7 +151,7 @@ public class StepParserTest {
         
         offset = 1;
         
-        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
         scanner.setRange(document, offset, 161);
         
         checkToken(scanner, document, keywordAttr);
@@ -180,7 +194,7 @@ public class StepParserTest {
         
         offset = 1;
         
-        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
         scanner.setRange(document, offset, 161);
         
         checkToken(scanner, document, keywordAttr);
@@ -227,7 +241,7 @@ public class StepParserTest {
         
         offset = 0;
         
-        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
         scanner.setRange(document, offset, document.getLength());
         
         checkToken(scanner, document, keywordAttr);
@@ -273,7 +287,7 @@ public class StepParserTest {
         
         offset = 0;
         
-        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
         scanner.setRange(document, offset, document.getLength());
         
         checkToken(scanner, document, keywordAttr);
@@ -308,7 +322,7 @@ public class StepParserTest {
         
         offset = 0;
         
-        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
         scanner.setRange(document, offset, document.getLength());
         
         checkToken(scanner, document, keywordAttr);
@@ -337,7 +351,7 @@ public class StepParserTest {
         IDocument document= new Document(storyAsText);
         offset = 477;
         
-        StepScannerStyled scanner= new StepScannerStyled(locatorProvider, textAttributeProvider);
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
         scanner.setRange(document, offset, 179);
         
         checkToken(scanner, document, keywordAttr);
@@ -371,7 +385,7 @@ public class StepParserTest {
         int tokenOffset = scanner.getTokenOffset();
         int tokenLength = scanner.getTokenLength();
         System.out.print(tokenOffset + " ~> " + tokenLength);
-        System.out.println(" > �" + doc.get(tokenOffset, tokenLength) + "�");
+        System.out.println(" >>" + doc.get(tokenOffset, tokenLength) + "<<");
     }
     
     

@@ -6,14 +6,14 @@ import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;
 
 public class StoryPart {
-    private final LocalizedStepSupport project;
+    private final LocalizedStepSupport localizedStepSupport;
     private final int offset;
     private final String content;
     private JBKeyword preferredKeyword;
     
-    public StoryPart(LocalizedStepSupport project, int offset, String content) {
+    public StoryPart(LocalizedStepSupport localizedStepSupport, int offset, String content) {
         super();
-        this.project = project;
+        this.localizedStepSupport = localizedStepSupport;
         this.offset = offset;
         this.content = content;
     }
@@ -38,14 +38,14 @@ public class StoryPart {
      * @return
      */
     public String extractStepSentence() {
-        return LineParser.extractStepSentence(project, getContent());
+        return LineParser.extractStepSentence(localizedStepSupport, getContent());
     }
     
     /**
      * @see #isStepPart()
      */
     public String extractStepSentenceAndRemoveTrailingNewlines() {
-        return LineParser.extractStepSentenceAndRemoveTrailingNewlines(project, getContent());
+        return LineParser.extractStepSentenceAndRemoveTrailingNewlines(localizedStepSupport, getContent());
     }
     
     /**
@@ -83,7 +83,7 @@ public class StoryPart {
     }
     
     private CharTree<JBKeyword> defaultTree() {
-        return project.sharedKeywordCharTree();
+        return localizedStepSupport.sharedKeywordCharTree();
     }
 
     /**

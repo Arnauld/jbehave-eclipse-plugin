@@ -149,7 +149,7 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     
     protected abstract boolean isPartAccepted(StoryPart part);
 
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
     private StringBuilder builder = new StringBuilder();
     protected void logln(String string) {
         if(DEBUG)

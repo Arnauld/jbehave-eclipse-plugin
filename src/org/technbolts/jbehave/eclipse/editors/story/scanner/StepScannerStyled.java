@@ -73,12 +73,12 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
         int offset = initialOffset;
         int stepSep = LineParser.stepSentenceIndex(getLocalizedStepSupport(), stepContent);
          
-        emit(keywordToken, offset, stepSep+1);
-        offset += stepSep+1;
+        emit(keywordToken, offset, stepSep);
+        offset += stepSep;
         
         // remove any trailing newlines, and keep track to insert 
         // corresponding token in place
-        String rawAfterKeyword = stepContent.substring(stepSep+1);
+        String rawAfterKeyword = stepContent.substring(stepSep);
         ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(
                 Constants.commentLineMatcher, rawAfterKeyword);
         
