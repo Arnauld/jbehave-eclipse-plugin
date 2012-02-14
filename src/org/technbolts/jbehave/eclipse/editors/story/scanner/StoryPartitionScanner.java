@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
@@ -14,7 +15,7 @@ import org.technbolts.util.New;
 
 public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPartitionTokenScanner {
 
-    private final LocalizedStepSupport jbehaveProject;
+    private final LocalizedStepSupport localizedStepSupport;
     //
     private IDocument document;
     //
@@ -22,8 +23,8 @@ public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPart
     private Partition currentPartition;
     private List<Partition> partitions;
     
-    public StoryPartitionScanner(LocalizedStepSupport jbehaveProject) {
-        this.jbehaveProject = jbehaveProject;
+    public StoryPartitionScanner(JBehaveProject jbehaveProject) {
+        this.localizedStepSupport = jbehaveProject.getLocalizedStepSupport();
     }
     
     @Override
@@ -72,7 +73,7 @@ public class StoryPartitionScanner implements org.eclipse.jface.text.rules.IPart
                 push(part);
             }
         };
-        new StoryPartDocumentUtils(jbehaveProject).traverseStoryParts(document, visitor);
+        new StoryPartDocumentUtils(localizedStepSupport).traverseStoryParts(document, visitor);
     }
     
     private void push(StoryPart part) {

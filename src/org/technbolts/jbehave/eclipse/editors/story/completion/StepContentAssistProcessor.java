@@ -25,6 +25,7 @@ import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
@@ -42,6 +43,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
         try {
             IProject project = EditorUtils.findProject(viewer);
             JBehaveProject jbehaveProject = JBehaveProjectRegistry.get().getOrCreateProject(project);
+            LocalizedStepSupport localizedStepSupport = jbehaveProject.getLocalizedStepSupport();
 
             IDocument document = viewer.getDocument();
             int lineNo = document.getLineOfOffset(offset);
@@ -67,8 +69,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             if(StringUtils.isEmpty(lineStart)) {
                 return createKeywordCompletionProposals(offset, 0, viewer);
             }
-            else if(LineParser.isTheStartIgnoringCaseOfStep(jbehaveProject, lineStart) //
-                    && !LineParser.isStepType(jbehaveProject, lineStart)) {
+            else if(LineParser.isTheStartIgnoringCaseOfStep(localizedStepSupport, lineStart) //
+                    && !LineParser.isStepType(localizedStepSupport, lineStart)) {
                 return createKeywordCompletionProposals(lineOffset, lineStart.length(), viewer);
             }
             
@@ -77,20 +79,20 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             
             String stepStartUsedForSearch = stepStart;
             // special case: one must find the right type of step
-            boolean isAndCase = LineParser.isStepAndType(jbehaveProject, lineStart); 
+            boolean isAndCase = LineParser.isStepAndType(localizedStepSupport, lineStart); 
             if(isAndCase) {
-                StoryPart part = new StoryPartDocumentUtils(jbehaveProject).findStoryPartAtOffset(document, offset).get();
+                StoryPart part = new StoryPartDocumentUtils(localizedStepSupport).findStoryPartAtOffset(document, offset).get();
                 JBKeyword kw = part.getPreferredKeyword();
-                int indexOf = jbehaveProject.lAnd(false).length();
+                int indexOf = localizedStepSupport.lAnd(false).length();
                 
-                stepStartUsedForSearch = kw.asString(jbehaveProject.getLocalizedKeywords()) + lineStart.substring(indexOf);
+                stepStartUsedForSearch = kw.asString(localizedStepSupport.getLocalizedKeywords()) + lineStart.substring(indexOf);
             }
             
             Iterable<WeightedCandidateStep> candidateIter = StepLocator.getStepLocator(jbehaveProject).findCandidatesStartingWith(stepStartUsedForSearch);
             List<WeightedCandidateStep> candidates = Lists.toList(candidateIter);
             Collections.sort(candidates);
             
-            String stepEntry = LineParser.extractStepSentence(jbehaveProject, stepStart);
+            String stepEntry = LineParser.extractStepSentence(localizedStepSupport, stepStart);
             boolean hasStartOfStep = !StringUtils.isBlank(stepEntry);
             
             Region regionFullLine = new Region(lineOffset, lineStart.length());
@@ -116,7 +118,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 else {
                     complete = pStep.potentialStep.fullStep();
                     if(isAndCase) {
-                        complete = jbehaveProject.lAnd(false) + " " + pStep.potentialStep.stepPattern;
+                        complete = localizedStepSupport.lAnd(false) + " " + pStep.potentialStep.stepPattern;
                     }
                     templateContext = contextFullLine;
                     replacementRegion = regionComplete;
@@ -142,7 +144,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                                 displayString);
                             break;
                         default:
-                            proposal = new StepCompletionProposal(jbehaveProject, replacementRegion, complete, displayString, pStep);
+                            proposal = new StepCompletionProposal(localizedStepSupport, replacementRegion, complete, displayString, pStep);
                     }
                     proposals.add(proposal);
                 }
@@ -152,7 +154,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                             lineStart, 
                             displayString, 
                             StoryContextType.STORY_CONTEXT_TYPE_ID, templateText, false);
-                    proposals.add(new StepTemplateProposal(jbehaveProject,
+                    proposals.add(new StepTemplateProposal(localizedStepSupport,
                             template,
                             templateContext, replacementRegion, complete, displayString, pStep));
                 }

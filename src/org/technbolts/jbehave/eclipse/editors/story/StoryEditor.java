@@ -39,6 +39,7 @@ import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.EditorActionDefinitionIds;
 import org.technbolts.jbehave.eclipse.editors.EditorMessages;
@@ -292,8 +293,12 @@ public class StoryEditor extends TextEditor {
     }
     
     public List<OutlineModel> getOutlineModels() {
-        OutlineModelBuilder builder = new OutlineModelBuilder(getJBehaveProject(), getInputDocument());
+        OutlineModelBuilder builder = new OutlineModelBuilder(getLocalizedStepSupport(), getInputDocument());
         return builder.build();
+    }
+
+    protected LocalizedStepSupport getLocalizedStepSupport() {
+        return getJBehaveProject().getLocalizedStepSupport();
     }
 
     public void addTextListener(ITextListener textListener) {

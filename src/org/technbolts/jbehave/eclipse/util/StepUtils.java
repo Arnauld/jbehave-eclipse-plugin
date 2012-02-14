@@ -29,7 +29,9 @@ public class StepUtils {
         
         Point point = viewer.getSelectedRange();
         
-        final Ref<StoryPart> found = new StoryPartDocumentUtils(jbehaveProject).findStoryPartAtOffset(viewer.getDocument(), point.x);
+        final Ref<StoryPart> found = 
+                new StoryPartDocumentUtils(jbehaveProject.getLocalizedStepSupport())
+                        .findStoryPartAtOffset(viewer.getDocument(), point.x);
         if (found.isNull()) {
             return false;
         }

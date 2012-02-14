@@ -35,7 +35,7 @@ public class ScenarioScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected void emitPart(StoryPart part) {
         String content = part.getContent();
-        String kwString = jbehaveProject.lScenario(false);
+        String kwString = getLocalizedStepSupport().lScenario(false);
         int offset = part.getOffset();
         
         if(content.startsWith(kwString)) {

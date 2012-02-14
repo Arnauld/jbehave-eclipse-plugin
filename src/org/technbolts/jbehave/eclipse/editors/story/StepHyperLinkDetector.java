@@ -9,6 +9,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.Constants;
@@ -32,8 +33,9 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
         }
         StoryDocument storyDocument = (StoryDocument)document;
         final JBehaveProject jbehaveProject = storyDocument.getJBehaveProject();
+        LocalizedStepSupport localizedStepSupport = jbehaveProject.getLocalizedStepSupport();
         
-        final Ref<StoryPart> found = new StoryPartDocumentUtils(jbehaveProject).findStoryPartAtRegion(document, region);
+        final Ref<StoryPart> found = new StoryPartDocumentUtils(localizedStepSupport).findStoryPartAtRegion(document, region);
         if (found.isNull()) {
             return NONE;
         }

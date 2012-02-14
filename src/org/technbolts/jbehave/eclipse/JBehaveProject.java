@@ -13,7 +13,6 @@ import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IMemberValuePair;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
-import org.jbehave.core.i18n.LocalizedKeywords;
 import org.jbehave.core.steps.PatternVariantBuilder;
 import org.jbehave.core.steps.StepType;
 import org.osgi.service.prefs.BackingStoreException;
@@ -25,9 +24,7 @@ import org.technbolts.eclipse.jdt.methodcache.Containers;
 import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
 import org.technbolts.jbehave.eclipse.preferences.ProjectPreferences;
-import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.C2;
-import org.technbolts.util.CharTree;
 import org.technbolts.util.LocaleUtils;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.StringEnhancer;
@@ -35,31 +32,28 @@ import org.technbolts.util.Visitor;
 
 import fj.Effect;
 
-public class JBehaveProject implements LocalizedStepSupport {
+public class JBehaveProject {
     private static Logger log = LoggerFactory.getLogger(JBehaveProject.class);
 
     private IProject project;
     //
     private MethodPerPackageFragmentRootCache<PotentialStep> cache;
-
-    private Locale storyLocale;
-
-    private LocalizedKeywords localizedKeywords;
-    
-    private CharTree<JBKeyword> kwTree;
     //
     private ReadWriteLock rwLock = new ReentrantReadWriteLock();
-
+    //
     private ProjectPreferences projectPreferences;
+    //
+    private LocalizedStepSupport localizedStepSupport;
+    private Locale storyLocale;
+    //
+    private AtomicInteger comod = new AtomicInteger();
+    private volatile int rebuildTick = -1;
+    //
 
-
-	private static String plusSpace(String aString, boolean wantSpace) {
-		return wantSpace ? aString + " " : aString;
-	}
-	
     public JBehaveProject(IProject project) {
         this.project = project;
         this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(newCallback());
+        this.localizedStepSupport = new LocalizedStepSupport();
         this.reloadProjectPreferences();
     }
     
@@ -71,136 +65,17 @@ public class JBehaveProject implements LocalizedStepSupport {
             log.error("Failed to load project preferences", e);
         }
         storyLocale = LocaleUtils.createLocaleFromCode(projectPreferences.getStoryLanguage(), Locale.ENGLISH);
-        localizedKeywords = new LocalizedKeywords(storyLocale);
-        kwTree = createKeywordCharTree();
+        localizedStepSupport.setStoryLocale(storyLocale);
     }
     
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#getLocale()
-     */
-    @Override
+    public LocalizedStepSupport getLocalizedStepSupport() {
+        return localizedStepSupport;
+    }
+    
     public Locale getLocale() {
         return storyLocale;
     }
     
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#sharedKeywordCharTree()
-     */
-    @Override
-    public CharTree<JBKeyword> sharedKeywordCharTree() {
-        return kwTree;
-    }
-    
-     /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#getLocalizedKeywords()
-     */
-    @Override
-    public LocalizedKeywords getLocalizedKeywords() {
-        return localizedKeywords;
-    }
-    
-    public CharTree<JBKeyword> createKeywordCharTree() {
-        LocalizedKeywords keywords = getLocalizedKeywords();
-        CharTree<JBKeyword> cn = new CharTree<JBKeyword>('/', null);
-        for(JBKeyword kw : JBKeyword.values()) {
-            String asString = kw.asString(keywords);
-            cn.push(asString, kw);
-        }
-        return cn;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lGiven(boolean)
-     */
-    @Override
-    public String lGiven(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.given(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lAnd(boolean)
-     */
-    @Override
-    public String lAnd(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.and(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lAsA(boolean)
-     */
-    @Override
-    public String lAsA(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.asA(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lExamplesTable(boolean)
-     */
-    @Override
-    public String lExamplesTable(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.examplesTable(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lGivenStories(boolean)
-     */
-    @Override
-    public String lGivenStories(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.givenStories(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lIgnorable(boolean)
-     */
-    @Override
-    public String lIgnorable(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.ignorable(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lInOrderTo(boolean)
-     */
-    @Override
-    public String lInOrderTo(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.inOrderTo(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lIWantTo(boolean)
-     */
-    @Override
-    public String lIWantTo(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.iWantTo(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lMeta(boolean)
-     */
-    @Override
-    public String lMeta(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.meta(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lNarrative(boolean)
-     */
-    @Override
-    public String lNarrative(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.narrative(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lScenario(boolean)
-     */
-    @Override
-    public String lScenario(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.scenario(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lThen(boolean)
-     */
-    @Override
-    public String lThen(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.then(), withTrailingSpace);
-    }
-    /* (non-Javadoc)
-     * @see org.technbolts.jbehave.eclipse.LocalizedStepSupport#lWhen(boolean)
-     */
-    @Override
-    public String lWhen(boolean withTrailingSpace) {
-        return plusSpace(localizedKeywords.when(), withTrailingSpace);
-    }
-
     private C2<IMethod, Container<PotentialStep>> newCallback() {
         return new C2<IMethod, Container<PotentialStep>>() {
          public void op(IMethod method, Container<PotentialStep> container) {
@@ -212,9 +87,6 @@ public class JBehaveProject implements LocalizedStepSupport {
          };
       };
     }
-    
-    private AtomicInteger comod = new AtomicInteger();
-    private volatile int rebuildTick = -1;
     
     public void notifyChanges (IJavaElementDelta delta) {
         log.debug("Notify JDT change within project <"+project.getName()+"> " + delta);
@@ -343,7 +215,7 @@ public class JBehaveProject implements LocalizedStepSupport {
                 for(String stepPattern : patterns) {
                     if(stepPattern==null)
                         continue;
-                    container.add(new PotentialStep(this, method, annotation, stepType, stepPattern, priority));
+                    container.add(new PotentialStep(getLocalizedStepSupport(), method, annotation, stepType, stepPattern, priority));
                 }
             }
         }

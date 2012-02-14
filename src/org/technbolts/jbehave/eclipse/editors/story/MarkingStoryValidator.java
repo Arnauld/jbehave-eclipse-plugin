@@ -65,7 +65,7 @@ public class MarkingStoryValidator {
     }
 
     public void validate(Runnable afterApplyCallback) {
-        List<StoryPart> parts = new StoryPartDocumentUtils(project).getStoryParts(document);
+        List<StoryPart> parts = new StoryPartDocumentUtils(project.getLocalizedStepSupport()).getStoryParts(document);
         analyzeParts(parts, afterApplyCallback);
     }
 

@@ -71,7 +71,7 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     private void parseStep(String stepContent, final int initialOffset) {
         logln("parseStep(" + stepContent + ", offset: " + initialOffset + ", stepLine.length: " + stepContent.length());
         int offset = initialOffset;
-        int stepSep = LineParser.stepSentenceIndex(jbehaveProject, stepContent);
+        int stepSep = LineParser.stepSentenceIndex(getLocalizedStepSupport(), stepContent);
          
         emit(keywordToken, offset, stepSep+1);
         offset += stepSep+1;

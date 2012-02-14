@@ -6,38 +6,100 @@ import org.jbehave.core.i18n.LocalizedKeywords;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;
 
-public interface LocalizedStepSupport {
+public class LocalizedStepSupport {
 
-    Locale getLocale();
+    private CharTree<JBKeyword> kwTree;
 
-    CharTree<JBKeyword> sharedKeywordCharTree();
+    private Locale storyLocale;
 
-    LocalizedKeywords getLocalizedKeywords();
+    private LocalizedKeywords localizedKeywords;
 
-    String lGiven(boolean withTrailingSpace);
+    public void setStoryLocale(Locale storyLocale) {
+        this.storyLocale = storyLocale;
+        localizedKeywords = null;
+        kwTree = null;
+    }
 
-    String lAnd(boolean withTrailingSpace);
+    public Locale getLocale() {
+        return storyLocale;
+    }
 
-    String lAsA(boolean withTrailingSpace);
+    public CharTree<JBKeyword> sharedKeywordCharTree() {
+        if (kwTree == null)
+            kwTree = createKeywordCharTree();
+        return kwTree;
+    }
 
-    String lExamplesTable(boolean withTrailingSpace);
+    public LocalizedKeywords getLocalizedKeywords() {
+        if (localizedKeywords == null)
+            localizedKeywords = new LocalizedKeywords(storyLocale);
+        return localizedKeywords;
+    }
 
-    String lGivenStories(boolean withTrailingSpace);
+    protected CharTree<JBKeyword> createKeywordCharTree() {
+        LocalizedKeywords keywords = getLocalizedKeywords();
+        CharTree<JBKeyword> cn = new CharTree<JBKeyword>('/', null);
+        for (JBKeyword kw : JBKeyword.values()) {
+            String asString = kw.asString(keywords);
+            cn.push(asString, kw);
+        }
+        return cn;
+    }
 
-    String lIgnorable(boolean withTrailingSpace);
+    public String lGiven(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().given(), withTrailingSpace);
+    }
 
-    String lInOrderTo(boolean withTrailingSpace);
+    public String lAnd(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().and(), withTrailingSpace);
+    }
 
-    String lIWantTo(boolean withTrailingSpace);
+    public String lAsA(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().asA(), withTrailingSpace);
+    }
 
-    String lMeta(boolean withTrailingSpace);
+    public String lExamplesTable(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().examplesTable(), withTrailingSpace);
+    }
 
-    String lNarrative(boolean withTrailingSpace);
+    public String lGivenStories(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().givenStories(), withTrailingSpace);
+    }
 
-    String lScenario(boolean withTrailingSpace);
+    public String lIgnorable(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().ignorable(), withTrailingSpace);
+    }
 
-    String lThen(boolean withTrailingSpace);
+    public String lInOrderTo(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().inOrderTo(), withTrailingSpace);
+    }
 
-    String lWhen(boolean withTrailingSpace);
+    public String lIWantTo(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().iWantTo(), withTrailingSpace);
+    }
+
+    public String lMeta(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().meta(), withTrailingSpace);
+    }
+
+    public String lNarrative(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().narrative(), withTrailingSpace);
+    }
+
+    public String lScenario(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().scenario(), withTrailingSpace);
+    }
+
+    public String lThen(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().then(), withTrailingSpace);
+    }
+
+    public String lWhen(boolean withTrailingSpace) {
+        return plusSpace(getLocalizedKeywords().when(), withTrailingSpace);
+    }
+
+    private static String plusSpace(String aString, boolean wantSpace) {
+        return wantSpace ? aString + " " : aString;
+    }
 
 }

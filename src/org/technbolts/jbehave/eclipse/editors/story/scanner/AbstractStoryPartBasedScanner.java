@@ -14,6 +14,7 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.Constants;
@@ -134,12 +135,16 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
                     emitPart(part); //part are given in the absolute position
             }
         };
-        new StoryPartDocumentUtils(jbehaveProject).traverseStoryParts(document, visitor);
+        new StoryPartDocumentUtils(getLocalizedStepSupport()).traverseStoryParts(document, visitor);
         
         if(DEBUG) {
             System.out.println(builder);
             builder.setLength(0);
         }
+    }
+
+    protected LocalizedStepSupport getLocalizedStepSupport() {
+        return jbehaveProject.getLocalizedStepSupport();
     }
     
     protected abstract boolean isPartAccepted(StoryPart part);

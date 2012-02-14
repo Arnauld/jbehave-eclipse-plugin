@@ -8,6 +8,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.technbolts.eclipse.util.JDTUtils;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.util.HasHTMLComment;
 import org.technbolts.util.Visitor;
@@ -69,8 +70,9 @@ public class StepLocator {
     public Iterable<WeightedCandidateStep> findCandidatesStartingWith(final String stepLine) {
         
         try {
-            final String searchedType = LineParser.stepType(project, stepLine);
-            final String stepEntry = LineParser.extractStepSentence(project, stepLine);
+            LocalizedStepSupport localizedStepSupport = project.getLocalizedStepSupport();
+            final String searchedType = LineParser.stepType(localizedStepSupport, stepLine);
+            final String stepEntry = LineParser.extractStepSentence(localizedStepSupport, stepLine);
             
             Visitor<PotentialStep, WeightedCandidateStep> findOne = new Visitor<PotentialStep, WeightedCandidateStep>() {
                 @Override

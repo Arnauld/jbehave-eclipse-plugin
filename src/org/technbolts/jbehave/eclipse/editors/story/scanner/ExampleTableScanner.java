@@ -40,7 +40,7 @@ public class ExampleTableScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected void emitPart(StoryPart part) {
         String content = part.getContent();
-        String kwString = jbehaveProject.lExamplesTable(false);
+        String kwString = getLocalizedStepSupport().lExamplesTable(false);
         int offset = part.getOffset();
         
         if(content.startsWith(kwString)) {

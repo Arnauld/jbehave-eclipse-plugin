@@ -45,7 +45,7 @@ public class MiscScanner extends AbstractStoryPartBasedScanner {
     
     private boolean handle(StoryPart part, JBKeyword kw, IToken token, Chain chain) {
         String content = part.getContent();
-        String kwString = kw.asString(jbehaveProject.getLocalizedKeywords());
+        String kwString = kw.asString(getLocalizedStepSupport().getLocalizedKeywords());
         if(content.startsWith(kwString)) {
             int length = kwString.length();
             int offset = part.getOffset();

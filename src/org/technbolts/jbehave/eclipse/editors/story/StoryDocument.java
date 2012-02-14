@@ -1,6 +1,7 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentEvent;
@@ -13,6 +14,7 @@ public class StoryDocument extends Document {
 
     private volatile List<StoryPart> parts;
     private JBehaveProject jbehaveProject;
+    private Locale lastLocale;
     
     public StoryDocument() {
         super();
@@ -38,8 +40,12 @@ public class StoryDocument extends Document {
     }
     
     private synchronized List<StoryPart> getOrGenerateStoryParts () {
+        if(lastLocale==null || !lastLocale.equals(jbehaveProject.getLocale())) {
+            invalidateStoryParts();
+            lastLocale = jbehaveProject.getLocale();
+        }
         if(parts==null) {
-            parts = new StoryParser(jbehaveProject).parse(get());
+            parts = new StoryParser(jbehaveProject.getLocalizedStepSupport()).parse(get());
         }
         return parts;
     }

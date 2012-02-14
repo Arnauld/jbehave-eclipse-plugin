@@ -3,6 +3,7 @@ package org.technbolts.eclipse.jbehave;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
@@ -12,16 +13,20 @@ import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.rules.IPartitionTokenScanner;
 import org.eclipse.jface.text.rules.IToken;
+import org.mockito.Mockito;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.StoryPartitionScanner;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class PartitionScannerTest {
-private String storyAsText;
+
+    private String storyAsText;
     
     @BeforeMethod
     public void setUp () throws IOException {
         storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx01.story"));
+        LocalizedStepSupport localizedSupport = mock(LocalizedStepSupport.class);
     }
 
     @Test
