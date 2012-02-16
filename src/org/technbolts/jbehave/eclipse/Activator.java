@@ -117,12 +117,21 @@ public class Activator extends AbstractUIPlugin {
 		super.stop(context);
 	}
 	
+	public KeywordImageRegistry getKeywordImageRegistry() {
+	    return new KeywordImageRegistry(getImageRegistry());
+	}
+	
 	@Override
 	protected void initializeImageRegistry(ImageRegistry registry) {
 	    super.initializeImageRegistry(registry);
 	    registry.put(ImageIds.STEP_GIVEN, getImageDescriptor("icons/bdd-g-blue.png"));
         registry.put(ImageIds.STEP_WHEN,  getImageDescriptor("icons/bdd-w-orange.png"));
         registry.put(ImageIds.STEP_THEN,  getImageDescriptor("icons/bdd-t-green.png"));
+        registry.put(ImageIds.STEP_AND,   getImageDescriptor("icons/bdd-a-lighterblue.png"));
+        //
+        registry.put(ImageIds.META,       getImageDescriptor("icons/bdd-m-pink.png"));
+        registry.put(ImageIds.STORY,      getImageDescriptor("icons/bdd-s-darkpink.png"));
+        registry.put(ImageIds.IGNORABLE,   getImageDescriptor("icons/bdd-i-cacadoie.png"));
         //
         registry.put(ImageIds.NARRATIVE,  getImageDescriptor("icons/bdd-n-darkred.png"));
         registry.put(ImageIds.SCENARIO,  getImageDescriptor("icons/bdd-s-darkpink.png"));

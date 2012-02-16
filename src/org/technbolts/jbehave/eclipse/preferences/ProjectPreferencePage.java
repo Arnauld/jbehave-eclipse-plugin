@@ -30,7 +30,7 @@ import org.jbehave.core.configuration.Keywords;
 import org.jbehave.core.i18n.LocalizedKeywords;
 import org.osgi.service.prefs.BackingStoreException;
 import org.technbolts.jbehave.eclipse.Activator;
-import org.technbolts.jbehave.eclipse.ImageIds;
+import org.technbolts.jbehave.eclipse.KeywordImageRegistry;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.LocaleUtils;
 
@@ -107,7 +107,7 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
                 | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER);
         localizedKeywords.setColumnProperties(new String[] {"English", "Selected" });
         localizedKeywords.setContentProvider(ArrayContentProvider.getInstance());
-        localizedKeywords.setLabelProvider(new KeywordTableLabelProvider());
+        localizedKeywords.setLabelProvider(new KeywordTableLabelProvider(Activator.getDefault().getKeywordImageRegistry()));
         localizedKeywords.setInput(JBKeyword.values());
         table = localizedKeywords.getTable();
         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -123,7 +123,7 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         // selected locale column
         TableColumn columnSel = new TableColumn(table, SWT.LEFT);
         columnSel.setText("Selected");
-        columnSel.setWidth(150);
+        columnSel.setWidth(250);
         
         reload();
         updatePageWithPrefs();
@@ -247,6 +247,11 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
     }
     
     private class KeywordTableLabelProvider extends LabelProvider implements ITableLabelProvider {
+        private KeywordImageRegistry keywordImageRegistry;
+
+        public KeywordTableLabelProvider(KeywordImageRegistry keywordImageRegistry) {
+            this.keywordImageRegistry = keywordImageRegistry;
+        }
 
         /* (non-Javadoc)
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
@@ -254,35 +259,7 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         @Override
         public Image getColumnImage(Object element, int columnIndex) {
             if(columnIndex==0) {
-                switch((JBKeyword)element) {
-                    case Given:
-                        return Activator.getDefault().getImageRegistry().get(ImageIds.STEP_GIVEN);
-                    case When:
-                        return Activator.getDefault().getImageRegistry().get(ImageIds.STEP_WHEN);
-                    case Then:
-                        return Activator.getDefault().getImageRegistry().get(ImageIds.STEP_THEN);
-                    case And:
-                        return null; // TODO create image for AND
-                    case GivenStories:
-                    case Meta:
-                    case MetaProperty:
-                        return null; // TODO create generic image for meta 
-                    case AsA:
-                    case InOrderTo:
-                    case IWantTo:
-                    case Narrative:
-                        return Activator.getDefault().getImageRegistry().get(ImageIds.NARRATIVE);
-                    case ExamplesTable:
-                    case ExamplesTableHeaderSeparator:
-                    case ExamplesTableIgnorableSeparator:
-                    case ExamplesTableRow:
-                    case ExamplesTableValueSeparator:
-                        return Activator.getDefault().getImageRegistry().get(ImageIds.EXAMPLE_TABLE);
-                    case Scenario:
-                        return Activator.getDefault().getImageRegistry().get(ImageIds.SCENARIO);
-                    case Ignorable:
-                        return null; // TODO create generic image for comment
-                }
+                return keywordImageRegistry.getImageFor((JBKeyword)element);
             }
             return null;
         }
