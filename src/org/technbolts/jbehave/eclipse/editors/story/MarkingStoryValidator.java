@@ -234,7 +234,7 @@ public class MarkingStoryValidator {
             potentials.put(stepSentence, list);
         }
 
-        StepLocator locator = StepLocator.getStepLocator(project);
+        StepLocator locator = project.getStepLocator();
         locator.traverseSteps(new Visitor<PotentialStep, Object>() {
             @Override
             public void visit(PotentialStep candidate) {

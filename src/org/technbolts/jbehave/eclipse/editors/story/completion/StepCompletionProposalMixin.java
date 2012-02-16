@@ -15,7 +15,7 @@ import org.technbolts.jbehave.eclipse.ImageIds;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.LineParser;
-import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
+import org.technbolts.jbehave.eclipse.util.WeightedCandidateStep;
 
 public class StepCompletionProposalMixin {
 

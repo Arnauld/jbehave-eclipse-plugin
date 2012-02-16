@@ -24,6 +24,7 @@ import org.technbolts.eclipse.jdt.methodcache.Containers;
 import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
 import org.technbolts.jbehave.eclipse.preferences.ProjectPreferences;
+import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.util.C2;
 import org.technbolts.util.LocaleUtils;
 import org.technbolts.util.ProcessGroup;
@@ -95,6 +96,10 @@ public class JBehaveProject {
     
     public IProject getProject() {
         return project;
+    }
+    
+    public StepLocator getStepLocator() {
+        return new StepLocator(this);
     }
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {

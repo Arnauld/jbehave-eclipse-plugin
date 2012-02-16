@@ -54,6 +54,7 @@ public class StepScannerStyledTest {
         localizedStepSupport.setStoryLocale(Locale.ENGLISH);
         jbehaveProject = mock(JBehaveProject.class);
         when(jbehaveProject.getLocalizedStepSupport()).thenReturn(localizedStepSupport);
+        when(jbehaveProject.getStepLocator()).thenReturn(new StepLocator(jbehaveProject));
         
         doAnswer(new Answer() {
             @SuppressWarnings("unchecked")

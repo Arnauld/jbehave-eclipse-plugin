@@ -11,7 +11,7 @@ import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
-import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
+import org.technbolts.jbehave.eclipse.util.WeightedCandidateStep;
 
 public class StepTemplateProposal extends TemplateProposal implements 
         ICompletionProposalExtension4, ICompletionProposalExtension5,

@@ -26,7 +26,7 @@ public abstract class Visitor<T,R> {
         return founds.peek();
     }
     
-    public Iterable<R> getFounds() {
+    public ConcurrentLinkedQueue<R> getFounds() {
         return founds;
     }
 }

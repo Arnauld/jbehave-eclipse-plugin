@@ -13,7 +13,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
-import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
+import org.technbolts.jbehave.eclipse.util.WeightedCandidateStep;
 
 public class StepCompletionProposal implements ICompletionProposal,
     ICompletionProposalExtension4,    

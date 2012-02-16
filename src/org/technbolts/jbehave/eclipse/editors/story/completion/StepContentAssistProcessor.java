@@ -27,9 +27,8 @@ import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.LineParser;
-import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
-import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
+import org.technbolts.jbehave.eclipse.util.WeightedCandidateStep;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.Lists;
@@ -88,7 +87,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 stepStartUsedForSearch = kw.asString(localizedStepSupport.getLocalizedKeywords()) + lineStart.substring(indexOf);
             }
             
-            Iterable<WeightedCandidateStep> candidateIter = StepLocator.getStepLocator(jbehaveProject).findCandidatesStartingWith(stepStartUsedForSearch);
+            Iterable<WeightedCandidateStep> candidateIter = jbehaveProject.getStepLocator().findCandidatesStartingWith(stepStartUsedForSearch);
             List<WeightedCandidateStep> candidates = Lists.toList(candidateIter);
             Collections.sort(candidates);
             

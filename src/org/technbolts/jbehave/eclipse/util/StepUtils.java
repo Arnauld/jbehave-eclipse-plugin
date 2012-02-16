@@ -59,7 +59,7 @@ public class StepUtils {
         cleanedStep = Strings.removeTrailingNewlines(cleanedStep);
         
         JBehaveProject jbehaveProject = JBehaveProjectRegistry.get().getOrCreateProject(project);
-        IJavaElement methodToJump = StepLocator.getStepLocator(jbehaveProject).findMethod(cleanedStep);
+        IJavaElement methodToJump = jbehaveProject.getStepLocator().findMethod(cleanedStep);
         // jump to method
         if (methodToJump != null) {
             JavaUI.openInEditor(methodToJump);
@@ -71,7 +71,7 @@ public class StepUtils {
     }
 
     public boolean jumpToMethod(String qualifiedName) throws PartInitException, JavaModelException {
-        IJavaElement methodToJump = StepLocator.getStepLocator(jbehaveProject).findMethodByQualifiedName(qualifiedName);
+        IJavaElement methodToJump = jbehaveProject.getStepLocator().findMethodByQualifiedName(qualifiedName);
         // jump to method
         if (methodToJump != null) {
             JavaUI.openInEditor(methodToJump);

@@ -18,6 +18,8 @@ import org.jbehave.core.steps.StepType;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
@@ -25,12 +27,12 @@ import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.StepScannerStyled;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
-import org.technbolts.jbehave.eclipse.util.StepLocator.Provider;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class StepParserTest {
-    
+    private Logger log = LoggerFactory.getLogger(StepParserTest.class);
+
     private String storyAsText;
     private TextAttribute defaultAttr;
     private TextAttribute keywordAttr;
@@ -39,7 +41,6 @@ public class StepParserTest {
     private TextAttribute exampleTableSep;
     private StepLocator locator;
     private TextAttributeProvider textAttributeProvider;
-    private Provider locatorProvider;
     private JBehaveProject jbehaveProject;
     //
     private static LocalizedStepSupport localizedSupport = createLocalizedStepSupport();
@@ -72,13 +73,12 @@ public class StepParserTest {
         when(textAttributeProvider.get(TextStyle.STEP_EXAMPLE_TABLE_CELL)).thenReturn(exampleTableCell);
         
         locator = mock(StepLocator.class);
-        locatorProvider = mock(StepLocator.Provider.class);
-        when(locatorProvider.getStepLocator()).thenReturn(locator);
         
         this.offset = 0;
         
         jbehaveProject = mock(JBehaveProject.class);
         when(jbehaveProject.getLocalizedStepSupport()).thenReturn(localizedSupport);
+        when(jbehaveProject.getStepLocator()).thenReturn(locator);
     }
 
     private static LocalizedStepSupport createLocalizedStepSupport() {
@@ -130,6 +130,29 @@ public class StepParserTest {
         checkToken(scanner, document, defaultAttr);
         checkToken(scanner, document, paramValueAttr);
         checkToken(scanner, document, defaultAttr);
+        
+        assertThat(offset, equalTo(document.getLength()));
+    }
+    @Test
+    public void usecase_ex2_light() throws Exception {
+        PotentialStep user = givenStep("a user named $username");
+        
+        storyAsText = IOUtils.toString(getClass().getResourceAsStream("/data/UseCaseEx03-light.story"));
+        when(locator.findFirstStep("a user named $username")).thenReturn(user);
+        
+        IDocument document= new Document(storyAsText);
+        
+        offset = 1;
+        
+        StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
+        scanner.setRange(document, offset, document.getLength()-offset);
+        
+        checkToken(scanner, document, keywordAttr);
+        checkToken(scanner, document, defaultAttr);
+        checkToken(scanner, document, paramAttr);
+        checkToken(scanner, document, defaultAttr);
+        
+        consumeRemaining(document, scanner);
         
         assertThat(offset, equalTo(document.getLength()));
     }
@@ -372,7 +395,7 @@ public class StepParserTest {
     }
     
     private void checkToken(StepScannerStyled scanner, IDocument document, Object jk) throws BadLocationException {
-        System.out.print(jk + " > ");
+        log.debug(jk + " > ");
         IToken token = scanner.nextToken();
         dumpState(scanner, document);
 
@@ -381,11 +404,10 @@ public class StepParserTest {
         offset += scanner.getTokenLength();
     }
     
-    private static void dumpState(StepScannerStyled scanner, IDocument doc) throws BadLocationException {
+    private void dumpState(StepScannerStyled scanner, IDocument doc) throws BadLocationException {
         int tokenOffset = scanner.getTokenOffset();
         int tokenLength = scanner.getTokenLength();
-        System.out.print(tokenOffset + " ~> " + tokenLength);
-        System.out.println(" >>" + doc.get(tokenOffset, tokenLength) + "<<");
+        log.debug(tokenOffset + " ~> " + tokenLength + " >>" + doc.get(tokenOffset, tokenLength) + "<<");
     }
     
     

@@ -15,10 +15,10 @@ import org.technbolts.util.Ref;
 
 public class StoryPartDocumentUtils {
     
-    private LocalizedStepSupport project;
-    public StoryPartDocumentUtils(LocalizedStepSupport project) {
+    private LocalizedStepSupport localizedStepSupport;
+    public StoryPartDocumentUtils(LocalizedStepSupport localizedStepSupport) {
         super();
-        this.project = project;
+        this.localizedStepSupport = localizedStepSupport;
     }
 
     public List<StoryPart> getStoryParts(IDocument document) {
@@ -32,7 +32,7 @@ public class StoryPartDocumentUtils {
             ((StoryDocument)document).traverseStoryParts(visitor);
         }
         else {
-            new StoryParser(project).parse(document.get(), visitor);
+            new StoryParser(localizedStepSupport).parse(document.get(), visitor);
         }
     }
 
