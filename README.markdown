@@ -41,10 +41,10 @@ RELEASE NOTES
 =============
 
 
-Valentine's Day - Release notes (1.0.6-SNAPSHOT)
+Valentine's Day - Release notes (1.0.6)
 ------------------------------------------------
 
-** in progress **
+Download here [1.0.6](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.6.jar)
 
 * Thanks to [dschneller](https://github.com/dschneller) priority is now taken into account to disambiguate steps during validation phase ([Issue 27](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/27)) and on aliases too ([Issue 33](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/33)).
 * Outline view is available and story is displayed as tree ([Issue 22](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/22) and [Issue 8](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/8)), double click allows a quick jump into the corresponding part in the story.
