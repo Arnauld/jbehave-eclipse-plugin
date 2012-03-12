@@ -51,6 +51,7 @@ Valentine's Day - Release notes (1.0.6-SNAPSHOT)
 * Syntax highlighting has been enhanced to support **meta** properties. **Comments** should now be highlighted within an `ExampleTable`. ([Issue 21](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/21))
 * Validation of the story's structure has been relaxed to allow meta definition before Narratives ([Issue 20](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/20))
 * Several enhancements and fixes see [here](https://github.com/Arnauld/jbehave-eclipse-plugin/issues?milestone=3&sort=created&direction=desc&state=closed) for a more complete list.
+* Error markers enhanced to display tooltip, Ambiguous cases also list the all matching steps
 
 
 Thanks to [dschneller](https://github.com/dschneller) for creating issues, providing fixes and contributing to the project!!
