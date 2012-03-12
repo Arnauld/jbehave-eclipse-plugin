@@ -23,6 +23,7 @@ Preference page:
 Download
 ========================
 
+* [1.0.6](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.6.jar)
 * [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
 * [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
 
@@ -59,8 +60,6 @@ Thanks to [dschneller](https://github.com/dschneller) for creating issues, provi
 
 Daughter 1st Birthday - Release notes (1.0.5)
 ---------------------------------------------
-
-Download here [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
 
 * Fix and unify code for **jump to declaration** behavior (mouse and keybord shortcut use the same code, supports multiline steps and should not be anymore sensible to trailing newlines) [Brathax's followup on Issue 6](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/6#issuecomment-3395767).
 * Complete refactoring of the Java Scanner [Issue 15](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/15)
