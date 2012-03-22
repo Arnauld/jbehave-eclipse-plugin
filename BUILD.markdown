@@ -13,27 +13,30 @@ This file explains the current way to setup the project and build the plugin:
 
 In order to simplify dependency management, the plugin use maven in a unusual way: retreive the required dependencies and copy jar into a dedicated folder `/lib`. Maven is not used to build and generate the plugin: only to retrieve the external library dependencies.
 
-   mvn dependency:copy-dependencies
+    mvn dependency:copy-dependencies
 
 Project classpath rely on the **plugin nature** of the project: 
 
 * Eclipse plugin dependencies managed through the plugin nature and declared in `META-INF/MANIFEST.MF`
     
-    Require-Bundle: org.eclipse.ui,
-     org.eclipse.core.runtime,
-     org.eclipse.jface.text,
-     org.eclipse.ui.editors,
-     org.eclipse.jdt.core;bundle-version="3.3.1",
-     ...
+```
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.jdt.core;bundle-version="3.3.1",
+ ...
+```
 
 * External libraries dependency (retrieved through maven) from the plugin point of view are declared in: `build.properties` and `META-INF/MANIFEST.MF`. Thus both files must be updated according to modified or added dependencies. Test depdencies belongs to the project lib directory, but are not part of the `build.properties` and `META-INF/MANIFEST.MF` thus not exported within the plugin.
 
-    Bundle-ClassPath: .,
-	 lib/commons-collections-3.2.1.jar,
-	 lib/commons-io-2.1.jar,
-	 lib/commons-lang-2.5.jar,
-	 ...
-
+```
+Bundle-ClassPath: .,
+ lib/commons-collections-3.2.1.jar,
+ lib/commons-io-2.1.jar,
+ lib/commons-lang-2.5.jar,
+ ...
+```
 
 Libraries that are not part of the plugin executable (e.g. test libraries) must be manually added in the project library dependencies:
 
