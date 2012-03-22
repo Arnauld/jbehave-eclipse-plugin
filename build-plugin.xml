@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="plugin_export" name="build">
+	<target name="plugin_export">
+		<pde.exportPlugins destination="/Users/arnauld/Projects/workspace-sts/technbolts-jbehave-eclipse-plugin/file/plugins" exportSource="false" exportType="directory" plugins="technbolts-jbehave-eclipse-plugin" useJARFormat="true"/>
+	</target>
+</project>

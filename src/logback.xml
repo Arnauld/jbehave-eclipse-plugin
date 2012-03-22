@@ -7,7 +7,7 @@
 		</layout>
 	</appender>
 
-	<logger name="org.technbolts" level="warn" />
+	<logger name="org.technbolts" level="debug" />
 	<root level="error">
 		<appender-ref ref="STDOUT" />
 	</root>
