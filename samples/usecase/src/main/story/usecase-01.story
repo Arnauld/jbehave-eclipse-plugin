@@ -5,7 +5,7 @@ I want to iWantTo
 
 Scenario: my scenario 2
 
-Given a customer named 'bob' created from model 'default'
+Given a customer named 'bob' created from model 'fjkdjsfk'
 Given a user named $username
 Given a user named roy la poutre
 When user credits is 16 dollars
@@ -33,6 +33,7 @@ When user credits is 5 dollars
 
 When user credits is amount dollars
 
+Then Then I confirm that I am logged
 
 
 
