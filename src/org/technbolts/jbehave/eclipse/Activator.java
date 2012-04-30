@@ -18,12 +18,14 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.slf4j.LoggerFactory;
+import org.technbolts.jbehave.eclipse.console.JBehaveConsoleAppender;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
 import org.technbolts.util.ProcessGroup;
 
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
@@ -68,12 +70,36 @@ public class Activator extends AbstractUIPlugin {
 		initLogger();
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
     private void initLogger () {
 	    String logFile = getStateLocation().append("plugin.log").toOSString();
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+		
+		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+        encoder.setContext(loggerContext);
+        encoder.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
+        encoder.start();
 
-	    RollingFileAppender rfAppender = new RollingFileAppender();
+	    RollingFileAppender<ILoggingEvent> rfAppender = rollingFileLog(logFile, loggerContext, encoder);
+	    
+	    // ~~ console
+	    JBehaveConsoleAppender clAppender = new JBehaveConsoleAppender();
+	    clAppender.setEncoder(encoder);
+	    clAppender.start();
+
+	    // attach the rolling file appender to the logger of your choice
+	    Logger logbackLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+	    if(replaceFileBasedAppenders)
+	        logbackLogger.detachAndStopAllAppenders();
+	    logbackLogger.addAppender(rfAppender);
+	    logbackLogger.addAppender(clAppender);
+        
+	    
+	    logInfo("Log file at " + logFile);
+	}
+
+    protected RollingFileAppender<ILoggingEvent> rollingFileLog(String logFile, LoggerContext loggerContext,
+            PatternLayoutEncoder encoder) {
+        RollingFileAppender<ILoggingEvent> rfAppender = new RollingFileAppender<ILoggingEvent>();
 	    rfAppender.setContext(loggerContext);
         rfAppender.setFile(logFile);
 	    FixedWindowRollingPolicy rollingPolicy = new FixedWindowRollingPolicy();
@@ -84,29 +110,17 @@ public class Activator extends AbstractUIPlugin {
 	    rollingPolicy.setFileNamePattern("plugin.%i.log.zip");
 	    rollingPolicy.start();
 
-	    SizeBasedTriggeringPolicy triggeringPolicy = new SizeBasedTriggeringPolicy();
+	    SizeBasedTriggeringPolicy<ILoggingEvent> triggeringPolicy = new SizeBasedTriggeringPolicy<ILoggingEvent>();
 	    triggeringPolicy.setMaxFileSize("5MB");
 	    triggeringPolicy.start();
-
-	    PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-	    encoder.setContext(loggerContext);
-	    encoder.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
-	    encoder.start();
 
 	    rfAppender.setEncoder(encoder);
 	    rfAppender.setRollingPolicy(rollingPolicy);
 	    rfAppender.setTriggeringPolicy(triggeringPolicy);
 
 	    rfAppender.start();
-
-	    // attach the rolling file appender to the logger of your choice
-	    Logger logbackLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-	    if(replaceFileBasedAppenders)
-	        logbackLogger.detachAndStopAllAppenders();
-	    logbackLogger.addAppender(rfAppender);
-	    
-	    logInfo("Log file at " + logFile);
-	}
+        return rfAppender;
+    }
 
 	/*
 	 * (non-Javadoc)

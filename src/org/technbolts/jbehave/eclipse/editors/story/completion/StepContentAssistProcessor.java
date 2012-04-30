@@ -21,6 +21,8 @@ import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.jbehave.core.configuration.Keywords;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.TemplateUtils;
 import org.technbolts.jbehave.eclipse.util.LineParser;
@@ -34,6 +36,8 @@ import org.technbolts.util.New;
 import org.technbolts.util.Strings;
 
 public class StepContentAssistProcessor implements IContentAssistProcessor {
+    
+    private Logger logger = LoggerFactory.getLogger(StepContentAssistProcessor.class);
     
     @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, final int offset) {
@@ -58,6 +62,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                     lineStart = Strings.getSubLineUntilOffset(partitionText, index+1);
                 }
             }
+            
+            logger.debug("Autocompletion line start: <{}>", lineStart);
 
             if(StringUtils.isEmpty(lineStart)) {
                 return createKeywordCompletionProposals(offset, 0, viewer);
@@ -75,14 +81,21 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             if(isAndCase) {
                 StoryPart part = StoryPartDocumentUtils.findStoryPartAtOffset(document, offset).get();
                 JBKeyword kw = part.getPreferredKeyword();
+                if(kw == JBKeyword.And) {
+                    logger.debug("Autocompletion unable to disambiguate 'And' case");
+                    return null;
+                }
                 int indexOf = lineStart.indexOf(' ');
                 stepStartUsedForSearch = kw.asString() + lineStart.substring(indexOf);
             }
+            
+            logger.debug("Autocompletion step start used for search: <{}>", stepStartUsedForSearch);
             
             IProject project = EditorUtils.findProject(viewer);
             Iterable<WeightedCandidateStep> candidateIter = StepLocator.getStepLocator(project).findCandidatesStartingWith(stepStartUsedForSearch);
             List<WeightedCandidateStep> candidates = Lists.toList(candidateIter);
             Collections.sort(candidates);
+            logger.debug("Autocompletion found #{}", candidates.size());
             
             String stepEntry = LineParser.extractStepSentence(stepStart);
             boolean hasStartOfStep = !StringUtils.isBlank(stepEntry);
