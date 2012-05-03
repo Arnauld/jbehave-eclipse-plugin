@@ -82,7 +82,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 StoryPart part = StoryPartDocumentUtils.findStoryPartAtOffset(document, offset).get();
                 JBKeyword kw = part.getPreferredKeyword();
                 if(kw == JBKeyword.And) {
-                    logger.debug("Autocompletion unable to disambiguate 'And' case");
+                    logger.debug("Autocompletion unable to disambiguate 'And' case: previous story part is probably not a step");
                     return null;
                 }
                 int indexOf = lineStart.indexOf(' ');

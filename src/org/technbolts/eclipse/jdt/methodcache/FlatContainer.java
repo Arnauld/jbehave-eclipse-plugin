@@ -6,9 +6,14 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.util.Visitor;
 
 public class FlatContainer<E> extends Container<E> {
+    
+    private static Logger logger = LoggerFactory.getLogger(FlatContainer.class);
+    
     private ConcurrentLinkedQueue<E> elements = new ConcurrentLinkedQueue<E>();
 
     public FlatContainer(String containerName) {
@@ -28,6 +33,7 @@ public class FlatContainer<E> extends Container<E> {
     @Override
     public void traverse(Visitor<E, ?> visitor) {
         for (E element : elements) {
+            logger.debug("Traversing element: <{}>", element);
             visitor.visit(element);
             if (visitor.isDone())
                 return;

@@ -91,7 +91,7 @@ public class JBehaveProject {
                 }
             }
             
-            log.info("Traversing cache for project <"+project.getName()+">");
+            log.debug("Traversing cache for project <"+project.getName()+">");
             cache.traverse(visitor);
         }
         finally {

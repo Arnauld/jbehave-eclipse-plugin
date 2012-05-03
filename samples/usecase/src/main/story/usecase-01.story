@@ -33,7 +33,8 @@ When user credits is 5 dollars
 
 When user credits is amount dollars
 
-Then Then I confirm that I am logged
+Then I confirm that I am logged
+
 
 
 

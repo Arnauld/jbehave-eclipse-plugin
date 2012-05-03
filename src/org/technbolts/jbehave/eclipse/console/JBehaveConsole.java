@@ -5,7 +5,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
+import org.eclipse.ui.console.IConsoleView;
 import org.eclipse.ui.console.IOConsoleOutputStream;
+import org.eclipse.ui.part.IPageBookViewPage;
 
 public class JBehaveConsole extends org.eclipse.ui.console.IOConsole {
 
@@ -24,6 +26,11 @@ public class JBehaveConsole extends org.eclipse.ui.console.IOConsole {
     
     public IOConsoleOutputStream getOutMessageStream() {
         return outMessageStream;
+    }
+    
+    @Override
+    public IPageBookViewPage createPage(IConsoleView view) {
+        return super.createPage(view);
     }
     
     public static JBehaveConsole findConsole() {

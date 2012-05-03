@@ -13,6 +13,7 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
@@ -175,6 +176,9 @@ public class StoryEditor extends TextEditor {
             final IProject project = getInputFile().getProject();
             MarkingStoryValidator validator = new MarkingStoryValidator (project, getInputFile(), document);
             validator.removeExistingMarkers();
+            ISourceViewer sourceViewer = getSourceViewer();
+            if(sourceViewer!=null)
+                sourceViewer.resetVisibleRegion();
             validator.validate(Runnables.noop());
         }
         catch (Exception e)

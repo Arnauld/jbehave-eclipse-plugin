@@ -12,6 +12,8 @@ import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyleTheme;
 
+import ch.qos.logback.classic.Level;
+
 /**
  * Class used to initialize default preference values.
  */
@@ -61,6 +63,17 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         } catch (BackingStoreException e) {
             Activator.logError("Failed to initialize default preferences for ClassScanner", e);
         }
+        
+        LoggerPreferences loggerPreferences = new LoggerPreferences(DefaultScope.INSTANCE);
+        loggerPreferences.addEntry("org.technbolts", Level.INFO);
+        loggerPreferences.addEntry("org.technbolts.jbehave.eclipse.editors.story.completion", Level.DEBUG);
+        try {
+            loggerPreferences.store();
+        } catch (BackingStoreException e) {
+            Activator.logError("Failed to initialize default preferences for Logger", e);
+        }
+        
+        Activator.getDefault().initLogger();
     }
 
     private static void addEntries(ClassScannerPreferences prefs, ApplyOn applyOn, boolean exclude, String... patternsSeq) {

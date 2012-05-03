@@ -42,6 +42,11 @@ public class LoginSteps {
     @Alias("agent see the application home page")
     public void iSeeTheLogout() {
     }
+    
+    @When("I confirm that I am logged")
+    @Alias("agent see the application home page")
+    public void iConfirmImLogged() {
+    }
 
     @When("agent displays Login page")
     public void displayLoginPage() {

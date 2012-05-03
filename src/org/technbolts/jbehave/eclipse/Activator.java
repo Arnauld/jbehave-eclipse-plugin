@@ -12,14 +12,19 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.editors.text.templates.ContributionTemplateStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.LoggerFactory;
 import org.technbolts.jbehave.eclipse.console.JBehaveConsoleAppender;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType;
+import org.technbolts.jbehave.eclipse.preferences.LoggerEntry;
+import org.technbolts.jbehave.eclipse.preferences.LoggerPreferences;
 import org.technbolts.util.ProcessGroup;
 
 import ch.qos.logback.classic.Logger;
@@ -29,6 +34,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
+import fj.data.List;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -47,8 +53,6 @@ public class Activator extends AbstractUIPlugin {
 
     private String version;
 
-    private boolean replaceFileBasedAppenders = false;
-    
     /** Key to store custom templates. */
     private static final String CUSTOM_TEMPLATES_KEY = "org.technbolts.jbehave.customtemplates"; //$NON-NLS-1$
 	
@@ -67,35 +71,73 @@ public class Activator extends AbstractUIPlugin {
 		Bundle bundle = context.getBundle();
 		version = (String) bundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
 		plugin = this;
-		initLogger();
 	}
 	
-    private void initLogger () {
+    public void initLogger () {
 	    String logFile = getStateLocation().append("plugin.log").toOSString();
 		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 		
-		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(loggerContext);
-        encoder.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
-        encoder.start();
-
-	    RollingFileAppender<ILoggingEvent> rfAppender = rollingFileLog(logFile, loggerContext, encoder);
+		String patternRf = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n";
+		PatternLayoutEncoder encoderRf = createLoggerPattern(loggerContext, patternRf);
+	    RollingFileAppender<ILoggingEvent> rfAppender = rollingFileLog(logFile, loggerContext, encoderRf);
 	    
 	    // ~~ console
-	    JBehaveConsoleAppender clAppender = new JBehaveConsoleAppender();
-	    clAppender.setEncoder(encoder);
+	    String patternCl = "%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n";
+        PatternLayoutEncoder encoderCl = createLoggerPattern(loggerContext, patternCl);
+        JBehaveConsoleAppender clAppender = new JBehaveConsoleAppender();
+	    clAppender.setEncoder(encoderCl);
 	    clAppender.start();
 
-	    // attach the rolling file appender to the logger of your choice
+	    // attach the appenders to the root logger
 	    Logger logbackLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-	    if(replaceFileBasedAppenders)
-	        logbackLogger.detachAndStopAllAppenders();
+        logbackLogger.detachAndStopAllAppenders();
+        logbackLogger.setAdditive(false);
 	    logbackLogger.addAppender(rfAppender);
 	    logbackLogger.addAppender(clAppender);
-        
+	    resetLoggerLevels();
+	    
+	    // TODO: investigate why it's not fired on preference flush...
+	    getPreferenceStore().addPropertyChangeListener(new IPropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent event) {
+                resetLoggerLevels();
+            }
+        });
 	    
 	    logInfo("Log file at " + logFile);
 	}
+
+    protected PatternLayoutEncoder createLoggerPattern(LoggerContext loggerContext, String pattern) {
+        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+        encoder.setContext(loggerContext);
+        encoder.setPattern(pattern);
+        encoder.start();
+        return encoder;
+    }
+
+    public void resetLoggerLevels() {
+        logInfo("Reseting log levels");
+
+        try {
+            LoggerPreferences prefs = new LoggerPreferences();
+            prefs.load();
+            
+            LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+            for(Logger logger : loggerContext.getLoggerList()) {
+                // The level of the root logger cannot be set to null
+                if(!org.slf4j.Logger.ROOT_LOGGER_NAME.equals(logger.getName()))
+                    logger.setLevel(null);
+            }
+            List<LoggerEntry> loggerEntries = prefs.getLoggerEntries();
+            logInfo("About to define #" + loggerEntries.length() + "loggers");
+            for(LoggerEntry entry : loggerEntries) {
+                logInfo("Defining logger <" + entry.getLoggerName() + "> at level <" + entry.getLevel() + ">");
+                loggerContext.getLogger(entry.getLoggerName()).setLevel(entry.getLevel());
+            }
+        } catch (BackingStoreException e) {
+            logError("Failed to define logger levels", e);
+        }
+    }
 
     protected RollingFileAppender<ILoggingEvent> rollingFileLog(String logFile, LoggerContext loggerContext,
             PatternLayoutEncoder encoder) {
