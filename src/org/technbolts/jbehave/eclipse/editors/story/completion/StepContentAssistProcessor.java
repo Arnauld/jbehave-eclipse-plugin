@@ -51,6 +51,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             int index = offset;
             String lineStart = "";
 
+            boolean relyOnPartition = false;
             if(offset>0) {
                 // retrieve region before 'cause we are probably in the next one
                 ITypedRegion region = document.getPartition(offset-1);
@@ -61,8 +62,15 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 if(isWithinLine) {
                     lineStart = Strings.getSubLineUntilOffset(partitionText, index+1);
                 }
+                
+                // keep partition infos for logging, but search line content by an other way
+                if(!relyOnPartition) {
+                    logger.debug("Autocompletion retrieving content lineOffset: " + lineOffset + ", offset: " + offset);
+                    lineStart = document.get(lineOffset, offset-lineOffset);
+                }
             }
             
+            logger.debug("Autocompletion offset: {} partion text: <{}>", offset, partitionText);
             logger.debug("Autocompletion line start: <{}>", lineStart);
 
             if(StringUtils.isEmpty(lineStart)) {

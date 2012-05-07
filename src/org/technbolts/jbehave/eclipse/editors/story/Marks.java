@@ -50,7 +50,7 @@ public class Marks {
         return Code.lookup(marker.getAttribute(ERROR_CODE, -1), Code.Unknown);
     }
 
-    public static MarkData putStepsAsHtml(MarkData mark, List<PotentialStep> candidates) {
+    public static MarkData putStepsAsHtml(MarkData mark, Iterable<PotentialStep> candidates) {
         StringBuilder builder = new StringBuilder();
         builder.append("<ul>");
         for(PotentialStep pStep : candidates) {

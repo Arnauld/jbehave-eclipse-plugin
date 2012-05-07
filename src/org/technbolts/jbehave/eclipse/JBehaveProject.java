@@ -79,9 +79,11 @@ public class JBehaveProject {
                 rAcquired = false;
                 rwLock.writeLock().lock();
                 try {
-                    rebuildTick = mod;
-                    rebuild();
-                    
+                    mod = comod.get();
+                    if(rebuildTick!=mod) {
+                        rebuildTick = mod;
+                        rebuild();
+                    }
                     // Downgrade by acquiring read lock before releasing write lock
                     rwLock.readLock().lock();
                     rAcquired = true;

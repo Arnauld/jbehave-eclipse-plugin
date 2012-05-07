@@ -28,7 +28,7 @@
 <stringAttribute key="org.eclipse.jdt.launching.JAVA_COMMAND" value="java"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -consoleLog"/>
 <stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.pde.ui.workbenchClasspathProvider"/>
-<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:MaxPermSize=128M -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8008"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XX:MaxPermSize=128M &#10;-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8008&#10;-Dcom.sun.management.jmxremote &#10;-Dcom.sun.management.jmxremote.port=7777 &#10;-Dcom.sun.management.jmxremote.authenticate=false &#10;-Dcom.sun.management.jmxremote.password=false &#10;-Dcom.sun.management.jmxremote.ssl=true"/>
 <booleanAttribute key="pde.generated.config" value="false"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="org.eclipse.platform.ide"/>

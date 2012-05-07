@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -31,6 +32,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.rolling.FixedWindowRollingPolicy;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy;
@@ -81,19 +83,25 @@ public class Activator extends AbstractUIPlugin {
 		PatternLayoutEncoder encoderRf = createLoggerPattern(loggerContext, patternRf);
 	    RollingFileAppender<ILoggingEvent> rfAppender = rollingFileLog(logFile, loggerContext, encoderRf);
 	    
-	    // ~~ console
+	    // ~~ jbehave console
 	    String patternCl = "%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n";
         PatternLayoutEncoder encoderCl = createLoggerPattern(loggerContext, patternCl);
         JBehaveConsoleAppender clAppender = new JBehaveConsoleAppender();
 	    clAppender.setEncoder(encoderCl);
 	    clAppender.start();
+	    
+	    // console
+	    ConsoleAppender<ILoggingEvent> soutAppender = new ConsoleAppender<ILoggingEvent>();
+	    soutAppender.setEncoder(encoderRf);
+	    soutAppender.start();
 
 	    // attach the appenders to the root logger
 	    Logger logbackLogger = loggerContext.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
         logbackLogger.detachAndStopAllAppenders();
-        logbackLogger.setAdditive(false);
+        logbackLogger.setAdditive(true);
 	    logbackLogger.addAppender(rfAppender);
 	    logbackLogger.addAppender(clAppender);
+	    logbackLogger.addAppender(soutAppender);
 	    resetLoggerLevels();
 	    
 	    // TODO: investigate why it's not fired on preference flush...
@@ -238,6 +246,7 @@ public class Activator extends AbstractUIPlugin {
         return fContextTypeRegistry;
     }
 	
+	private AtomicInteger idGen = new AtomicInteger();
 	private ExecutorService executor = Executors.newFixedThreadPool(4, new ThreadFactory() {
 	    private ThreadGroup group = new ThreadGroup("AsyncExecutor") {
 	        @Override
@@ -248,7 +257,7 @@ public class Activator extends AbstractUIPlugin {
 	    };
 	    @Override
 	    public Thread newThread(Runnable r) {
-	        Thread thr = new Thread (group, r);
+	        Thread thr = new Thread (group, r, "JBehaveWorker#" + idGen.incrementAndGet());
 	        return thr;
 	    }
 	});

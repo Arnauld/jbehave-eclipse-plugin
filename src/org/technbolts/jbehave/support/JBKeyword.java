@@ -1,6 +1,7 @@
 package org.technbolts.jbehave.support;
 
 import org.jbehave.core.configuration.Keywords;
+import org.jbehave.core.steps.StepType;
 import org.technbolts.util.Filter;
 
 public enum JBKeyword {
@@ -173,6 +174,19 @@ public enum JBKeyword {
             case Then:
             case And:
                 return true;
+            default:
+                return false;
+        }
+    }
+    
+    public boolean isSameAs(StepType type) {
+        switch(type) {
+            case GIVEN: 
+                return this==Given;
+            case WHEN: 
+                return this==When;
+            case THEN: 
+                return this==Then;
             default:
                 return false;
         }
