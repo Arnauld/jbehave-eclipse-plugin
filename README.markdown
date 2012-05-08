@@ -1,7 +1,7 @@
 JBehave Eclipse plugin
 =======================
 
-**In progree** see [presentation](http://arnauld.github.com/jbehave-eclipse-plugin/)
+**In progress** see [presentation](http://arnauld.github.com/jbehave-eclipse-plugin/)
 
 Misc:
 
@@ -41,6 +41,14 @@ Simply drop the jar in your eclipse `plugins/` directory and restart your ide.
 RELEASE NOTES
 =============
 
+(In progress) [Neighbours' Day](http://fr.wikipedia.org/wiki/F%C3%AAte_des_voisins) - Release notes (1.0.7)
+-----------------------------------------------------------------------------------------------------------
+
+* Thanks to [dschneller](https://github.com/dschneller) for initiating the development of the localized keywords support ([Issue 3](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/3)) 
+ * A per project preference is available to set the locale that should be used. Merge the LocalizedKeywords branch // JBehave Localized Keywords, preferences...
+* Add JBehave Console to trace what happens under the hood ([Issue 45](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/45)). A new preference page allows to define level per logger (similar to logback and log4j settings)
+* Various fixes:
+  * Plugin fails to disambiguate steps matching different kind of steps [Issue 41](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/41)
 
 Valentine's Day - Release notes (1.0.6)
 ------------------------------------------------
