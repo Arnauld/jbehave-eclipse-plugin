@@ -2,6 +2,7 @@ package org.technbolts.jbehave.eclipse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -22,7 +23,10 @@ import org.technbolts.eclipse.jdt.methodcache.Container;
 import org.technbolts.eclipse.jdt.methodcache.Containers;
 import org.technbolts.eclipse.jdt.methodcache.MethodPerPackageFragmentRootCache;
 import org.technbolts.jbehave.eclipse.preferences.ClassScannerPreferences;
+import org.technbolts.jbehave.eclipse.preferences.ProjectPreferences;
+import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.util.C2;
+import org.technbolts.util.LocaleUtils;
 import org.technbolts.util.ProcessGroup;
 import org.technbolts.util.StringEnhancer;
 import org.technbolts.util.Visitor;
@@ -35,14 +39,45 @@ public class JBehaveProject {
     private IProject project;
     //
     private MethodPerPackageFragmentRootCache<PotentialStep> cache;
+    //
+    private ReadWriteLock rwLock = new ReentrantReadWriteLock();
+    //
+    private ProjectPreferences projectPreferences;
+    //
+    private LocalizedStepSupport localizedStepSupport;
+    private Locale storyLocale;
+    //
+    private AtomicInteger comod = new AtomicInteger();
+    private volatile int rebuildTick = -1;
+    //
 
     public JBehaveProject(IProject project) {
         this.project = project;
-        this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(
-                newCallback());
+        this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(newCallback());
+        this.localizedStepSupport = new LocalizedStepSupport();
+        this.reloadProjectPreferences();
     }
-
-    private static C2<IMethod, Container<PotentialStep>> newCallback() {
+    
+    private void reloadProjectPreferences() {
+        this.projectPreferences = new ProjectPreferences(getProject());
+        try {
+            projectPreferences.load();
+        } catch (BackingStoreException e) {
+            log.error("Failed to load project preferences", e);
+        }
+        storyLocale = LocaleUtils.createLocaleFromCode(projectPreferences.getStoryLanguage(), Locale.ENGLISH);
+        localizedStepSupport.setStoryLocale(storyLocale);
+    }
+    
+    public LocalizedStepSupport getLocalizedStepSupport() {
+        return localizedStepSupport;
+    }
+    
+    public Locale getLocale() {
+        return storyLocale;
+    }
+    
+    private C2<IMethod, Container<PotentialStep>> newCallback() {
         return new C2<IMethod, Container<PotentialStep>>() {
          public void op(IMethod method, Container<PotentialStep> container) {
              try {
@@ -54,9 +89,6 @@ public class JBehaveProject {
       };
     }
     
-    private AtomicInteger comod = new AtomicInteger();
-    private volatile int rebuildTick = -1;
-    
     public void notifyChanges (IJavaElementDelta delta) {
         log.debug("Notify JDT change within project <"+project.getName()+"> " + delta);
         comod.incrementAndGet();
@@ -66,7 +98,9 @@ public class JBehaveProject {
         return project;
     }
     
-    private ReadWriteLock rwLock = new ReentrantReadWriteLock();
+    public StepLocator getStepLocator() {
+        return new StepLocator(this);
+    }
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
         boolean rAcquired = true;
@@ -137,7 +171,7 @@ public class JBehaveProject {
         }
     }
     
-    private static void extractMethodSteps(IMethod method, Container<PotentialStep> container) throws JavaModelException {
+    private void extractMethodSteps(IMethod method, Container<PotentialStep> container) throws JavaModelException {
         StepType stepType = null;
         for(IAnnotation annotation : method.getAnnotations()) {
             String elementName = annotation.getElementName();
@@ -188,7 +222,7 @@ public class JBehaveProject {
                 for(String stepPattern : patterns) {
                     if(stepPattern==null)
                         continue;
-                    container.add(new PotentialStep(method, annotation, stepType, stepPattern, priority));
+                    container.add(new PotentialStep(getLocalizedStepSupport(), method, annotation, stepType, stepPattern, priority));
                 }
             }
         }

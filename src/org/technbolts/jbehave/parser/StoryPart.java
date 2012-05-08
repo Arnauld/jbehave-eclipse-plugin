@@ -1,16 +1,19 @@
 package org.technbolts.jbehave.parser;
 
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharTree;
 
 public class StoryPart {
+    private final LocalizedStepSupport localizedStepSupport;
     private final int offset;
     private final String content;
     private JBKeyword preferredKeyword;
     
-    public StoryPart(int offset, String content) {
+    public StoryPart(LocalizedStepSupport localizedStepSupport, int offset, String content) {
         super();
+        this.localizedStepSupport = localizedStepSupport;
         this.offset = offset;
         this.content = content;
     }
@@ -30,20 +33,19 @@ public class StoryPart {
     public String getContent() {
         return content;
     }
-    
 
     /**
      * @return
      */
     public String extractStepSentence() {
-        return LineParser.extractStepSentence(getContent());
+        return LineParser.extractStepSentence(localizedStepSupport, getContent());
     }
     
     /**
      * @see #isStepPart()
      */
     public String extractStepSentenceAndRemoveTrailingNewlines() {
-        return LineParser.extractStepSentenceAndRemoveTrailingNewlines(getContent());
+        return LineParser.extractStepSentenceAndRemoveTrailingNewlines(localizedStepSupport, getContent());
     }
     
     /**
@@ -81,7 +83,7 @@ public class StoryPart {
     }
     
     private CharTree<JBKeyword> defaultTree() {
-        return Constants.sharedKeywordCharTree();
+        return localizedStepSupport.sharedKeywordCharTree();
     }
 
     /**

@@ -1,5 +1,7 @@
 package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
+import static org.technbolts.util.Objects.o;
+
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -12,7 +14,11 @@ import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.Constants;
@@ -36,7 +42,10 @@ import org.technbolts.util.New;
  */
 public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     
-    private TextAttributeProvider textAttributeProvider;
+    private Logger log = LoggerFactory.getLogger(AbstractStoryPartBasedScanner.class);
+    
+    private final TextAttributeProvider textAttributeProvider;
+    protected final JBehaveProject jbehaveProject;
     //
     private IToken defaultToken;
     private Token commentToken;
@@ -49,7 +58,8 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     private IDocument document;
     private Region range;
 
-    public AbstractStoryPartBasedScanner(TextAttributeProvider textAttributeProvider) {
+    public AbstractStoryPartBasedScanner(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
+        this.jbehaveProject = jbehaveProject;
         this.textAttributeProvider = textAttributeProvider;
         textAttributeProvider.addObserver(new Observer() {
             @Override
@@ -131,21 +141,17 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
                     emitPart(part); //part are given in the absolute position
             }
         };
-        StoryPartDocumentUtils.traverseStoryParts(document, visitor);
-        
-        if(DEBUG) {
-            System.out.println(builder);
-            builder.setLength(0);
-        }
+        new StoryPartDocumentUtils(getLocalizedStepSupport()).traverseStoryParts(document, visitor);
+    }
+
+    protected LocalizedStepSupport getLocalizedStepSupport() {
+        return jbehaveProject.getLocalizedStepSupport();
     }
     
     protected abstract boolean isPartAccepted(StoryPart part);
 
-    private static boolean DEBUG = false;
-    private StringBuilder builder = new StringBuilder();
-    protected void logln(String string) {
-        if(DEBUG)
-            builder.append(string).append('\n');
+    protected static String f(String string) {
+        return string.replace("\n", "\\n");
     }
     
     protected abstract void emitPart(StoryPart part);
@@ -172,7 +178,17 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     }
 
     protected void emit(IToken token, int offset, int length) {
-        logln("emit(" + token.getData() + ", offset: " + offset + ", length: " + length + ")");
+        log.debug("Emitting ({}, offset: {}, length: {})",
+                  o(token.getData(), offset, length));
+        if(length==0) {
+            log.debug("Empty token emitted zero length, data: {},  offset: {}, length: {}", o(token.getData(), offset, length));
+        }
+        else if(length<0) {
+            log.error("Invalid token emitted negative length, data: {},  offset: {}, length: {}", o(token.getData(), offset, length));
+        }
+        else {
+            log.debug("Token emitted, data: {},  offset: {}, length: {}, content: <{}>", o(token.getData(), offset, length, getContentForLog(offset, length)));
+        }
         
         // can we merge previous one?
         if(!fragments.isEmpty()) {
@@ -181,20 +197,33 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
             // check no hole
             int requiredOffset = previous.offset+previous.length;
             if(offset != requiredOffset) {
-                logln("emit() **hole completion**, offset: " +  offset + "(vs required: " + requiredOffset + "), length: " + length + "; previous offset: " + previous.offset + ", length: " + previous.length);
+                log.debug("**hole completion**, offset: {} (vs required: {}), length: {}; previous offset: {}, length: {}",
+                        o(offset, requiredOffset, length, previous.offset, previous.length));
                 emit(getDefaultToken(), requiredOffset, offset-requiredOffset);
                 previous = getLastFragment();
             }
             
             if(previous.token==token) {
                 previous.length += length;
-                logln("emit() token merged, offset: " +  previous.offset + ", length: " + previous.length);
+                log.debug("Token merged, offset: {}, length: {}", o(previous.offset, previous.length));
                 return;
             }
         }
         Fragment fragment = new Fragment(token, offset, length);
-        logln("emit() >>> added, offset: " +  offset + ", length: " + length);
+        log.debug("Fragment added, offset: {}, length: {}", o(offset, length));
         fragments.add(fragment);
+    }
+
+    private String getContentForLog(int offset, int length) {
+        return f(getContent(offset, length));
+    }
+
+    private String getContent(int offset, int length)  {
+        try {
+            return document.get(offset, length);
+        } catch (BadLocationException e) {
+            return "<<<n/a>>>";
+        }
     }
 
     private Fragment getLastFragment() {
@@ -268,7 +297,7 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
      */
     @Override
     public void setRange(IDocument document, int offset, int length) {
-        logln("setRange(offset: " +  offset + ", length: " + length);
+        log.debug("Range(offset: " +  offset + ", length: " + length);
 
         fragments = New.arrayList();
         cursor = -1;

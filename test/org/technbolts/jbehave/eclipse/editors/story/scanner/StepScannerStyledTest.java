@@ -2,11 +2,15 @@ package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
@@ -15,8 +19,11 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
+import org.technbolts.util.Visitor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -30,20 +37,36 @@ public class StepScannerStyledTest {
             "|Login|Travis|" + NL +
             "|Password|p4cm4n|" + NL;
     
-    private StepLocator.Provider provider;
     private TextAttributeProvider textAttributeProvider;
     private StepScannerStyled scanner;
     private Document document;
     private StepLocator stepLocator;
     private PotentialStep potentialStep;
+    private LocalizedStepSupport localizedStepSupport;
+    private JBehaveProject jbehaveProject;
 
+    @SuppressWarnings("rawtypes")
     @BeforeMethod
-    public void prepare () {
+    public void prepare () throws JavaModelException {
         stepLocator = mock(StepLocator.class);
-        provider = mock(StepLocator.Provider.class);
-        when(provider.getStepLocator()).thenReturn(stepLocator);
         textAttributeProvider = mock(TextAttributeProvider.class);
-        scanner = new StepScannerStyled(provider, textAttributeProvider) {
+        localizedStepSupport = new LocalizedStepSupport();
+        localizedStepSupport.setStoryLocale(Locale.ENGLISH);
+        jbehaveProject = mock(JBehaveProject.class);
+        when(jbehaveProject.getLocalizedStepSupport()).thenReturn(localizedStepSupport);
+        when(jbehaveProject.getStepLocator()).thenReturn(new StepLocator(jbehaveProject));
+        
+        doAnswer(new Answer() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Visitor<PotentialStep, ?> visitor = (Visitor<PotentialStep, ?>)invocation.getArguments()[0];
+                visitor.visit(potentialStep);
+                return null;
+            }
+        }).when(jbehaveProject).traverseSteps(Mockito.<Visitor<PotentialStep, ?>>any());
+        
+        scanner = new StepScannerStyled(jbehaveProject, textAttributeProvider) {
             @Override
             protected Token newToken(String styleId) {
                 return new Token(styleId);
@@ -52,7 +75,7 @@ public class StepScannerStyledTest {
         document = new Document(GIVEN1);
         IMethod method = null;
         IAnnotation annotation = null;
-        potentialStep = new PotentialStep(method, annotation, StepType.GIVEN, STEP1, 0);
+        potentialStep = new PotentialStep(localizedStepSupport, method, annotation, StepType.GIVEN, STEP1, 0);
     }
     
     @Test
@@ -60,6 +83,7 @@ public class StepScannerStyledTest {
         when(stepLocator.findFirstStep(Mockito.anyString())).thenAnswer(new Answer<PotentialStep>() {
             @Override
             public PotentialStep answer(InvocationOnMock invocation) throws Throwable {
+                System.out.println("StepScannerStyledTest.useCase_ex1(" + invocation + ")");
                 return potentialStep;
             }
         });

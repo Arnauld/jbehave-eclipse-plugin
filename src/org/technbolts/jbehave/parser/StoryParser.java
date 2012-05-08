@@ -2,6 +2,7 @@ package org.technbolts.jbehave.parser;
 
 import java.util.List;
 
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.CharIterator;
 import org.technbolts.util.CharIterators;
@@ -9,8 +10,13 @@ import org.technbolts.util.CharTree;
 
 public class StoryParser {
     
-    public StoryParser() {
+    private final LocalizedStepSupport localizedStepSupport;
+    
+    public StoryParser(LocalizedStepSupport localizedStepSupport) {
         super();
+        if(localizedStepSupport==null)
+            throw new IllegalArgumentException();
+        this.localizedStepSupport = localizedStepSupport;
     }
     
     public List<StoryPart> parse(CharSequence content) {
@@ -28,7 +34,7 @@ public class StoryParser {
     }
 
     public void parse(CharIterator it, int baseOffset, StoryPartVisitor visitor) {
-        CharTree<JBKeyword> kwTree = Constants.sharedKeywordCharTree();
+        CharTree<JBKeyword> kwTree = localizedStepSupport.sharedKeywordCharTree();
         int offset = baseOffset;
         Line line = new Line();
         Block block = new Block();
@@ -72,7 +78,7 @@ public class StoryParser {
         public void emitTo(StoryPartVisitor visitor) {
             if(buffer.length()>0) {
                 String content = buffer.toString();
-                StoryPart part = new StoryPart(offset, content);
+                StoryPart part = new StoryPart(localizedStepSupport, offset, content);
                 JBKeyword partKeyword = part.extractKeyword();
                 if(partKeyword!=null && partKeyword.isStep()) {
                     if(partKeyword==JBKeyword.And) {

@@ -25,10 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.TemplateUtils;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.util.LineParser;
-import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
-import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
+import org.technbolts.jbehave.eclipse.util.WeightedCandidateStep;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.Lists;
@@ -42,6 +44,10 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
     @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, final int offset) {
         try {
+            IProject project = EditorUtils.findProject(viewer);
+            JBehaveProject jbehaveProject = JBehaveProjectRegistry.get().getOrCreateProject(project);
+            LocalizedStepSupport localizedStepSupport = jbehaveProject.getLocalizedStepSupport();
+
             IDocument document = viewer.getDocument();
             int lineNo = document.getLineOfOffset(offset);
             int lineOffset = document.getLineOffset(lineNo);
@@ -76,7 +82,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             if(StringUtils.isEmpty(lineStart)) {
                 return createKeywordCompletionProposals(offset, 0, viewer);
             }
-            else if(LineParser.isTheStartIgnoringCaseOfStep(lineStart) && !LineParser.isStepType(lineStart)) {
+            else if(LineParser.isTheStartIgnoringCaseOfStep(localizedStepSupport, lineStart) //
+                    && !LineParser.isStepType(localizedStepSupport, lineStart)) {
                 return createKeywordCompletionProposals(lineOffset, lineStart.length(), viewer);
             }
             
@@ -85,27 +92,26 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             
             String stepStartUsedForSearch = stepStart;
             // special case: one must find the right type of step
-            boolean isAndCase = LineParser.isStepAndType(lineStart); 
+            boolean isAndCase = LineParser.isStepAndType(localizedStepSupport, lineStart); 
             if(isAndCase) {
-                StoryPart part = StoryPartDocumentUtils.findStoryPartAtOffset(document, offset).get();
+                StoryPart part = new StoryPartDocumentUtils(localizedStepSupport).findStoryPartAtOffset(document, offset).get();
                 JBKeyword kw = part.getPreferredKeyword();
                 if(kw == JBKeyword.And) {
                     logger.debug("Autocompletion unable to disambiguate 'And' case: previous story part is probably not a step");
                     return null;
                 }
-                int indexOf = lineStart.indexOf(' ');
-                stepStartUsedForSearch = kw.asString() + lineStart.substring(indexOf);
+                int indexOf = localizedStepSupport.lAnd(false).length();
+                stepStartUsedForSearch = kw.asString(localizedStepSupport.getLocalizedKeywords()) + lineStart.substring(indexOf);
             }
             
             logger.debug("Autocompletion step start used for search: <{}>", stepStartUsedForSearch);
             
-            IProject project = EditorUtils.findProject(viewer);
-            Iterable<WeightedCandidateStep> candidateIter = StepLocator.getStepLocator(project).findCandidatesStartingWith(stepStartUsedForSearch);
+            Iterable<WeightedCandidateStep> candidateIter = jbehaveProject.getStepLocator().findCandidatesStartingWith(stepStartUsedForSearch);
             List<WeightedCandidateStep> candidates = Lists.toList(candidateIter);
             Collections.sort(candidates);
             logger.debug("Autocompletion found #{}", candidates.size());
             
-            String stepEntry = LineParser.extractStepSentence(stepStart);
+            String stepEntry = LineParser.extractStepSentence(localizedStepSupport, stepStart);
             boolean hasStartOfStep = !StringUtils.isBlank(stepEntry);
             
             Region regionFullLine = new Region(lineOffset, lineStart.length());
@@ -131,8 +137,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                 else {
                     complete = pStep.potentialStep.fullStep();
                     if(isAndCase) {
-                        int kwIndex = complete.indexOf(' ');
-                        complete = "And" + complete.substring(kwIndex);
+                        complete = localizedStepSupport.lAnd(false) + " " + pStep.potentialStep.stepPattern;
                     }
                     templateContext = contextFullLine;
                     replacementRegion = regionComplete;
@@ -158,7 +163,7 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                                 displayString);
                             break;
                         default:
-                            proposal = new StepCompletionProposal(replacementRegion, complete, displayString, pStep);
+                            proposal = new StepCompletionProposal(localizedStepSupport, replacementRegion, complete, displayString, pStep);
                     }
                     proposals.add(proposal);
                 }
@@ -168,7 +173,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
                             lineStart, 
                             displayString, 
                             StoryContextType.STORY_CONTEXT_TYPE_ID, templateText, false);
-                    proposals.add(new StepTemplateProposal(template,
+                    proposals.add(new StepTemplateProposal(localizedStepSupport,
+                            template,
                             templateContext, replacementRegion, complete, displayString, pStep));
                 }
             }

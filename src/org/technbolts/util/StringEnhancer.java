@@ -35,6 +35,10 @@ public class StringEnhancer {
         return false;
     }
     
+    public boolean startsIgnoringCaseWith(String prefix) {
+        return startsWith(true, prefix);
+    }
+    
     public boolean startsIgnoringCaseWithOneOf(String...prefixes) {
         return startsWithOneOf(true, prefixes);
     }
@@ -50,6 +54,14 @@ public class StringEnhancer {
             if(underlying.regionMatches(ignoreCase, 0, prefix, 0, prefix.length()))
                 return true;
         }
+        return false;
+    }
+    
+    public boolean startsWith(boolean ignoreCase, String prefix) {
+        if(isNull())
+            return false;
+        if(underlying.regionMatches(ignoreCase, 0, prefix, 0, prefix.length()))
+            return true;
         return false;
     }
     

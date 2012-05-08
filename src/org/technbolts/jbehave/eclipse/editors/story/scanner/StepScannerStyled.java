@@ -1,12 +1,18 @@
 package org.technbolts.jbehave.eclipse.editors.story.scanner;
 
+import static org.technbolts.util.Objects.o;
+
 import java.util.List;
 
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.ITokenScanner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
+import org.technbolts.jbehave.eclipse.util.LineParser;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
 import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter;
@@ -29,17 +35,17 @@ import org.technbolts.util.Strings;
  */
 public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     
+    private Logger log = LoggerFactory.getLogger(StepScannerStyled.class);
+
     //
     private IToken keywordToken;
     private IToken parameterToken;
     private IToken parameterValueToken;
     //
-    private StepLocator.Provider locatorProvider;
 
-    public StepScannerStyled(StepLocator.Provider locatorProvider, TextAttributeProvider textAttributeProvider) {
-        super(textAttributeProvider);
+    public StepScannerStyled(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
+        super(jbehaveProject, textAttributeProvider);
         initialize();
-        this.locatorProvider = locatorProvider;
     }
     
     @Override
@@ -69,25 +75,26 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
     }
     
     private void parseStep(String stepContent, final int initialOffset) {
-        logln("parseStep(" + stepContent + ", offset: " + initialOffset + ", stepLine.length: " + stepContent.length());
+        log.debug("Parsing step, offset: {}, length: {}, content: <{}>", 
+                o(initialOffset, stepContent.length(), f(stepContent)));
         int offset = initialOffset;
-        int stepSep = stepContent.indexOf(' ');
+        int stepSep = LineParser.stepSentenceIndex(getLocalizedStepSupport(), stepContent);
          
-        emit(keywordToken, offset, stepSep+1);
-        offset += stepSep+1;
+        emit(keywordToken, offset, stepSep);
+        offset += stepSep;
         
         // remove any trailing newlines, and keep track to insert 
         // corresponding token in place
-        String rawAfterKeyword = stepContent.substring(stepSep+1);
+        String rawAfterKeyword = stepContent.substring(stepSep);
         ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(
                 Constants.commentLineMatcher, rawAfterKeyword);
         
         String cleanedAfterKeyword = emitter.contentWithoutIgnorables();
         String cleanedStepSentence = Strings.removeTrailingNewlines(cleanedAfterKeyword);
         
-        PotentialStep potentialStep = locatorProvider.getStepLocator().findFirstStep(cleanedStepSentence);
+        PotentialStep potentialStep = getStepLocator().findFirstStep(cleanedStepSentence);
         if(potentialStep==null) {
-            logln("parseStep() no step found");
+            log.debug("No step found");
             emitVariables(emitter, cleanedAfterKeyword, offset);
             offset += rawAfterKeyword.length();
         }
@@ -97,17 +104,18 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
             WeightChain chain = pString.calculateWeightChain(cleanedStepSentence);
             List<String> chainTokens = chain.tokenize();
             
-            logln("parseStep() step found with variable " + chainTokens.size() + " tokens in chain");
+            log.debug("Step found with variable {} tokens in chain", chainTokens.size());
 
             for(int i=0;i<chainTokens.size();i++) {
                 org.technbolts.util.ParametrizedString.Token pToken = pString.getToken(i);
                 String content = chainTokens.get(i);
                 
-                logln("token content: length: " + content.length() + " >>" + content.replace("\n", "\\n") + "<<");
+                log.debug("Token content - length: {}, content: <{}>",
+                        o(content.length() , f(content)));
                 
                 if(pToken.isIdentifier) {
                     
-                    logln("token is an identifier");
+                    log.debug("Token is an identifier <{}>", f(content));
                     
                     if(content.startsWith("$")) {
                         emit(emitter, parameterToken, offset, content.length());
@@ -128,20 +136,29 @@ public class StepScannerStyled extends AbstractStoryPartBasedScanner {
             }
         }
         else {
-            logln("parseStep(" + stepContent + ") step found without variable");
+            log.debug("Parsing step <{}> step found without variable", f(stepContent));
             emit(emitter, getDefaultToken(), offset, cleanedAfterKeyword.length());
             offset += rawAfterKeyword.length();
         }
         
         // insert if trailings whitespace have been removed
-        int expectedOffset = initialOffset+(stepSep+1 + cleanedAfterKeyword.length());
+        int expectedOffset = initialOffset+(stepSep + cleanedAfterKeyword.length());
         if(offset < expectedOffset) {
+            log.debug("Remaings, offset: {}, length: {}", o(offset, expectedOffset-offset));
             emit(emitter, getDefaultToken(), offset, expectedOffset-offset);
         }
     }
 
+    private StepLocator getStepLocator() {
+        StepLocator stepLocator = jbehaveProject.getStepLocator();
+        if(stepLocator==null)
+            throw new IllegalStateException("No state locator available from project");
+        return stepLocator;
+    }
+
     private void emitVariables(ContentWithIgnorableEmitter emitter, String content, int offset) {
-        logln("emitVariables(offset: " + offset + ", content.length: " + content.length() + " >>" + content + "<<");
+        log.debug("Emitting variables (offset: {}, length: {}, <{}>",
+                 o(offset, content.length(), f(content)));
         int tokenStart = 0;
         boolean escaped = false;
         boolean inVariable = false;

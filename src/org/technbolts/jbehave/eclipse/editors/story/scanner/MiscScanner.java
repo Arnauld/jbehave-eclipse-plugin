@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jface.text.rules.IToken;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.StoryPart;
@@ -20,8 +21,8 @@ public class MiscScanner extends AbstractStoryPartBasedScanner {
     private IToken keywordToken;
     private IToken metaPropertyToken;
 
-    public MiscScanner(TextAttributeProvider textAttributeProvider) {
-        super(textAttributeProvider);
+    public MiscScanner(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
+        super(jbehaveProject, textAttributeProvider);
         initialize();
     }
     
@@ -44,7 +45,7 @@ public class MiscScanner extends AbstractStoryPartBasedScanner {
     
     private boolean handle(StoryPart part, JBKeyword kw, IToken token, Chain chain) {
         String content = part.getContent();
-        String kwString = kw.asString();
+        String kwString = kw.asString(getLocalizedStepSupport().getLocalizedKeywords());
         if(content.startsWith(kwString)) {
             int length = kwString.length();
             int offset = part.getOffset();

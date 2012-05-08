@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.ui.PreferenceConstants;
@@ -36,6 +35,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.util.StepUtils;
 import org.technbolts.util.New;
 
@@ -298,7 +298,7 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
                 if(!initial) {
                     try {
                         String qname = removeStart(event.location, "file:///");
-                        StepUtils.jumpToMethod(getProject(), qname);
+                        new StepUtils(getProject()).jumpToMethod(qname);
                     } catch (PartInitException e) {
                         log.error("Failed to jump to <" + event.location + ">", e);
                     } catch (JavaModelException e) {
@@ -308,8 +308,8 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
                 event.doit = initial;
             }
 
-            private IProject getProject() {
-                return storyEditor.getProject();
+            private JBehaveProject getProject() {
+                return storyEditor.getJBehaveProject();
             }
             
             @Override

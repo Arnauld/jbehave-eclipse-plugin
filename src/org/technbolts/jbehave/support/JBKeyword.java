@@ -119,7 +119,6 @@ public enum JBKeyword {
     public String asString() {
         return asString(keywords);
     }
-    
     public String asString(Keywords keywords) {
         throw new AbstractMethodError();
     }

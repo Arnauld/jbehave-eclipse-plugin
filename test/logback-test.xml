@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	
+	<conversionRule conversionWord="error" 
+                  converterClass="org.technbolts.logback.ErrorLevelConverter" />
+	
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-			<Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+			<Pattern>%d{HH:mm:ss.SSS} %error %-32C{0}#%-16M - %msg%n</Pattern>
 	  	</encoder>
 	</appender>
 
@@ -11,6 +14,7 @@
 	<logger name="org.technbolts.eclipse.jdt.methodcache" level="debug" />
 	<logger name="org.technbolts.jbehave.eclipse.JBehaveProject" level="debug" />
 	<logger name="org.technbolts.jbehave.eclipse.editors.story.scanner" level="info" />
+	<logger name="org.technbolts.eclipse.jbehave" level="debug" />
 
 	<root level="error">
 		<appender-ref ref="STDOUT" />

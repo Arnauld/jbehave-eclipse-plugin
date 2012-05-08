@@ -1,64 +1,35 @@
 package org.technbolts.jbehave.eclipse.util;
 
+import static fj.data.List.iterableList;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.JDTUtils;
 import org.technbolts.jbehave.eclipse.Activator;
-import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.PotentialStep;
-import org.technbolts.util.HasHTMLComment;
 import org.technbolts.util.Visitor;
 
 import fj.Ord;
-import static fj.data.List.iterableList;
 
 public class StepLocator {
     
-    public interface Provider {
-        StepLocator getStepLocator();
-    }
+    private static Logger log = LoggerFactory.getLogger(StepLocator.class);
     
-    public static StepLocator getStepLocator(IProject project) {
-        return new StepLocator(project);
-    }
-    
-    private IProject project;
-    private StepLocator(IProject project) {
+    private JBehaveProject project;
+    public StepLocator(JBehaveProject project) {
         this.project = project;
-    }
-    
-    public static class WeightedCandidateStep implements Comparable<WeightedCandidateStep>, HasHTMLComment {
-        public final PotentialStep potentialStep;
-        public final float weight;
-        public WeightedCandidateStep(PotentialStep potentialStep, float weight) {
-            super();
-            this.potentialStep = potentialStep;
-            this.weight = weight;
-        }
-        @Override
-        public int compareTo(WeightedCandidateStep o) {
-            return (weight>o.weight)?1:-1;
-        }
-        
-        private String htmlComment;
-        @Override
-        public String getHTMLComment() {
-            if(htmlComment==null) {
-                try {
-                    htmlComment = JDTUtils.getJavadocOf(potentialStep.method);
-                } catch (Exception e) {
-                    htmlComment = "No documentation found";
-                }
-            }
-            return htmlComment;
-        }
     }
     
     static boolean findCandidatesCheckStepType = true;
     
-    /*
+    /**
      *  When '$who' clicks on the '$button_id' button
      *  
      *  When 'Bob' clicks on the 'login' button
@@ -67,10 +38,11 @@ public class StepLocator {
      * 
      */
     public Iterable<WeightedCandidateStep> findCandidatesStartingWith(final String stepLine) {
-        
+        log.debug("Attempt to find candidates starting with <{}>", stepLine);
         try {
-            final String searchedType = LineParser.stepType(stepLine);
-            final String stepEntry = LineParser.extractStepSentence(stepLine);
+            LocalizedStepSupport localizedStepSupport = project.getLocalizedStepSupport();
+            final String searchedType = LineParser.stepType(localizedStepSupport, stepLine);
+            final String stepEntry = LineParser.extractStepSentence(localizedStepSupport, stepLine);
             
             Visitor<PotentialStep, WeightedCandidateStep> findOne = new Visitor<PotentialStep, WeightedCandidateStep>() {
                 @Override
@@ -95,9 +67,11 @@ public class StepLocator {
                 }
             };
             traverseSteps(findOne);
-            return findOne.getFounds();
+            ConcurrentLinkedQueue<WeightedCandidateStep> founds = findOne.getFounds();
+            log.debug("Candidates starting with <{}> found: #{}", stepLine, founds.size());
+            return founds;
         } catch (JavaModelException e) {
-            e.printStackTrace();
+            log.error("Failed to find candidates for step <" + stepLine + ">", e);
             Activator.logError("Failed to find candidates for step <" + stepLine + ">", e);
         }
         return null;
@@ -111,6 +85,8 @@ public class StepLocator {
      * @return
      */
     public PotentialStep findFirstStep(final String step) {
+        log.debug("Attempt to find the first step matching <{}>", step);
+
         try {
             Visitor<PotentialStep, PotentialStep> matchingStepVisitor = new Visitor<PotentialStep, PotentialStep>() {
                 @Override
@@ -122,8 +98,17 @@ public class StepLocator {
                 }
             };
             traverseSteps(matchingStepVisitor);
-            return getFirstStepWithHighestPrio(matchingStepVisitor.getFounds());
+            PotentialStep found = getFirstStepWithHighestPrio(matchingStepVisitor.getFounds());
+            if(found==null) {
+                log.debug("No candidate found matching <{}>", step);
+                return null;
+            }
+            else {
+                log.debug("First candidate matching <{}> found: <{}>", step, found.stepPattern);
+                return found;
+            }
         } catch (JavaModelException e) {
+            log.error("Failed to find candidates for step <" + step + ">", e);
             Activator.logError("Failed to find candidates for step <" + step + ">", e);
         }
         return null;
@@ -134,7 +119,7 @@ public class StepLocator {
      * @param findOne
      * @return
      */
-    PotentialStep getFirstStepWithHighestPrio(Iterable<PotentialStep> potentialSteps) {
+    private PotentialStep getFirstStepWithHighestPrio(Iterable<PotentialStep> potentialSteps) {
         fj.data.List<Integer> collectedPrios = iterableList(potentialSteps).map(new PotentialStepPrioTransformer());
         if (collectedPrios.isEmpty()) {
             return null;
@@ -147,14 +132,20 @@ public class StepLocator {
     }
     
     public IJavaElement findMethod(final String step) {
+        log.debug("Attempt to find method for <{}>", step);
         PotentialStep pStep = findFirstStep(step);
-        if(pStep!=null)
+        if(pStep!=null) {
+            log.debug("Method found for <{}>: <{}>", step, pStep.method);
             return pStep.method;
-        else
+        }
+        else {
+            log.debug("No method found for <{}>", step);
             return null;
+        }
     }
     
     public IJavaElement findMethodByQualifiedName(final String qualifiedName) {
+        log.debug("Attempt to find method using its qualified name <{}>", qualifiedName);
         try {
             Visitor<PotentialStep, PotentialStep> findOne = new Visitor<PotentialStep, PotentialStep>() {
                 @Override
@@ -168,8 +159,11 @@ public class StepLocator {
             };
             traverseSteps(findOne);
             PotentialStep first = findOne.getFirst();
-            if(first==null)
+            if(first==null) {
+                log.debug("No method found using its qualified name <{}>", qualifiedName);
                 return null;
+            }
+            log.debug("Found method using its qualified name <{}>, got: {}", qualifiedName, first.method);
             return first.method;
         } catch (JavaModelException e) {
             Activator.logError("Failed to find candidates for method <" + qualifiedName + ">", e);
@@ -179,7 +173,8 @@ public class StepLocator {
 
     
     public void traverseSteps(Visitor<PotentialStep, ?> visitor) throws JavaModelException {
-        JBehaveProjectRegistry.get().getOrCreateProject(project).traverseSteps(visitor);
+        log.debug("Traversing steps with: {}", visitor.getClass());
+        project.traverseSteps(visitor);
     }
 
 }

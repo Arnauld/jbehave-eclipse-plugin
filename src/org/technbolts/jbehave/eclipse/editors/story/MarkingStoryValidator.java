@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
@@ -22,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.MarkData;
 import org.technbolts.jbehave.eclipse.Activator;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.jbehave.eclipse.util.PotentialStepPrioTransformer;
 import org.technbolts.jbehave.eclipse.util.StepLocator;
@@ -46,11 +46,11 @@ public class MarkingStoryValidator {
 
     private IFile file;
     private IDocument document;
-    private IProject project;
+    private JBehaveProject project;
 
     private boolean applyMarkAsynchronously;
 
-    public MarkingStoryValidator(IProject project, IFile file, IDocument document) {
+    public MarkingStoryValidator(JBehaveProject project, IFile file, IDocument document) {
         super();
         this.project = project;
         this.file = file;
@@ -66,7 +66,7 @@ public class MarkingStoryValidator {
     }
 
     public void validate(Runnable afterApplyCallback) {
-        List<StoryPart> parts = StoryPartDocumentUtils.getStoryParts(document);
+        List<StoryPart> parts = new StoryPartDocumentUtils(project.getLocalizedStepSupport()).getStoryParts(document);
         analyzeParts(parts, afterApplyCallback);
     }
 
@@ -232,7 +232,7 @@ public class MarkingStoryValidator {
         
         log.debug("Validating steps");
         
-        StepLocator locator = StepLocator.getStepLocator(project);
+        StepLocator locator = project.getStepLocator();
         locator.traverseSteps(new Visitor<PotentialStep, Object>() {
             @Override
             public void visit(PotentialStep candidate) {

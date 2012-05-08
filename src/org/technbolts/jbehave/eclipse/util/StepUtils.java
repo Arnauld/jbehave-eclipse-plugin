@@ -1,8 +1,5 @@
 package org.technbolts.jbehave.eclipse.util;
 
-
-import static org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils.findStoryPartAtOffset;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaModelException;
@@ -12,6 +9,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.PartInitException;
 import org.technbolts.eclipse.util.EditorUtils;
 import org.technbolts.eclipse.util.UIUtils;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
 import org.technbolts.jbehave.parser.Constants;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.util.Ref;
@@ -19,12 +18,20 @@ import org.technbolts.util.Strings;
 
 public class StepUtils {
     
-    public static boolean jumpToSelectionDeclaration(final ITextViewer viewer) throws JavaModelException,
+    private JBehaveProject jbehaveProject;
+    public StepUtils(JBehaveProject jbehaveProject) {
+        super();
+        this.jbehaveProject = jbehaveProject;
+    }
+
+    public boolean jumpToSelectionDeclaration(final ITextViewer viewer) throws JavaModelException,
     PartInitException {
         
         Point point = viewer.getSelectedRange();
         
-        final Ref<StoryPart> found = findStoryPartAtOffset(viewer.getDocument(), point.x);
+        final Ref<StoryPart> found = 
+                new StoryPartDocumentUtils(jbehaveProject.getLocalizedStepSupport())
+                        .findStoryPartAtOffset(viewer.getDocument(), point.x);
         if (found.isNull()) {
             return false;
         }
@@ -37,7 +44,7 @@ public class StepUtils {
         return jumpToDeclaration(viewer, step);
     }
     
-    public static boolean jumpToDeclaration(final ITextViewer viewer, final String step) throws JavaModelException,
+    public boolean jumpToDeclaration(final ITextViewer viewer, final String step) throws JavaModelException,
             PartInitException {
         // configure search
         IProject project = EditorUtils.findProject(viewer);
@@ -50,8 +57,9 @@ public class StepUtils {
         String cleanedStep = Constants.removeComment(step);
         // comment removed: there can be trailing new lines...
         cleanedStep = Strings.removeTrailingNewlines(cleanedStep);
-
-        IJavaElement methodToJump = StepLocator.getStepLocator(project).findMethod(cleanedStep);
+        
+        JBehaveProject jbehaveProject = JBehaveProjectRegistry.get().getOrCreateProject(project);
+        IJavaElement methodToJump = jbehaveProject.getStepLocator().findMethod(cleanedStep);
         // jump to method
         if (methodToJump != null) {
             JavaUI.openInEditor(methodToJump);
@@ -62,8 +70,8 @@ public class StepUtils {
         }
     }
 
-    public static boolean jumpToMethod(IProject project, String qualifiedName) throws PartInitException, JavaModelException {
-        IJavaElement methodToJump = StepLocator.getStepLocator(project).findMethodByQualifiedName(qualifiedName);
+    public boolean jumpToMethod(String qualifiedName) throws PartInitException, JavaModelException {
+        IJavaElement methodToJump = jbehaveProject.getStepLocator().findMethodByQualifiedName(qualifiedName);
         // jump to method
         if (methodToJump != null) {
             JavaUI.openInEditor(methodToJump);

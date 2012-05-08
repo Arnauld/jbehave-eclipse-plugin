@@ -3,20 +3,20 @@ package org.technbolts.jbehave.eclipse.preferences;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.wb.swt.ResourceManager;
 import org.technbolts.jbehave.eclipse.Activator;
 
-public class JBehavePluginPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
+public class JBehavePluginPreferencePage extends PropertyPage implements IWorkbenchPreferencePage {
 
     /**
      * Create the preference page.

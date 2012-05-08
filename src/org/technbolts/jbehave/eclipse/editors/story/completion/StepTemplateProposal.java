@@ -10,23 +10,32 @@ import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateProposal;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
-import org.technbolts.jbehave.eclipse.util.StepLocator.WeightedCandidateStep;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
+import org.technbolts.jbehave.eclipse.util.WeightedCandidateStep;
 
 public class StepTemplateProposal extends TemplateProposal implements 
         ICompletionProposalExtension4, ICompletionProposalExtension5,
         ICompletionProposalExtension6, StepCompletionProposalMixin.Trait {
     
+    private final LocalizedStepSupport jbehaveProject;
     private final String complete;
     private final String label;
     private final WeightedCandidateStep weightedCandidateStep;
 
     public StepTemplateProposal(
+            LocalizedStepSupport jbehaveProject, //
             Template template, TemplateContext context, IRegion region, 
             String complete, String label, WeightedCandidateStep weightedCandidateStep) {
         super(template, context, region, null, 0);
+        this.jbehaveProject = jbehaveProject;
         this.complete = complete;
         this.label = label;
         this.weightedCandidateStep = weightedCandidateStep;
+    }
+    
+    @Override
+    public LocalizedStepSupport getJBehaveProject() {
+        return jbehaveProject;
     }
     
     @Override

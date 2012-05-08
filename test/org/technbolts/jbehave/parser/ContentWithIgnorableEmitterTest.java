@@ -5,10 +5,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IMethod;
 import org.jbehave.core.steps.StepType;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.PotentialStep;
 import org.technbolts.util.ParametrizedString;
 import org.technbolts.util.ParametrizedString.WeightChain;
@@ -48,11 +50,16 @@ public class ContentWithIgnorableEmitterTest {
     private ParametrizedString pString;
     private Collector collector;
 
+    private LocalizedStepSupport localizedStepSupport;
+
     @BeforeMethod
     public void setUp () {
+        localizedStepSupport = new LocalizedStepSupport();
+        localizedStepSupport.setStoryLocale(Locale.ENGLISH);
+        
         IMethod method = null;
         IAnnotation annotation = null;
-        potentialStep = new PotentialStep(method, annotation, StepType.GIVEN, STEP1, 0);
+        potentialStep = new PotentialStep(localizedStepSupport, method, annotation, StepType.GIVEN, STEP1, 0);
         pString = potentialStep.getParametrizedString();
         
         collector = new Collector();
@@ -60,7 +67,7 @@ public class ContentWithIgnorableEmitterTest {
     
     @Test
     public void useCase_exampleTableWithComment_case1 () {
-        storyPart = new StoryPart(17, GIVEN1);
+        storyPart = new StoryPart(localizedStepSupport, 17, GIVEN1);
         String rawContent = storyPart.getContent();
         
         ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(Constants.commentLineMatcher, rawContent);
@@ -90,7 +97,7 @@ public class ContentWithIgnorableEmitterTest {
 
     @Test
     public void useCase_exampleTableWithComment_case2 () {
-        storyPart = new StoryPart(17, GIVEN2);
+        storyPart = new StoryPart(localizedStepSupport, 17, GIVEN2);
         String rawContent = storyPart.getContent();
         
         ContentWithIgnorableEmitter emitter = new ContentWithIgnorableEmitter(Constants.commentLineMatcher, rawContent);

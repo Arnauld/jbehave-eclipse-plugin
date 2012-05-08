@@ -25,6 +25,12 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
      * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
      */
     public void initializeDefaultPreferences() {
+        initializeDefaultThemesAndColorPreferences();
+        initializeDefaultProjectPreferences();
+        initializeDefaultClassScannerPreferences();
+    }
+
+    protected void initializeDefaultThemesAndColorPreferences() {
         IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
         TextStyle darkTheme = TextStyleTheme.createDarkTheme();
@@ -35,10 +41,11 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 
         store.setDefault(PreferenceConstants.THEMES, darkTheme.getPath() + "," + lightTheme.getPath());
         store.setDefault(PreferenceConstants.THEME, darkTheme.getPath());
-
         store.setDefault(PreferenceConstants.CURRENT_LINE_ENABLED, true);
         PreferenceConverter.setDefault(store, PreferenceConstants.CUSTOM_CURRENT_LINE_COLOR, new RGB(70, 70, 70));
+    }
 
+    protected void initializeDefaultClassScannerPreferences() {
         ClassScannerPreferences classScannerPreferences = new ClassScannerPreferences(DefaultScope.INSTANCE);
         addEntries(classScannerPreferences, ApplyOn.Package, true,//
                 "apple.*, com.apple.*, quicktime.*", //
@@ -76,9 +83,19 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         Activator.getDefault().initLogger();
     }
 
+    protected void initializeDefaultProjectPreferences() {
+        ProjectPreferences projectPreferences = new ProjectPreferences(DefaultScope.INSTANCE);
+        projectPreferences.setStoryLanguage("en");
+        projectPreferences.setAvailableStoryLanguages("de", "en", "fr", "it", "pt", "tr", "zh_TW");
+        try {
+            projectPreferences.store();
+        } catch (BackingStoreException e) {
+            Activator.logError("Failed to initialize default preferences for project", e);
+        }
+    }
+
     private static void addEntries(ClassScannerPreferences prefs, ApplyOn applyOn, boolean exclude, String... patternsSeq) {
         for(String patterns : patternsSeq)
             prefs.addEntry(patterns, applyOn, exclude);
     }
-
 }

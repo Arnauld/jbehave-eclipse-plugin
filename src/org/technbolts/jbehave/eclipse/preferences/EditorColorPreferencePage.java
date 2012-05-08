@@ -45,7 +45,7 @@ import org.technbolts.jbehave.eclipse.textstyle.TextStyleTreeBuilder;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyleTreeContentProvider;
 import org.technbolts.util.New;
 
-public class EditorPreferencePage extends PreferencePage implements org.eclipse.ui.IWorkbenchPreferencePage {
+public class EditorColorPreferencePage extends PreferencePage implements org.eclipse.ui.IWorkbenchPreferencePage {
 
     private ColorManager colorManager;
     private StyleRangeConverter styleRangeConverter;
@@ -68,7 +68,7 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
     /**
      * Create the preference page.
      */
-    public EditorPreferencePage() {
+    public EditorColorPreferencePage() {
     }
 
     /**
@@ -136,13 +136,15 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         new Label(container, SWT.NONE);
         
         Label lblCurrentLine = new Label(container, SWT.NONE);
-        lblCurrentLine.setText("Current line");
+        lblCurrentLine.setText("Current line marker:");
         
         currentLineColor = new ColorSelector(container);
         currentLineColor.addListener(styleChangedPropertyListener);
         currentLineColor.getButton().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
         Label lblCurrentLineToolTip = new Label(container, SWT.NONE);
         lblCurrentLineToolTip.setText("(Change the caret position in the preview for feedback)");
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
         
@@ -213,6 +215,11 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
         previewStyledText.getControl().setLayoutData(gridData2);
         
         cursorLinePainter = new CursorLinePainter(previewStyledText);
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
+        new Label(container, SWT.NONE);
         previewStyledText.addPainter(cursorLinePainter);
         
         initialize();
@@ -390,66 +397,66 @@ public class EditorPreferencePage extends PreferencePage implements org.eclipse.
      */
     private List<Fragment> fragments() {
         return Arrays.asList(
-                f(TextStyle.DEFAULT, "A story is a collection of scenarios\n\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "Narrative:\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "In order to "),
-                f(TextStyle.NARRATIVE_DEFAULT, "communicate effectively to the business some functionality\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "As a "),
-                f(TextStyle.NARRATIVE_DEFAULT, "development team\n"),
-                f(TextStyle.NARRATIVE_KEYWORD, "I want to "),
-                f(TextStyle.NARRATIVE_DEFAULT, "use Behaviour-Driven Development\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.SCENARIO_KEYWORD, "Scenario: "),
-                f(TextStyle.SCENARIO_DEFAULT, " A scenario is a collection of executable steps of different type\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.META_KEYWORD, "GivenStories: "),
-                f(TextStyle.META_DEFAULT, "path/to/precondition1.story,\n"),
-                f(TextStyle.META_DEFAULT, "              path/to/precondition1.story,\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.STEP_KEYWORD, "Given "),
-                f(TextStyle.STEP_DEFAULT, "a new user with the following properties:\n"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"firstname"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"Sherlock"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|\n"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"lastname"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"Holmes"),
-                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|\n"),
-                f(TextStyle.STEP_KEYWORD, "When "),
-                f(TextStyle.STEP_DEFAULT, "user clicks on "),
-                f(TextStyle.STEP_PARAMETER_VALUE, "login"),
-                f(TextStyle.STEP_DEFAULT, " button\n"),
-                f(TextStyle.STEP_KEYWORD, "And "),
-                f(TextStyle.STEP_DEFAULT, "user clicks on "),
-                f(TextStyle.STEP_PARAMETER, "$button_label"),
-                f(TextStyle.STEP_DEFAULT, " button\n"),
-                f(TextStyle.COMMENT, "!-- Look at this beautiful comment!\n"),
-                f(TextStyle.STEP_KEYWORD, "Then "),
-                f(TextStyle.STEP_DEFAULT, "login page must be displayed\n"),
-                f(TextStyle.DEFAULT, "\n"),
-                f(TextStyle.EXAMPLE_TABLE_KEYWORD, "ExampleTable:\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "user"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "login"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "Sherlock Holmes"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "sherlock"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "Arsene Lupin"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "arsene"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "Fileas Fogg"),
-                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),
-                f(TextStyle.EXAMPLE_TABLE_CELL, "flogg"),
+                f(TextStyle.DEFAULT, "A story is a collection of scenarios\n\n"),//
+                f(TextStyle.NARRATIVE_KEYWORD, "Narrative:\n"),//
+                f(TextStyle.NARRATIVE_KEYWORD, "In order to "),//
+                f(TextStyle.NARRATIVE_DEFAULT, "communicate effectively to the business some functionality\n"),//
+                f(TextStyle.NARRATIVE_KEYWORD, "As a "),//
+                f(TextStyle.NARRATIVE_DEFAULT, "development team\n"),//
+                f(TextStyle.NARRATIVE_KEYWORD, "I want to "),//
+                f(TextStyle.NARRATIVE_DEFAULT, "use Behaviour-Driven Development\n"),//
+                f(TextStyle.DEFAULT, "\n"),//
+                f(TextStyle.SCENARIO_KEYWORD, "Scenario: "),//
+                f(TextStyle.SCENARIO_DEFAULT, " A scenario is a collection of executable steps of different type\n"),//
+                f(TextStyle.DEFAULT, "\n"),//
+                f(TextStyle.META_KEYWORD, "GivenStories: "),//
+                f(TextStyle.META_DEFAULT, "path/to/precondition1.story,\n"),//
+                f(TextStyle.META_DEFAULT, "              path/to/precondition1.story,\n"),//
+                f(TextStyle.DEFAULT, "\n"),//
+                f(TextStyle.STEP_KEYWORD, "Given "),//
+                f(TextStyle.STEP_DEFAULT, "a new user with the following properties:\n"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"firstname"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"Sherlock"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|\n"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"lastname"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_CELL,"Holmes"),//
+                f(TextStyle.STEP_EXAMPLE_TABLE_SEPARATOR,"|\n"),//
+                f(TextStyle.STEP_KEYWORD, "When "),//
+                f(TextStyle.STEP_DEFAULT, "user clicks on "),//
+                f(TextStyle.STEP_PARAMETER_VALUE, "login"),//
+                f(TextStyle.STEP_DEFAULT, " button\n"),//
+                f(TextStyle.STEP_KEYWORD, "And "),//
+                f(TextStyle.STEP_DEFAULT, "user clicks on "),//
+                f(TextStyle.STEP_PARAMETER, "$button_label"),//
+                f(TextStyle.STEP_DEFAULT, " button\n"),//
+                f(TextStyle.COMMENT, "!-- Look at this beautiful comment!\n"),//
+                f(TextStyle.STEP_KEYWORD, "Then "),//
+                f(TextStyle.STEP_DEFAULT, "login page must be displayed\n"),//
+                f(TextStyle.DEFAULT, "\n"),//
+                f(TextStyle.EXAMPLE_TABLE_KEYWORD, "ExampleTable:\n"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "user"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "login"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "Sherlock Holmes"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "sherlock"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "Arsene Lupin"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "arsene"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "Fileas Fogg"),//
+                f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|"),//
+                f(TextStyle.EXAMPLE_TABLE_CELL, "flogg"),//
                 f(TextStyle.EXAMPLE_TABLE_SEPARATOR, "|\n")
         );
     }

@@ -1,26 +1,28 @@
 package org.technbolts.jbehave.eclipse.editors.story.outline;
 
-import static org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils.traverseStoryParts;
-
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
+import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
+import org.technbolts.jbehave.eclipse.util.StoryPartDocumentUtils;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.util.New;
 
 public class OutlineModelBuilder extends StoryPartVisitor {
     
-    private IDocument document;
+    private final LocalizedStepSupport jbehaveProject;
+    private final IDocument document;
     private List<OutlineModel> models;
     
-    public OutlineModelBuilder(IDocument document) {
+    public OutlineModelBuilder(LocalizedStepSupport jbehaveProject, IDocument document) {
+        this.jbehaveProject = jbehaveProject;
         this.document = document;
     }
     
     public List<OutlineModel> build () {
         models = New.arrayList();
-        traverseStoryParts(document, this);
+        new StoryPartDocumentUtils(jbehaveProject).traverseStoryParts(document, this);
         return models;
     }
     
