@@ -1,7 +1,5 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.core.resources.IMarker;
 import org.technbolts.eclipse.util.JDTUtils;

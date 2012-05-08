@@ -230,15 +230,13 @@ public class MarkingStoryValidator {
             };
         });
         
-        logInfo("Validating steps");
-        log.info("Validating steps");
+        log.debug("Validating steps");
         
         StepLocator locator = StepLocator.getStepLocator(project);
         locator.traverseSteps(new Visitor<PotentialStep, Object>() {
             @Override
             public void visit(PotentialStep candidate) {
-                logInfo("Evaluating candidate: <" + candidate + ">");
-                log.info("Evaluating candidate: <{}>", candidate);
+                log.debug("Evaluating candidate: <{}>", candidate);
                 for (Part part : steps) {
                     part.evaluateCandidate(candidate);
                 }
@@ -251,7 +249,6 @@ public class MarkingStoryValidator {
             String key = part.extractStepSentenceAndRemoveTrailingNewlines();
             ConcurrentLinkedQueue<PotentialStep> candidates = part.getCandidates();
             int count = candidates.size();
-            logInfo("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
             log.debug("#" + count + "result(s) found for >>" + Strings.escapeNL(key) + "<<");
             if (count == 0)
                 part.addErrorMark(Marks.Code.NoMatchingStep, "No step is matching <" + key + ">");
@@ -274,10 +271,6 @@ public class MarkingStoryValidator {
         }
     }
     
-    private void logInfo(String message) {
-        //Activator.logInfo(message);
-    }
-
     class Part {
         private final ConcurrentLinkedQueue<MarkData> marks = New.concurrentLinkedQueue();
         private final ConcurrentLinkedQueue<PotentialStep> candidates = New.concurrentLinkedQueue();
@@ -294,9 +287,7 @@ public class MarkingStoryValidator {
             JBKeyword type = partType();
             log.debug("Candidate evaluated against part {}", storyPart);
             boolean patternMatch = candidate.matches(pattern);
-            log.debug("Candidate evaluated patternMatch: {}", patternMatch);
             boolean typeMatch = type.isSameAs(candidate.stepType);
-            log.debug("Candidate evaluated typeMatch: {}", typeMatch);
             if (patternMatch && typeMatch) {
                 log.debug("Candidate accepted");
                 addCandidate(candidate);
