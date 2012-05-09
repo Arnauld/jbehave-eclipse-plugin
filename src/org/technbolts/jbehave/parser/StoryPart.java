@@ -111,4 +111,8 @@ public class StoryPart {
         return keyword!=null && keyword.isStep();
     }
 
+    @Override
+    public String toString() {
+        return "StoryPart[" + localizedStepSupport.getLocale() + " <<" + content.replace("\n", "\\n") + ">>]";
+    }
 }

@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IPreferencesService;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -21,7 +22,7 @@ public final class PreferencesHelper {
     private final IPreferencesService service;
     private final String qualifier;
     private final IScopeContext[] nextContexts;
-
+    
     public static PreferencesHelper getHelper(final String qualifier,
             final IProject project) {
         return new PreferencesHelper(qualifier, new IScopeContext[] {
@@ -52,6 +53,13 @@ public final class PreferencesHelper {
         nextContexts = getNextContexts(loadContexts, storeContext);
         service = Platform.getPreferencesService();
         this.qualifier = qualifier;
+    }
+    
+    public void addListener(IPreferenceChangeListener listener) {
+        if(storeContext!=InstanceScope.INSTANCE) {
+            storeContext.getNode(qualifier).addPreferenceChangeListener(listener);
+        }
+        InstanceScope.INSTANCE.getNode(qualifier).addPreferenceChangeListener(listener);
     }
 
     public boolean getBoolean(final String key, final boolean defaultValue) {
@@ -98,7 +106,7 @@ public final class PreferencesHelper {
                 found = true;
             }
         }
-        return result.toArray(new IScopeContext[0]);
+        return result.toArray(new IScopeContext[result.size()]);
     }
 
     public void putDouble(final String key, final double value) {
@@ -112,7 +120,7 @@ public final class PreferencesHelper {
     public void putFloat(final String key, final float value) {
         final float def = service.getFloat(qualifier, key, Float.NaN,
                 nextContexts);
-        if (Float.isNaN(def) || def != value) {
+        if (Float.isNaN(def) || Float.compare(def, value) != 0) {
             storeContext.getNode(qualifier).putFloat(key, value);
         }
     }
@@ -120,7 +128,7 @@ public final class PreferencesHelper {
     public void putInt(final String key, final int value) {
         final int def = service.getInt(qualifier, key, Integer.MIN_VALUE,
                 nextContexts);
-        if (def == Integer.MIN_VALUE || Double.compare(def, value) != 0) {
+        if (def == Integer.MIN_VALUE || def != value) {
             storeContext.getNode(qualifier).putInt(key, value);
         }
     }
@@ -176,6 +184,10 @@ public final class PreferencesHelper {
     }
 
     public void removeAllAtLowestScope() {
+        removeAllAtLowestScope(true);
+    }
+    
+    public void removeAllAtLowestScope(boolean flush) {
         final IScopeContext sc = storeContext;
         final IEclipsePreferences p = sc.getNode(qualifier);
         if (p != null) {
@@ -184,7 +196,8 @@ public final class PreferencesHelper {
                 for (final String key : keys) {
                     remove(key, sc);
                 }
-                flush();
+                if(flush)
+                    flush();
             } catch (final BackingStoreException e) {
             }
         }

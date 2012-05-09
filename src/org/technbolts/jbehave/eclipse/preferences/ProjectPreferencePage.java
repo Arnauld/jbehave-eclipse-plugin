@@ -29,13 +29,17 @@ import org.eclipse.ui.dialogs.PropertyPage;
 import org.jbehave.core.configuration.Keywords;
 import org.jbehave.core.i18n.LocalizedKeywords;
 import org.osgi.service.prefs.BackingStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.KeywordImageRegistry;
 import org.technbolts.jbehave.support.JBKeyword;
 import org.technbolts.util.LocaleUtils;
 
 public class ProjectPreferencePage extends PropertyPage implements org.eclipse.ui.IWorkbenchPreferencePage {
-
+    
+    private Logger logger = LoggerFactory.getLogger(ProjectPreferencePage.class);
+    //
     private Combo languageCombo;
     private Locale[] locales = { Locale.ENGLISH, Locale.ENGLISH };
     private Table table;
@@ -157,23 +161,32 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
     public void init(IWorkbench workbench) {
         // Initialize the preference page
     }
+    
+    @Override
+    protected void performApply() {
+        super.performApply();
+        storePrefs();
+    }
+
+    protected void storePrefs() {
+        try {
+            updatePrefsWithPage();
+            if (isProjectPreferencePage()
+                    && !enableProjectSpecific.getSelection()) {
+                prefs.removeAllSpecificSettings();
+            }
+            prefs.store();
+        } catch (final BackingStoreException e) {
+            Activator.logError("Failed to store ClassScanner preferences", e);
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.eclipse.jface.preference.PreferencePage#performOk()
      */
     @Override
     public boolean performOk() {
-        try {
-            updatePrefsWithPage();
-            if (isProjectPreferencePage()
-                    && !enableProjectSpecific.getSelection()) {
-                prefs.removeAllSpecificSettings();
-            } else {
-                prefs.store();
-            }
-        } catch (final BackingStoreException e) {
-            Activator.logError("Failed to store ClassScanner preferences", e);
-        }
+        storePrefs();
         return super.performOk();
     }
 
@@ -216,8 +229,10 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         if (isProjectPreferencePage()) {
             boolean isProjectSpecific = enableProjectSpecific.getSelection();
             prefs.setUseProjectSettings(isProjectSpecific);
-            prefs.setStoryLanguage(locales[1].toString());
         }
+        prefs.setStoryLanguage(locales[1].toString());
+        
+        logger.debug("Updating prefs with story language {}", prefs.getStoryLanguage());
     }
 
     private void updatePageWithPrefs() {

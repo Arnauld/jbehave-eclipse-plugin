@@ -116,6 +116,7 @@ public class EditorColorPreferencePage extends PreferencePage implements org.ecl
         Composite container = new Composite(parent, SWT.NULL);
         container.setLayout(new GridLayout(6, false));
         
+        // ~~ row 1
         Label lblTheme = new Label(container, SWT.NONE);
         lblTheme.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
         lblTheme.setText("Theme");
@@ -135,6 +136,7 @@ public class EditorColorPreferencePage extends PreferencePage implements org.ecl
         });
         new Label(container, SWT.NONE);
         
+        // ~~ row 2
         Label lblCurrentLine = new Label(container, SWT.NONE);
         lblCurrentLine.setText("Current line marker:");
         
@@ -145,9 +147,9 @@ public class EditorColorPreferencePage extends PreferencePage implements org.ecl
         lblCurrentLineToolTip.setText("(Change the caret position in the preview for feedback)");
         new Label(container, SWT.NONE);
         new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
-        new Label(container, SWT.NONE);
         
+        
+        //
         keywordTree = new TreeViewer(container, SWT.SINGLE |SWT.BORDER);
         Tree tree = keywordTree.getTree();
         

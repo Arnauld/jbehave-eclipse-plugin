@@ -1,13 +1,20 @@
 package org.technbolts.jbehave.eclipse.preferences;
 
+import static org.technbolts.util.Objects.o;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.osgi.service.prefs.BackingStoreException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.preferences.PreferencesHelper;
 import org.technbolts.jbehave.eclipse.Activator;
 
 public class ProjectPreferences {
+    
+    private Logger logger = LoggerFactory.getLogger(ProjectPreferences.class);
     
     private static final String QUALIFIER = Activator.PLUGIN_ID + "/project";
     
@@ -17,6 +24,7 @@ public class ProjectPreferences {
     public static final String LANGUAGES = "keyword.languages";  
     public static final String LANGUAGE = "keyword.language";
     
+    private final boolean isProjectLevel;
     private boolean useProjectSettings;
     private String storyLanguage;
 
@@ -24,14 +32,21 @@ public class ProjectPreferences {
 
     public ProjectPreferences(IScopeContext scope) {
         helper = PreferencesHelper.getHelper(QUALIFIER, scope);
+        isProjectLevel = false;
     }
     
     public ProjectPreferences() {
         helper = PreferencesHelper.getHelper(QUALIFIER);
+        isProjectLevel = false;
     }
 
     public ProjectPreferences(final IProject project) {
         helper = PreferencesHelper.getHelper(QUALIFIER, project);
+        isProjectLevel = true;
+    }
+    
+    public void addListener(IPreferenceChangeListener changeListener) {
+        helper.addListener(changeListener);
     }
     
     public boolean hasOptionsAtLowestScope() {
@@ -49,6 +64,8 @@ public class ProjectPreferences {
         storyLanguage = helper.getString(LANGUAGE, "en");
         availableStoryLanguages = helper.getString(LANGUAGES, "en").split(",");
         useProjectSettings = helper.getBoolean(USE_PROJECT_SETTINGS, false);
+        logger.info("Project preferences loaded (projectLevel: {}), storyLanguage: {}, useProjectSettings: {}",//
+                o(isProjectLevel, storyLanguage, useProjectSettings));
     }
     
     public String[] availableStoryLanguages() {

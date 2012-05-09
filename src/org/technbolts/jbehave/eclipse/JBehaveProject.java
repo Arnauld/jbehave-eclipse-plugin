@@ -1,5 +1,7 @@
 package org.technbolts.jbehave.eclipse;
 
+import static org.technbolts.util.Objects.o;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -8,6 +10,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.jdt.core.IAnnotation;
 import org.eclipse.jdt.core.IJavaElementDelta;
 import org.eclipse.jdt.core.IMemberValuePair;
@@ -43,6 +47,7 @@ public class JBehaveProject {
     private ReadWriteLock rwLock = new ReentrantReadWriteLock();
     //
     private ProjectPreferences projectPreferences;
+    private ClassScannerPreferences classScannerPreferences;
     //
     private LocalizedStepSupport localizedStepSupport;
     private Locale storyLocale;
@@ -51,15 +56,50 @@ public class JBehaveProject {
     private volatile int rebuildTick = -1;
     //
 
+
     public JBehaveProject(IProject project) {
         this.project = project;
         this.cache = new MethodPerPackageFragmentRootCache<PotentialStep>(newCallback());
         this.localizedStepSupport = new LocalizedStepSupport();
+        initializeProjectPreferencesAndListener(project);
+        initializeClassScannerPreferencesAndListener(project);
+    }
+
+    protected void initializeClassScannerPreferencesAndListener(IProject project) {
+        this.classScannerPreferences = new ClassScannerPreferences(project);
+        this.classScannerPreferences.addListener(new IPreferenceChangeListener() {
+            @Override
+            public void preferenceChange(PreferenceChangeEvent changeEvent) {
+                log.info("Class scanner preference changed [{}]: <{}> -> <{}>", 
+                        o(changeEvent.getKey(), changeEvent.getOldValue(), changeEvent.getNewValue()));
+                reloadScannerPreferences();
+            }
+        });
+        this.reloadScannerPreferences();
+    }
+
+    protected void initializeProjectPreferencesAndListener(IProject project) {
+        this.projectPreferences = new ProjectPreferences(project);
+        this.projectPreferences.addListener(new IPreferenceChangeListener() {
+            @Override
+            public void preferenceChange(PreferenceChangeEvent changeEvent) {
+                log.info("Project preference changed [{}]: <{}> -> <{}>", 
+                        o(changeEvent.getKey(), changeEvent.getOldValue(), changeEvent.getNewValue()));
+                reloadProjectPreferences();
+            }
+        });
         this.reloadProjectPreferences();
     }
     
+    protected void reloadScannerPreferences() {
+        try {
+            classScannerPreferences.load();
+        } catch (BackingStoreException e) {
+            log.error("Failed to load scanner preferences", e);
+        }
+    }
+    
     private void reloadProjectPreferences() {
-        this.projectPreferences = new ProjectPreferences(getProject());
         try {
             projectPreferences.load();
         } catch (BackingStoreException e) {
@@ -144,16 +184,10 @@ public class JBehaveProject {
             cache.rebuild(project, new Effect<JavaScanner<?>>() {
                 @Override
                 public void e(JavaScanner<?> scanner) {
-                    try {
-                        ClassScannerPreferences prefs = new ClassScannerPreferences(project);
-                        prefs.load();
-                        scanner.setFilterHash(prefs.calculateHash());
-                        scanner.setPackageRootNameFilter(prefs.getPackageRootMatcher());
-                        scanner.setPackageNameFilter(prefs.getPackageMatcher());
-                        scanner.setClassNameFilter(prefs.getClassMatcher());
-                    } catch (BackingStoreException e) {
-                        log.error("Failed to load scanner preferences", e);
-                    }
+                    scanner.setFilterHash(classScannerPreferences.calculateHash());
+                    scanner.setPackageRootNameFilter(classScannerPreferences.getPackageRootMatcher());
+                    scanner.setPackageNameFilter(classScannerPreferences.getPackageMatcher());
+                    scanner.setClassNameFilter(classScannerPreferences.getClassMatcher());
                 }
             }, processGroup);
         } catch (JavaModelException e) {

@@ -5,12 +5,16 @@ import java.util.Locale;
 
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.DocumentEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.parser.StoryParser;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
 
 public class StoryDocument extends Document {
+    
+    private Logger logger = LoggerFactory.getLogger(StoryDocument.class);
 
     private volatile List<StoryPart> parts;
     private JBehaveProject jbehaveProject;
@@ -40,6 +44,8 @@ public class StoryDocument extends Document {
     }
     
     private synchronized List<StoryPart> getOrGenerateStoryParts () {
+        logger.debug("Retrieving story parts from document (previous locale {} current locale {})", lastLocale, jbehaveProject.getLocale());
+        
         if(lastLocale==null || !lastLocale.equals(jbehaveProject.getLocale())) {
             invalidateStoryParts();
             lastLocale = jbehaveProject.getLocale();
