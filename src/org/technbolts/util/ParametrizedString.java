@@ -2,19 +2,31 @@ package org.technbolts.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fj.F;
 
 public class ParametrizedString {
     
-    private String content;
+    private static Pattern compileParameterPattern(String parameterPrefix) {
+        return Pattern.compile("(\\" + parameterPrefix + "\\w*)(\\W|\\Z)", Pattern.DOTALL);
+    }
+    
     private List<Token> tokens = new ArrayList<Token>();
+    private final String content;
+    private final String parameterPrefix;
     
     public ParametrizedString(String content) {
+        this(content, "$");
+    }
+    
+    public ParametrizedString(String content, String parameterPrefix) {
         if(content==null)
             throw new IllegalArgumentException("Content cannot be null");
         this.content = content;
-        parse();
+        this.parameterPrefix = parameterPrefix;
+        parse(compileParameterPattern(parameterPrefix));
     }
     
     @Override
@@ -37,45 +49,24 @@ public class ParametrizedString {
         return content;
     }
 
-    private void parse() {
-        boolean inIdentifier = false;
-        StringBuilder buffer = new StringBuilder ();
+    private void parse(Pattern parameterPattern) {
+        Matcher matcher = parameterPattern.matcher(content);
         
-        char previous = ' ';
-        int i,n=content.length();
-        for(i=0; i<n; i++) {
-            char c = content.charAt(i);
-            try {
-                if(inIdentifier) {
-                    if(isIdentifierChar(c)) {
-                        buffer.append(c);
-                        continue;
-                    }
-                    else {
-                        add(new Token(i-buffer.length(), buffer.length(), true));
-                        buffer.setLength(0);
-                        inIdentifier = false;
-                        // continue parsing, incase of the character is an identifier delimiter
-                    }
-                }
-                
-                // make sure it is not escaped
-                if(c=='$' && previous!='\\') {
-                    add(new Token(i-buffer.length(), buffer.length(), false));
-                    buffer.setLength(0);
-                    inIdentifier = true;
-                }
-                else {
-                    buffer.append(c);
-                }
+        int prev = 0;
+        while (matcher.find()) {
+            int start = matcher.start();
+            int end = matcher.end();
+            if (start > 0) {
+                add(new Token(prev, start - prev, false));
             }
-            finally {
-                previous = c;
-            }
+            end -= matcher.group(2).length();
+            start += parameterPrefix.length(); // remove prefix from the identifier
+            add(new Token(start, end - start, true));
+            prev = end;
         }
-        
-        //remaining
-        add(new Token(i-buffer.length(), buffer.length(), inIdentifier));
+        if (prev < content.length()) {
+            add(new Token(prev, content.length() - prev, false));
+        }
     }
     
     private void add(Token token) {
