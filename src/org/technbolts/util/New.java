@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class New {
 
@@ -42,6 +43,10 @@ public class New {
 
     public static <K,V> ConcurrentMultimap<K,V> concurrentMultimap() {
         return new ConcurrentMultimap<K,V>();
+    }
+
+    public static <T> CopyOnWriteArrayList<T> copyOnWriteArrayList() {
+        return new CopyOnWriteArrayList<T>();
     }
 
 }

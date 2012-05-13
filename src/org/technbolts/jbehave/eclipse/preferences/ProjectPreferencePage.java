@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.jbehave.core.configuration.Keywords;
@@ -49,6 +50,7 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
     private ProjectPreferences prefs;
     private ControlEnableState blockEnableState;
     private Composite projectComposite;
+    private Text parameterPrefixText;
 
     /**
      * Create the preference page.
@@ -85,6 +87,14 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         projectComposite = new Composite(container, SWT.NONE);
         projectComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
         projectComposite.setLayout(new GridLayout(2, false));
+        
+        Label lblParameterPrefix = new Label(projectComposite, SWT.NONE);
+        lblParameterPrefix.setSize(87, 14);
+        lblParameterPrefix.setText("Parameter prefix");
+        
+        parameterPrefixText = new Text(projectComposite, SWT.NONE|SWT.BORDER);
+        parameterPrefixText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+        parameterPrefixText.setSize(100, 22);
         
         Label lblStoryLanguage = new Label(projectComposite, SWT.NONE);
         lblStoryLanguage.setSize(87, 14);
@@ -162,12 +172,6 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         // Initialize the preference page
     }
     
-    @Override
-    protected void performApply() {
-        super.performApply();
-        storePrefs();
-    }
-
     protected void storePrefs() {
         try {
             updatePrefsWithPage();
@@ -177,7 +181,7 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
             }
             prefs.store();
         } catch (final BackingStoreException e) {
-            Activator.logError("Failed to store ClassScanner preferences", e);
+            Activator.logError("Failed to store preferences", e);
         }
     }
 
@@ -187,6 +191,8 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
     @Override
     public boolean performOk() {
         storePrefs();
+        reload();
+        updatePageWithPrefs();
         return super.performOk();
     }
 
@@ -206,12 +212,6 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         super.performDefaults();
     }
     
-    protected void performReload () {
-        reload();
-        updatePageWithPrefs();
-        super.performDefaults();
-    }
-
     private void reload() {
         if (project == null) {
             prefs = new ProjectPreferences();
@@ -230,12 +230,14 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
             boolean isProjectSpecific = enableProjectSpecific.getSelection();
             prefs.setUseProjectSettings(isProjectSpecific);
         }
+        prefs.setParameterPrefix(parameterPrefixText.getText());
         prefs.setStoryLanguage(locales[1].toString());
         
-        logger.debug("Updating prefs with story language {}", prefs.getStoryLanguage());
+        logger.debug("Updating prefs with story language <{}> and parameter prefix <{}>", prefs.getStoryLanguage(), prefs.getParameterPrefix());
     }
 
     private void updatePageWithPrefs() {
+        parameterPrefixText.setText(prefs.getParameterPrefix());
         String[] langs = prefs.availableStoryLanguages();
         String selectedLanguage = prefs.getStoryLanguage();
         languageCombo.setItems(langs);

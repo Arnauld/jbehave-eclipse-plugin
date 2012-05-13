@@ -20,7 +20,6 @@ Given a user named $username
 Given a user named roy la poutre
 When user credits is 16 dollars
 When user credits is 5 dollars
-
 When user credits is amount dollars
 
 Scenario: my scenario 3

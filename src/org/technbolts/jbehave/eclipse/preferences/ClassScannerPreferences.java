@@ -109,6 +109,7 @@ public class ClassScannerPreferences {
     }
 
     public void store() throws BackingStoreException {
+        helper.removeAllAtLowestScope();
         boolean[] modes = { true, false };
         
         for(ApplyOn applyOn : ApplyOn.values()) {

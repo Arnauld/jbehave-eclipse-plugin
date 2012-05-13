@@ -87,6 +87,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         ProjectPreferences projectPreferences = new ProjectPreferences(DefaultScope.INSTANCE);
         projectPreferences.setStoryLanguage("en");
         projectPreferences.setAvailableStoryLanguages("de", "en", "fr", "it", "pt", "tr", "zh_TW");
+        projectPreferences.setParameterPrefix("$");
         try {
             projectPreferences.store();
         } catch (BackingStoreException e) {

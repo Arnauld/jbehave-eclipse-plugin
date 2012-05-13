@@ -17,6 +17,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
@@ -28,6 +29,7 @@ import org.technbolts.jbehave.parser.ContentWithIgnorableEmitter.Callback;
 import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.parser.StoryPartVisitor;
 import org.technbolts.util.New;
+import org.technbolts.util.Objects;
 
 /**
  * 
@@ -44,7 +46,7 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     
     private Logger log = LoggerFactory.getLogger(AbstractStoryPartBasedScanner.class);
     
-    private final TextAttributeProvider textAttributeProvider;
+    protected final TextAttributeProvider textAttributeProvider;
     protected final JBehaveProject jbehaveProject;
     //
     private IToken defaultToken;
@@ -55,8 +57,8 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     private List<Fragment> fragments;
     private int cursor = 0;
     //
-    private IDocument document;
-    private Region range;
+    protected IDocument document;
+    protected Region range;
 
     public AbstractStoryPartBasedScanner(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
         this.jbehaveProject = jbehaveProject;
@@ -134,14 +136,59 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
     }
     
     protected void evaluateFragments() {
+        final Object self = this;
         StoryPartVisitor visitor = new StoryPartVisitor() {
             @Override
             public void visit(StoryPart part) {
-                if(part.intersects(range.getOffset(), range.getLength()) && isPartAccepted(part))
-                    emitPart(part); //part are given in the absolute position
+                if(part.intersects(range.getOffset(), range.getLength())) {
+                    if(isPartAccepted(part))
+                        emitPart(part); //part are given in the absolute position
+                    else
+                        log.warn("Part rejected... ({}@{}): {}", Objects.o(self.getClass(), System.identityHashCode(self), part));
+                }
             }
         };
         new StoryPartDocumentUtils(getLocalizedStepSupport()).traverseStoryParts(document, visitor);
+        
+        consolidateFragments();
+    }
+
+    private void consolidateFragments() {
+        log.debug("Consolidating fragments ({}@{})", getClass(), System.identityHashCode(this));
+        int start = range.getOffset();
+        int length = range.getLength();
+
+        try {
+            if(defaultToken==null)
+                throw new IllegalStateException("No default token defined");
+            
+            if(fragments.isEmpty()) {
+                emitCommentAware(defaultToken, start, document.get(start, length));
+                return;
+            }
+            Fragment firstFragment = fragments.get(0);
+            if(firstFragment.offset>start) {
+                fragments.add(0, new Fragment(defaultToken, start, firstFragment.offset-start));
+            }
+            
+            Fragment lastFragment = fragments.get(fragments.size()-1);
+            int endOffset = start + length;
+            int endFragmentOffset = lastFragment.offset+lastFragment.length;
+            if(endFragmentOffset<endOffset) {
+                emitCommentAware(defaultToken, endFragmentOffset, 
+                        document.get(endFragmentOffset, endOffset - endFragmentOffset));
+            }
+        } catch (BadLocationException e) {
+            Activator.logError("Failed to consolidate fragments", e);
+        }
+        
+        int expected = 0;
+        for(Fragment fragment : fragments) {
+            if(fragment.offset!=expected)
+                log.warn("humpff");
+            log.debug("fragment: {}, {}, {}", o(fragment.offset, fragment.length, fragment.token.getData()));
+            expected = fragment.offset + fragment.length;
+        }
     }
 
     protected LocalizedStepSupport getLocalizedStepSupport() {
@@ -210,8 +257,21 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
             }
         }
         Fragment fragment = new Fragment(token, offset, length);
-        log.debug("Fragment added, offset: {}, length: {}", o(offset, length));
+        addFragment(fragment);
+    }
+    
+    public void addFragment(Fragment fragment) {
+        log.debug("Fragment added, offset: {}, length: {}, token: {}", o(fragment.offset, fragment.length, fragment.token));
         fragments.add(fragment);
+    }
+    
+    public void addFragments(Iterable<Fragment> fragments) {
+        for(Fragment fragment : fragments)
+            addFragment(fragment);
+    }
+    
+    public List<Fragment> getFragments() {
+        return fragments;
     }
 
     private String getContentForLog(int offset, int length) {
@@ -330,6 +390,13 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
         }
         public IToken getToken() {
             return token;
+        }
+        public boolean intersects(Region range) {
+            int tMin = offset;
+            int tMax = offset+length-1;
+            int oMin = range.getOffset();
+            int oMax = range.getOffset()+range.getLength()-1;
+            return tMin<=oMax && oMin<=tMax;
         }
     }
     

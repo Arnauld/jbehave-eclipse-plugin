@@ -75,7 +75,7 @@ public class StepScannerStyledTest {
         document = new Document(GIVEN1);
         IMethod method = null;
         IAnnotation annotation = null;
-        potentialStep = new PotentialStep(localizedStepSupport, method, annotation, StepType.GIVEN, STEP1, 0);
+        potentialStep = new PotentialStep(localizedStepSupport, "$", method, annotation, StepType.GIVEN, STEP1, 0);
     }
     
     @Test

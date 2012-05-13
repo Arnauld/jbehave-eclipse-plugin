@@ -17,7 +17,7 @@ import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.util.Ref;
 
 public class StepHyperLinkDetector implements IHyperlinkDetector {
-    
+
     private static Logger logger = LoggerFactory.getLogger(StepHyperLinkDetector.class);
 
     private IHyperlink[] NONE = null;// new IHyperlink[0];
@@ -26,23 +26,29 @@ public class StepHyperLinkDetector implements IHyperlinkDetector {
     public IHyperlink[] detectHyperlinks(final ITextViewer viewer, final IRegion region,
             boolean canShowMultipleHyperlinks) {
 
+        logger.debug("Searching for hyperlink in region offset: {}, length: {}", region.getOffset(), region.getLength());
+
         IDocument document = viewer.getDocument();
-        if(!(document instanceof StoryDocument)) {
-            logger.error("Document is not a story document got: {}, hyperlink detector failed",document.getClass());
+        if (!(document instanceof StoryDocument)) {
+            logger.error("Document is not a story document got: {}, hyperlink detector failed", document.getClass());
             return NONE;
         }
-        StoryDocument storyDocument = (StoryDocument)document;
+        StoryDocument storyDocument = (StoryDocument) document;
         final JBehaveProject jbehaveProject = storyDocument.getJBehaveProject();
         LocalizedStepSupport localizedStepSupport = jbehaveProject.getLocalizedStepSupport();
-        
-        final Ref<StoryPart> found = new StoryPartDocumentUtils(localizedStepSupport).findStoryPartAtRegion(document, region);
+
+        final Ref<StoryPart> found = new StoryPartDocumentUtils(localizedStepSupport).findStoryPartAtRegion(document,
+                region);
         if (found.isNull()) {
+            logger.debug("No story part found in region offset: {}, length: {}", region.getOffset(), region.getLength());
             return NONE;
         }
 
         final StoryPart part = found.get();
-        if (!part.isStepPart())
+        if (!part.isStepPart()) {
+            logger.debug("Part found is not a step part got: {}", part.extractKeyword());
             return NONE;
+        }
         final String step = part.extractStepSentence();
         final String partCleaned = Constants.removeTrailingComment(part.getContent());
         IHyperlink link = new IHyperlink() {

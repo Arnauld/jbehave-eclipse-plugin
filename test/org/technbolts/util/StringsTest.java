@@ -31,6 +31,18 @@ public class StringsTest {
         String line = Strings.getSubLineUntilOffset(text, 25);
         assertThat(line, equalTo("Given an inactive direct "));
     }
+    
+    @Test
+    public void removeLeftSpaces() {
+        assertThat(Strings.removeLeftSpaces("   a  "), equalTo("a  "));
+        assertThat(Strings.removeLeftSpaces("   abc"), equalTo("abc"));
+        assertThat(Strings.removeLeftSpaces("   a c"), equalTo("a c"));
+        assertThat(Strings.removeLeftSpaces("      "), equalTo(""));
+        assertThat(Strings.removeLeftSpaces(""), equalTo(""));
+        assertThat(Strings.removeLeftSpaces(null), equalTo(null));
+        assertThat(Strings.removeLeftSpaces("  \n"), equalTo("\n"));
+        
+    }
 
 }
 

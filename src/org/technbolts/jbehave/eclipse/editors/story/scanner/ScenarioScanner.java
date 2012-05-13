@@ -26,7 +26,7 @@ public class ScenarioScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected boolean isPartAccepted(StoryPart part) {
         JBKeyword keyword = part.getPreferredKeyword();
-        if(keyword==JBKeyword.Scenario) {
+        if(keyword==JBKeyword.Scenario || keyword.isComment()) {
             return true;
         }
         return false;
@@ -41,10 +41,10 @@ public class ScenarioScanner extends AbstractStoryPartBasedScanner {
         if(content.startsWith(kwString)) {
             emit(keywordToken, offset, kwString.length());
             offset += kwString.length();
-            emit(getDefaultToken(), offset, content.length()-kwString.length());
+            emitCommentAware(getDefaultToken(), offset, content.substring(kwString.length()));
         }
         else {
-            emit(getDefaultToken(), offset, content.length());
+            emitCommentAware(getDefaultToken(), offset, content);
         }
     }
 }

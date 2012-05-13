@@ -1,5 +1,6 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
@@ -13,8 +14,10 @@ import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.technbolts.eclipse.util.TextAttributeProvider;
+import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.editors.story.completion.StepContentAssistant;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.AllInOneScanner;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.ExampleTableScanner;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.MiscScanner;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.NarrativeScanner;
@@ -36,12 +39,13 @@ public class StoryConfiguration extends SourceViewerConfiguration {
     private TextAttributeProvider textAttributeProvider;
     private StoryEditor storyEditor;
     private PresentationReconciler reconciler;
+    private Object reconcilerInternalListener;
 
     public StoryConfiguration(StoryEditor storyEditor, TextAttributeProvider textAttributeProvider) {
         this.storyEditor = storyEditor;
         this.textAttributeProvider = textAttributeProvider;
     }
-
+    
     /* (non-Javadoc)
      * @see org.eclipse.jface.text.source.SourceViewerConfiguration#getConfiguredContentTypes(org.eclipse.jface.text.source.ISourceViewer)
      */
@@ -128,35 +132,52 @@ public class StoryConfiguration extends SourceViewerConfiguration {
      */
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        reconciler = new PresentationReconciler();
-
-        DefaultDamagerRepairer dr = new DefaultDamagerRepairer(getDefaultScanner());
-        reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
-        reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
-
-        dr = new DefaultDamagerRepairer(getStepScanner());
-        reconciler.setDamager(dr, JBPartition.Step.name());
-        reconciler.setRepairer(dr, JBPartition.Step.name());
-
-        dr = new DefaultDamagerRepairer(getCommentScanner());
-        reconciler.setDamager(dr, JBPartition.Comment.name());
-        reconciler.setRepairer(dr, JBPartition.Comment.name());
-
-        dr = new DefaultDamagerRepairer(getScenarioScanner());
-        reconciler.setDamager(dr, JBPartition.Scenario.name());
-        reconciler.setRepairer(dr, JBPartition.Scenario.name());
+        reconciler = new PresentationReconciler() {
+        };
         
-        dr = new DefaultDamagerRepairer(getNarrativeScanner());
-        reconciler.setDamager(dr, JBPartition.Narrative.name());
-        reconciler.setRepairer(dr, JBPartition.Narrative.name());
-        
-        dr = new DefaultDamagerRepairer(getExampleTableScanner());
-        reconciler.setDamager(dr, JBPartition.ExampleTable.name());
-        reconciler.setRepairer(dr, JBPartition.ExampleTable.name());
-        
-        dr = new DefaultDamagerRepairer(getMiscScanner());
-        reconciler.setDamager(dr, JBPartition.Misc.name());
-        reconciler.setRepairer(dr, JBPartition.Misc.name());
+        try {
+            Field declaredField = PresentationReconciler.class.getDeclaredField("fInternalListener");
+            declaredField.setAccessible(true);
+            reconcilerInternalListener = declaredField.get(reconciler);
+        } catch (Exception e) {
+            Activator.logError("Failed to retrieve internal listener", e);
+        }
+
+        DefaultDamagerRepairer dr;
+        if(AllInOneScanner.allInOne) {
+            dr = new DefaultDamagerRepairer(new AllInOneScanner(getJBehaveProject(), textAttributeProvider));
+            reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
+            reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+        }
+        else {
+            dr = new DefaultDamagerRepairer(getDefaultScanner());
+            reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
+            reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+    
+            dr = new DefaultDamagerRepairer(getStepScanner());
+            reconciler.setDamager(dr, JBPartition.Step.name());
+            reconciler.setRepairer(dr, JBPartition.Step.name());
+    
+            dr = new DefaultDamagerRepairer(getCommentScanner());
+            reconciler.setDamager(dr, JBPartition.Comment.name());
+            reconciler.setRepairer(dr, JBPartition.Comment.name());
+    
+            dr = new DefaultDamagerRepairer(getScenarioScanner());
+            reconciler.setDamager(dr, JBPartition.Scenario.name());
+            reconciler.setRepairer(dr, JBPartition.Scenario.name());
+            
+            dr = new DefaultDamagerRepairer(getNarrativeScanner());
+            reconciler.setDamager(dr, JBPartition.Narrative.name());
+            reconciler.setRepairer(dr, JBPartition.Narrative.name());
+            
+            dr = new DefaultDamagerRepairer(getExampleTableScanner());
+            reconciler.setDamager(dr, JBPartition.ExampleTable.name());
+            reconciler.setRepairer(dr, JBPartition.ExampleTable.name());
+            
+            dr = new DefaultDamagerRepairer(getMiscScanner());
+            reconciler.setDamager(dr, JBPartition.Misc.name());
+            reconciler.setRepairer(dr, JBPartition.Misc.name());
+        }
         
         return reconciler;
     }
@@ -166,5 +187,8 @@ public class StoryConfiguration extends SourceViewerConfiguration {
         return new StoryAnnotationHover(storyEditor);
     }
     
-    
+    @SuppressWarnings("unchecked")
+    public <T> T getReconcilerInternalListener(Class<T> asType) {
+        return (T)reconcilerInternalListener;
+    }
 }

@@ -88,15 +88,15 @@ public class StepParserTest {
     }
 
     private static PotentialStep givenStep(String content) {
-        return new PotentialStep(localizedSupport, null, null, StepType.GIVEN, content, 0);
+        return new PotentialStep(localizedSupport, "$", null, null, StepType.GIVEN, content, 0);
     }
     
     private static PotentialStep whenStep(String content) {
-        return new PotentialStep(localizedSupport, null, null, StepType.WHEN, content, 0);
+        return new PotentialStep(localizedSupport, "$", null, null, StepType.WHEN, content, 0);
     }
     
     private static PotentialStep thenStep(String content) {
-        return new PotentialStep(localizedSupport, null, null, StepType.THEN, content, 0);
+        return new PotentialStep(localizedSupport, "$", null, null, StepType.THEN, content, 0);
     }
     
     @Test

@@ -45,6 +45,7 @@ public class LoggerPreferences {
     }
 
     public void store() throws BackingStoreException {
+        helper.removeAllAtLowestScope();
         StringBuilder inlinedEntries = entries.foldLeft(inlineEntries(), new StringBuilder());
         helper.putString(INLINED_ENTRIES, inlinedEntries.toString());
         helper.putBoolean(USE_PROJECT_SETTINGS, useProjectSettings);

@@ -135,6 +135,10 @@ public enum JBKeyword {
         return isExampleTable(this);
     }
     
+    public boolean isComment() {
+        return this==Ignorable;
+    }
+
     public static JBKeyword lookup(StringBuilder builder, Keywords keywords) {
         int len = builder.length();
         for(JBKeyword jk : values()) {

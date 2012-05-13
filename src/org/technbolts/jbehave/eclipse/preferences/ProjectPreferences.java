@@ -14,20 +14,24 @@ import org.technbolts.jbehave.eclipse.Activator;
 
 public class ProjectPreferences {
     
-    private Logger logger = LoggerFactory.getLogger(ProjectPreferences.class);
-    
     private static final String QUALIFIER = Activator.PLUGIN_ID + "/project";
     
-    private final PreferencesHelper helper;
-    //
+    private static final String DEFAULT_PARAMETER_PREFIX = "$";
     public static final String USE_PROJECT_SETTINGS = "use_project_settings";
     public static final String LANGUAGES = "keyword.languages";  
     public static final String LANGUAGE = "keyword.language";
-    
+    public static final String PARAMETER_PREFIX = "parameter.prefix";
+
+    //
+    private Logger logger = LoggerFactory.getLogger(ProjectPreferences.class);
+    //
+    private final PreferencesHelper helper;
+    //
     private final boolean isProjectLevel;
     private boolean useProjectSettings;
     private String storyLanguage;
-
+    private String parameterPrefix;
+    //
     private String[] availableStoryLanguages;
 
     public ProjectPreferences(IScopeContext scope) {
@@ -54,18 +58,23 @@ public class ProjectPreferences {
     }
 
     public void store() throws BackingStoreException {
+        helper.removeAllAtLowestScope();
         helper.putString(LANGUAGE, storyLanguage);
         helper.putString(LANGUAGES, StringUtils.join(availableStoryLanguages,","));
         helper.putBoolean(USE_PROJECT_SETTINGS, useProjectSettings);
+        helper.putString(PARAMETER_PREFIX, parameterPrefix);
         helper.flush();
+        logger.info("Project preferences stored (projectLevel: {}), storyLanguage: {}, useProjectSettings: {}, parameterPrefix: {}",//
+                o(isProjectLevel, storyLanguage, useProjectSettings, parameterPrefix));
     }
 
     public void load() throws BackingStoreException {
         storyLanguage = helper.getString(LANGUAGE, "en");
         availableStoryLanguages = helper.getString(LANGUAGES, "en").split(",");
         useProjectSettings = helper.getBoolean(USE_PROJECT_SETTINGS, false);
-        logger.info("Project preferences loaded (projectLevel: {}), storyLanguage: {}, useProjectSettings: {}",//
-                o(isProjectLevel, storyLanguage, useProjectSettings));
+        parameterPrefix = helper.getString(PARAMETER_PREFIX, DEFAULT_PARAMETER_PREFIX);
+        logger.info("Project preferences loaded (projectLevel: {}), storyLanguage: {}, useProjectSettings: {}, parameterPrefix: {}",//
+                o(isProjectLevel, storyLanguage, useProjectSettings, parameterPrefix));
     }
     
     public String[] availableStoryLanguages() {
@@ -91,7 +100,23 @@ public class ProjectPreferences {
         this.useProjectSettings = useProjectSettings;
     }
     
+    public String getParameterPrefix() {
+        return parameterPrefix;
+    }
+    
+    /**
+     * Define the parameter prefix, if the prefix is blank then it is automatically
+     * replaced by '$'
+     * @param parameterPrefix
+     */
+    public void setParameterPrefix(String parameterPrefix) {
+        if(StringUtils.isBlank(parameterPrefix))
+            parameterPrefix = DEFAULT_PARAMETER_PREFIX;
+        this.parameterPrefix = parameterPrefix.trim();
+    }
+    
     public void removeAllSpecificSettings() throws BackingStoreException {
+        logger.info("Remove project specific settings");
         helper.removeAllAtLowestScope();
         load();
     }

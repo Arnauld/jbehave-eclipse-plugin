@@ -21,7 +21,8 @@ import com.google.common.cache.CacheLoader;
  * Candidate Step, prevent name clash with jbehave thus one uses potential instead.
  */
 public class PotentialStep {
-    private final LocalizedStepSupport project;
+    private final LocalizedStepSupport localizedSupport;
+    private final String parameterPrefix;
     public final IMethod method;
     public final IAnnotation annotation;
     public final StepType stepType;
@@ -29,9 +30,10 @@ public class PotentialStep {
     private ParametrizedString parametrizedString;
     public final Integer priority;
     
-    public PotentialStep(LocalizedStepSupport project, IMethod method, IAnnotation annotation, StepType stepType, String stepPattern, Integer priority) {
+    public PotentialStep(LocalizedStepSupport localizedSupport, String parameterPrefix, IMethod method, IAnnotation annotation, StepType stepType, String stepPattern, Integer priority) {
         super();
-        this.project = project;
+        this.localizedSupport = localizedSupport;
+        this.parameterPrefix = parameterPrefix;
         this.method = method;
         this.annotation = annotation;
         this.stepType = stepType;
@@ -45,7 +47,7 @@ public class PotentialStep {
     
     public ParametrizedString getParametrizedString() {
         if(parametrizedString==null)
-            parametrizedString = new ParametrizedString(stepPattern);
+            parametrizedString = new ParametrizedString(stepPattern, parameterPrefix);
         return parametrizedString;
     }
     
@@ -63,11 +65,11 @@ public class PotentialStep {
     
     public String typeWord () {
         switch(stepType) {
-            case WHEN: return project.lWhen(false);
-            case THEN: return project.lThen(false);
+            case WHEN: return localizedSupport.lWhen(false);
+            case THEN: return localizedSupport.lThen(false);
             case GIVEN:
             default:
-                return project.lGiven(false);
+                return localizedSupport.lGiven(false);
         }
     }
     

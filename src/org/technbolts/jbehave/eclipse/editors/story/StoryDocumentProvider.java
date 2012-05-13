@@ -13,6 +13,8 @@ import org.technbolts.eclipse.util.ProjectAwareFastPartitioner;
 import org.technbolts.eclipse.util.UIUtils;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.AllInOnePartitionScanner;
+import org.technbolts.jbehave.eclipse.editors.story.scanner.AllInOneScanner;
 import org.technbolts.jbehave.eclipse.editors.story.scanner.StoryPartitionScanner;
 import org.technbolts.jbehave.support.JBPartition;
 import org.technbolts.util.Strings;
@@ -47,11 +49,20 @@ public class StoryDocumentProvider extends FileDocumentProvider {
     }
 
     private IDocumentPartitioner createPartitioner(final JBehaveProject jbehaveProject) {
-        List<String> names = new ArrayList<String>(JBPartition.names());
-        names.add((String)TokenConstants.IGNORED.getData());
-        return new ProjectAwareFastPartitioner(
-                new StoryPartitionScanner(jbehaveProject),
-                Strings.toArray(names), jbehaveProject.getProject());
+        List<String> names = new ArrayList<String>();
+        if(AllInOneScanner.allInOne) {
+            names.add(IDocument.DEFAULT_CONTENT_TYPE);
+            return new ProjectAwareFastPartitioner(
+                    new AllInOnePartitionScanner(),
+                    Strings.toArray(names), jbehaveProject.getProject());
+        }
+        else {
+            names.addAll(JBPartition.names());
+            names.add((String)TokenConstants.IGNORED.getData());
+            return new ProjectAwareFastPartitioner(
+                    new StoryPartitionScanner(jbehaveProject),
+                    Strings.toArray(names), jbehaveProject.getProject());
+        }
     }
 
 }

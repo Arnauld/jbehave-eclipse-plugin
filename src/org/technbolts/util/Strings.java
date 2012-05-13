@@ -48,6 +48,18 @@ public class Strings {
         return sameStarts(sequence, prefix);
     }
     
+    public static String removeLeftSpaces(String string) {
+        if(string==null)
+            return null;
+        int len = string.length();
+        int st = 0;
+
+        while ((st < len) && (string.charAt(st) == ' ')) {
+            st++;
+        }
+        return (st > 0) ? string.substring(st) : string;
+    }
+    
     public static String removeTrailingNewlines(String string) {
         if(string==null)
             return null;
