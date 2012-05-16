@@ -14,6 +14,7 @@
 	<logger name="org.technbolts.eclipse.jdt.methodcache" level="debug" />
 	<logger name="org.technbolts.jbehave.eclipse.JBehaveProject" level="debug" />
 	<logger name="org.technbolts.jbehave.eclipse.editors.story.scanner" level="info" />
+	<logger name="org.technbolts.jbehave.eclipse.editors.story.scanner.AbstractStoryPartBasedScanner" level="debug"/>
 	<logger name="org.technbolts.eclipse.jbehave" level="debug" />
 
 	<root level="error">

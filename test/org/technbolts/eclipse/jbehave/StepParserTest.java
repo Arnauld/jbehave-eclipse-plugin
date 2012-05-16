@@ -175,7 +175,7 @@ public class StepParserTest {
         offset = 1;
         
         StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
-        scanner.setRange(document, offset, 161);
+        scanner.setRange(document, offset, document.getLength()-offset);
         
         checkToken(scanner, document, keywordAttr);
         checkToken(scanner, document, defaultAttr);
@@ -218,7 +218,7 @@ public class StepParserTest {
         offset = 1;
         
         StepScannerStyled scanner= new StepScannerStyled(jbehaveProject, textAttributeProvider);
-        scanner.setRange(document, offset, 161);
+        scanner.setRange(document, offset, document.getLength()-offset);
         
         checkToken(scanner, document, keywordAttr);
         checkToken(scanner, document, defaultAttr);

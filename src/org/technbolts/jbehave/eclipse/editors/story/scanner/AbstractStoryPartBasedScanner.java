@@ -17,7 +17,6 @@ import org.eclipse.jface.text.rules.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.TextAttributeProvider;
-import org.technbolts.jbehave.eclipse.Activator;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.LocalizedStepSupport;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
@@ -175,11 +174,12 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
             int endOffset = start + length;
             int endFragmentOffset = lastFragment.offset+lastFragment.length;
             if(endFragmentOffset<endOffset) {
+                log.debug("Emitting consolidation fragment at offset: {} of length: {} (document length: {})", o(endFragmentOffset, endOffset - endFragmentOffset, document.getLength()));
                 emitCommentAware(defaultToken, endFragmentOffset, 
                         document.get(endFragmentOffset, endOffset - endFragmentOffset));
             }
         } catch (BadLocationException e) {
-            Activator.logError("Failed to consolidate fragments", e);
+            log.error("Failed to consolidate fragments", e);
         }
         
         int expected = 0;
@@ -357,7 +357,9 @@ public abstract class AbstractStoryPartBasedScanner implements ITokenScanner {
      */
     @Override
     public void setRange(IDocument document, int offset, int length) {
-        log.debug("Range(offset: " +  offset + ", length: " + length);
+        log.debug("Range(offset: " +  offset + ", length: " + length + ", document length: " + document.getLength() + ")");
+        if((offset+length)>document.getLength())
+            throw new IllegalArgumentException("Range is outside the document");
 
         fragments = New.arrayList();
         cursor = -1;
