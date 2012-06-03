@@ -1,19 +1,33 @@
 package org.technbolts.jbehave.eclipse.editors.story;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.technbolts.jbehave.eclipse.JBehaveProject;
+import org.technbolts.jbehave.eclipse.JBehaveProjectRegistry;
 
 public class StoryView extends ViewPart {
 
     public static final String ID = "org.technbolts.jbehave.eclipse.editors.story.StoryView"; //$NON-NLS-1$
+    
+    private Logger logger = LoggerFactory.getLogger(StoryView.class);
+    
     private Label storylanguagelabel;
 
     public StoryView() {
@@ -22,6 +36,27 @@ public class StoryView extends ViewPart {
     @Override
     public void init(IViewSite site) throws PartInitException {
         super.init(site);
+        site.getWorkbenchWindow().getSelectionService().addSelectionListener(new ISelectionListener() {
+            @Override
+            public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+                if(selection.isEmpty() || !(selection instanceof IStructuredSelection))
+                    return;
+                
+                IStructuredSelection structured = (IStructuredSelection)selection;
+                Object firstElement = structured.getFirstElement();
+                if(!(firstElement instanceof IAdaptable))
+                    return;
+                    
+                IAdaptable adaptable = (IAdaptable)firstElement;
+                IProject project = (IProject) adaptable.getAdapter(IProject.class);
+                if(project==null) {
+                    logger.warn(">> {} ({})", adaptable, adaptable.getClass());
+                    return;
+                }
+                JBehaveProject jbehaveProject = JBehaveProjectRegistry.get().getProject(project);
+                updateProjectInfos(jbehaveProject);
+            }
+        });
         site.getPage().addPartListener(new IPartListener2() {
             
             @Override
@@ -73,7 +108,14 @@ public class StoryView extends ViewPart {
         if(!isInterestedBy(partRef))
             return;
         StoryEditor editorPart = (StoryEditor)partRef.getPart(true);
-        storylanguagelabel.setText(editorPart.getJBehaveProject().getLocale().toString());
+        JBehaveProject jBehaveProject = editorPart.getJBehaveProject();
+        updateProjectInfos(jBehaveProject);
+    }
+
+    protected void updateProjectInfos(JBehaveProject jbehaveProject) {
+        if(jbehaveProject==null)
+            return;
+        storylanguagelabel.setText(jbehaveProject.getLocale().toString());
     }
 
     private boolean isInterestedBy(IWorkbenchPartReference partRef) {
@@ -96,6 +138,8 @@ public class StoryView extends ViewPart {
         {
             storylanguagelabel = new Label(container, SWT.NONE);
             storylanguagelabel.setText("en");
+            storylanguagelabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
         }
 
         createActions();

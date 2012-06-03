@@ -28,6 +28,7 @@ public class TextStyle {
     public static final String NARRATIVE_DEFAULT = "narrative_default";
     public static final String NARRATIVE_KEYWORD = "narrative_keyword";
     public static final String DEFAULT = "default";
+    public static final String ERROR = "error";
 
     private final String key;
     private RGB foreground;
@@ -145,8 +146,9 @@ public class TextStyle {
     }
 
     protected void recursivelyFill(Map<String, TextStyle> styles) {
-        if (parent == null)
+        if (parent == null) {
             styles.put(DEFAULT, this);
+        }
         else
             styles.put(key, this);
         for (TextStyle child : getChildren())

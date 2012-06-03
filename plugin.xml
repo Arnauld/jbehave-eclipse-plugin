@@ -17,12 +17,18 @@
    <extension
          point="org.eclipse.ui.editors.templates">
       <include
-            file="jbehave_templates/jbehave_templates.xml">
-      </include>
+            file="jbehave_templates/jbehave_templates_shared.xml" />
+      <include
+            file="jbehave_templates/jbehave_templates_en.xml" />
+      <include
+            file="jbehave_templates/jbehave_templates_fr.xml"/>
+      <include
+            file="jbehave_templates/jbehave_templates_fr_FR_Traditional.xml"/>
+            
       <contextType
             class="org.technbolts.jbehave.eclipse.editors.story.completion.StoryContextType"
             id="org.technbolts.jbehave.story"
-            name="JBehave story">
+            name="JBehave Templates">
       </contextType>
    </extension>
    

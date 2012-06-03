@@ -6,6 +6,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.rules.Token;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.TextAttributeProvider;
 import org.technbolts.jbehave.eclipse.JBehaveProject;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
@@ -13,6 +15,8 @@ import org.technbolts.jbehave.parser.StoryPart;
 import org.technbolts.jbehave.support.JBKeyword;
 
 public class AllInOneScanner extends AbstractStoryPartBasedScanner {
+    
+    private Logger logger = LoggerFactory.getLogger(AllInOneScanner.class);
     
     public static boolean allInOne = true;
     
@@ -23,6 +27,8 @@ public class AllInOneScanner extends AbstractStoryPartBasedScanner {
     private StepScannerStyled stepScannerStyled;
 
     private Region realRange;
+
+    private Token errorToken;
 
     public AllInOneScanner(JBehaveProject jbehaveProject, TextAttributeProvider textAttributeProvider) {
         super(jbehaveProject, textAttributeProvider);
@@ -55,8 +61,15 @@ public class AllInOneScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected void initialize() {
         super.initialize();
-        TextAttribute textAttribute = textAttributeProvider.get(TextStyle.DEFAULT);
+        TextAttribute textAttribute;
+        textAttribute = textAttributeProvider.get(TextStyle.DEFAULT);
         setDefaultToken(new Token(textAttribute));
+        textAttribute = textAttributeProvider.get(TextStyle.ERROR);
+        errorToken = new Token(textAttribute);
+    }
+    
+    protected Token getErrorToken() {
+        return errorToken;
     }
 
     @Override
@@ -67,6 +80,11 @@ public class AllInOneScanner extends AbstractStoryPartBasedScanner {
     @Override
     protected void emitPart(StoryPart part) {
         JBKeyword keyword = part.getPreferredKeyword();
+        if(keyword==null) {
+            logger.warn("Weird case: no keywork for part. Content: {}", part);
+            emitCommentAware(getErrorToken(), part.getOffset(), part.getContent());
+            return;
+        }
         switch(keyword) {
             case Given:
             case When:

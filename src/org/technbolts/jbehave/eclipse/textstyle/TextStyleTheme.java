@@ -11,6 +11,7 @@ public class TextStyleTheme {
         root.setCurrentLineHighlight(new RGB(70,70,70));
         Map<String,TextStyle> map = root.createMap(); 
         define(map, DEFAULT, new RGB(0,0,0),new RGB(255,255,255),false,false);
+        define(map, ERROR, new RGB(0,0,0),new RGB(255,0,0),true,false);
         define(map, NARRATIVE_DEFAULT, null,new RGB(238,159,97),true,false);
         define(map, NARRATIVE_KEYWORD, null,null,false,true);
         define(map, COMMENT, null,new RGB(210,255,210),false,false);
@@ -36,6 +37,7 @@ public class TextStyleTheme {
         root.setCurrentLineHighlight(new RGB(247,225,203));
         Map<String,TextStyle> map = root.createMap(); 
         define(map, DEFAULT, new RGB(255,255,255),new RGB(0,0,0),false,false);
+        define(map, ERROR, new RGB(255,0,0),new RGB(0,0,0),true,false);
         define(map, NARRATIVE_DEFAULT, null,new RGB(183,57,20),true,false);
         define(map, NARRATIVE_KEYWORD, null,null,false,true);
         define(map, COMMENT, null,new RGB(62,165,0),false,false);

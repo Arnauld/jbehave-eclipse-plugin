@@ -5,6 +5,7 @@ public class TextStyleTreeBuilder {
     public TextStyle createTree(String rootKey) {
         TextStyle root = new TextStyle(rootKey, null);
         root.newChild(TextStyle.COMMENT);
+        root.newChild(TextStyle.ERROR);
         createNarrativeSubTree(root);
         createStepSubTree(root);
         createScenarioSubTree(root);

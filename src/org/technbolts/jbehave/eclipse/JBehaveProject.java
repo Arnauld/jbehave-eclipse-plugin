@@ -56,7 +56,6 @@ public class JBehaveProject {
     private ClassScannerPreferences classScannerPreferences;
     //
     private LocalizedStepSupport localizedStepSupport;
-    private Locale storyLocale;
     //
     private AtomicInteger comod = new AtomicInteger();
     private volatile int rebuildTick = -1;
@@ -113,7 +112,7 @@ public class JBehaveProject {
         } catch (BackingStoreException e) {
             log.error("Failed to load project preferences", e);
         }
-        storyLocale = LocaleUtils.createLocaleFromCode(projectPreferences.getStoryLanguage(), Locale.ENGLISH);
+        Locale storyLocale = LocaleUtils.createLocaleFromCode(projectPreferences.getStoryLanguage(), Locale.ENGLISH);
         localizedStepSupport.setStoryLocale(storyLocale);
         parameterPrefix = projectPreferences.getParameterPrefix();
         
@@ -136,7 +135,7 @@ public class JBehaveProject {
     }
 
     public Locale getLocale() {
-        return storyLocale;
+        return getLocalizedStepSupport().getLocale();
     }
 
     private C2<IMethod, Container<PotentialStep>> newCallback() {

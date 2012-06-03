@@ -62,6 +62,17 @@ public class JBehaveProjectRegistry {
         }
     }
     
+    /**
+     * 
+     * @param project
+     * @return
+     * @see #getOrCreateProject(IProject)
+     */
+    public JBehaveProject getProject(IProject project) {
+        JBehaveProject cache = projectCache.get(project);
+        return cache;
+    }
+    
     public JBehaveProject getOrCreateProject(IProject project) {
         JBehaveProject cache = projectCache.get(project);
         if(cache==null) {

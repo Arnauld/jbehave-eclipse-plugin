@@ -20,7 +20,7 @@ import org.eclipse.jface.text.templates.DocumentTemplateContext;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContext;
 import org.eclipse.jface.text.templates.TemplateContextType;
-import org.jbehave.core.configuration.Keywords;
+import org.jbehave.core.i18n.LocalizedKeywords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.technbolts.eclipse.util.EditorUtils;
@@ -80,11 +80,11 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             logger.debug("Autocompletion line start: <{}>", lineStart);
 
             if(StringUtils.isEmpty(lineStart)) {
-                return createKeywordCompletionProposals(offset, 0, viewer);
+                return createKeywordCompletionProposals(jbehaveProject, offset, 0, viewer);
             }
             else if(LineParser.isTheStartIgnoringCaseOfStep(localizedStepSupport, lineStart) //
                     && !LineParser.isStepType(localizedStepSupport, lineStart)) {
-                return createKeywordCompletionProposals(lineOffset, lineStart.length(), viewer);
+                return createKeywordCompletionProposals(jbehaveProject, lineOffset, lineStart.length(), viewer);
             }
             
             // TODO add support for multi-line step
@@ -117,8 +117,8 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
             Region regionFullLine = new Region(lineOffset, lineStart.length());
             Region regionComplete = new Region(offset, 0);
             
-            TemplateContext contextFullLine = createTemplateContext(document, regionFullLine);
-            TemplateContext contextComplete = createTemplateContext(document, regionComplete);
+            TemplateContext contextFullLine = createTemplateContext(jbehaveProject, document, regionFullLine);
+            TemplateContext contextComplete = createTemplateContext(jbehaveProject, document, regionComplete);
 
             List<ICompletionProposal> proposals = New.arrayList();
             for(int i=0;i<candidates.size();i++) {
@@ -187,28 +187,37 @@ public class StepContentAssistProcessor implements IContentAssistProcessor {
         return null;
     }
 
-    private DocumentTemplateContext createTemplateContext(IDocument document, Region region) {
+    private DocumentTemplateContext createTemplateContext(JBehaveProject jbehaveProject, IDocument document, Region region) {
         TemplateContextType contextType = StoryContextType.getTemplateContextType();
         return new DocumentTemplateContext(contextType, document, region.getOffset(), region.getLength());
     }
 
-    private ICompletionProposal[] createKeywordCompletionProposals(int offset, int length, ITextViewer viewer) {
+    private ICompletionProposal[] createKeywordCompletionProposals(JBehaveProject jbehaveProject, int offset, int length, ITextViewer viewer) {
         List<ICompletionProposal> proposals = New.arrayList();
+        
+        LocalizedStepSupport localizedStepSupport = jbehaveProject.getLocalizedStepSupport();
+        LocalizedKeywords localizedKeywords = localizedStepSupport.getLocalizedKeywords();
 
         JBKeyword[] keywords = new JBKeyword[] {
                 JBKeyword.Given,
                 JBKeyword.And,
                 JBKeyword.When,
                 JBKeyword.Then,
+                JBKeyword.Ignorable,
                 JBKeyword.Scenario,
-                JBKeyword.GivenStories };
-        Keywords jkeywords = new Keywords();
+                JBKeyword.GivenStories,
+                JBKeyword.Narrative,
+                JBKeyword.InOrderTo,
+                JBKeyword.AsA,
+                JBKeyword.IWantTo,
+                JBKeyword.ExamplesTable
+                };
         for(JBKeyword keyword : keywords) {
-            String kw = keyword.asString(jkeywords);
+            String kw = keyword.asString(localizedKeywords);
             proposals.add(new CompletionProposal(kw, offset, length, kw.length()));
         };
         
-        StoryTemplateCompletionProcessor t = new StoryTemplateCompletionProcessor();
+        StoryTemplateCompletionProcessor t = new StoryTemplateCompletionProcessor(jbehaveProject);
         proposals.addAll(Arrays.asList(t.computeCompletionProposals(viewer, offset)));
         return proposals.toArray(new ICompletionProposal[proposals.size()]);
     }

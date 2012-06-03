@@ -3,6 +3,7 @@ package org.technbolts.jbehave.eclipse.editors.story.completion;
 import org.eclipse.jface.text.templates.GlobalTemplateVariables;
 import org.eclipse.jface.text.templates.TemplateContextType;
 import org.technbolts.jbehave.eclipse.Activator;
+import org.technbolts.jbehave.support.JBKeyword;
 
 public class StoryContextType extends TemplateContextType {
 
@@ -25,10 +26,14 @@ public class StoryContextType extends TemplateContextType {
         addResolver(new GlobalTemplateVariables.Year());
         addResolver(new GlobalTemplateVariables.Time());
         addResolver(new GlobalTemplateVariables.User());
+        for(JBKeyword keyword : JBKeyword.values()) {
+            addResolver(new LocalizedKeywordResolver(keyword));
+        }
     }
 
     public static TemplateContextType getTemplateContextType() {
-        return Activator.getDefault().getContextTypeRegistry().getContextType(STORY_CONTEXT_TYPE_ID);
+        return Activator.getDefault().getContextTypeRegistry()
+                .getContextType(StoryContextType.STORY_CONTEXT_TYPE_ID);
     }
     
 }
