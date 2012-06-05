@@ -25,12 +25,13 @@ Preference page:
 Download
 ========================
 
-* [1.0.6](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.6.jar)
-* [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
-* [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
+* [1.0.7](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.7.jar)
 
 Previous (for posterity)
 
+* [1.0.6](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.6.jar)
+* [1.0.5](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.5.jar)
+* [1.0.4](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.4.jar)
 * [1.0.3.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.3.SNAPSHOT.jar)
 * [1.0.0.SNAPSHOT](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.0.SNAPSHOT.jar)
 
@@ -44,7 +45,9 @@ RELEASE NOTES
 =============
 
 [Neighbours' Day](http://fr.wikipedia.org/wiki/F%C3%AAte_des_voisins) - Release notes (1.0.7)
------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
+
+Download here [1.0.7](https://github.com/downloads/Arnauld/jbehave-eclipse-plugin/technbolts-jbehave-eclipse-plugin_1.0.7.jar)
 
 * Thanks to [dschneller](https://github.com/dschneller) for initiating the development of the localized keywords support ([Issue 3](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/3)) 
  * A per project preference is available to set the locale that should be used.
