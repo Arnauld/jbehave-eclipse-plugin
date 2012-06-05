@@ -55,7 +55,7 @@ Download here [1.0.7](https://github.com/downloads/Arnauld/jbehave-eclipse-plugi
 * Support shortcut for (un-)commenting selection ([Issue 44](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/44))
 * Various fixes:
   * Plugin fails to disambiguate steps matching different kind of steps [Issue 41](https://github.com/Arnauld/jbehave-eclipse-plugin/issues/41)
-  * See here for more []()
+  * See here for more [Closed Issues](https://github.com/Arnauld/jbehave-eclipse-plugin/issues?milestone=4&page=1&state=closed)
 
 Valentine's Day - Release notes (1.0.6)
 ------------------------------------------------
