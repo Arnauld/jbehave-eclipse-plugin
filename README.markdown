@@ -1,9 +1,11 @@
+<h1>/!\ The project has been integrated to the JBehave Project itself, the adventure continues here: <a href="https://github.com/jbehave/jbehave-ide">jbehave-ide</a></h1>
+
+
+
 JBehave Eclipse plugin
 =======================
 
 **In progress** see [presentation](http://arnauld.github.com/jbehave-eclipse-plugin/)
-
-<b style="font-size:200%; color:#800000;">The project has been integrated to the JBehave Project itself, the adventure continues here: <a href="https://github.com/jbehave/jbehave-ide">jbehave-ide</a></b>
 
 
 Misc:
