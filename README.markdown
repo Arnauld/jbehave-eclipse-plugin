@@ -3,6 +3,9 @@ JBehave Eclipse plugin
 
 **In progress** see [presentation](http://arnauld.github.com/jbehave-eclipse-plugin/)
 
+<b style="font-size:200%; color:#800000;">The project has been integrated to the JBehave Project itself, the adventure continues here: <a href="https://github.com/jbehave/jbehave-ide">jbehave-ide</a></b>
+
+
 Misc:
 
 * Custom and internal buildin Story parser
