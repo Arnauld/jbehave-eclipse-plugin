@@ -25,7 +25,6 @@ public class NarrativeScannerPrev extends RuleBasedScanner {
         this.textAttributeProvider = textAttributeProvider;
         initialize();
         textAttributeProvider.addObserver(new Observer() {
-            @Override
             public void update(Observable o, Object arg) {
                 initialize();
             }

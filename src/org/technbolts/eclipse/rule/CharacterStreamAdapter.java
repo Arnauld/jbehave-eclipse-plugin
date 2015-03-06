@@ -10,11 +10,11 @@ public class CharacterStreamAdapter implements BidirectionalStream {
         this.scanner = scanner;
     }
 
-    @Override
+ 
     public int read() {
         return scanner.read();
     }
-    @Override
+    
     public void unread() {
         scanner.unread();
     }

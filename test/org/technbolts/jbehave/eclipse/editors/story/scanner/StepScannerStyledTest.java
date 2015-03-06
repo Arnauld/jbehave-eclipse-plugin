@@ -58,7 +58,6 @@ public class StepScannerStyledTest {
         
         doAnswer(new Answer() {
             @SuppressWarnings("unchecked")
-            @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Visitor<PotentialStep, ?> visitor = (Visitor<PotentialStep, ?>)invocation.getArguments()[0];
                 visitor.visit(potentialStep);
@@ -81,7 +80,6 @@ public class StepScannerStyledTest {
     @Test
     public void useCase_ex1() {
         when(stepLocator.findFirstStep(Mockito.anyString())).thenAnswer(new Answer<PotentialStep>() {
-            @Override
             public PotentialStep answer(InvocationOnMock invocation) throws Throwable {
                 System.out.println("StepScannerStyledTest.useCase_ex1(" + invocation + ")");
                 return potentialStep;

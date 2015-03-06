@@ -12,13 +12,11 @@ public class WeightedCandidateStep implements Comparable<WeightedCandidateStep>,
         this.potentialStep = potentialStep;
         this.weight = weight;
     }
-    @Override
     public int compareTo(WeightedCandidateStep o) {
         return (weight>o.weight)?1:-1;
     }
     
     private String htmlComment;
-    @Override
     public String getHTMLComment() {
         if(htmlComment==null) {
             try {

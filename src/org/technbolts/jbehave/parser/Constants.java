@@ -57,7 +57,6 @@ public class Constants {
         }
         final List<Tok> toks = New.arrayList();
         tokenize(commentLineMatcher, input, new TokenizerCallback() {
-            @Override
             public void token(int startOffset, int endOffset, String token, boolean isDelimiter) {
                 toks.add(new Tok(token, isDelimiter));
             }

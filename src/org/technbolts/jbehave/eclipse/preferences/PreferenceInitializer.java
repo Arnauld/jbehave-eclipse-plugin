@@ -11,6 +11,7 @@ import org.technbolts.jbehave.eclipse.preferences.ClassScannerFilterEntry.ApplyO
 import org.technbolts.jbehave.eclipse.textstyle.TextStyle;
 import org.technbolts.jbehave.eclipse.textstyle.TextStylePreferences;
 import org.technbolts.jbehave.eclipse.textstyle.TextStyleTheme;
+import org.technbolts.util.ScannerForKeywordsFiles;
 
 import ch.qos.logback.classic.Level;
 
@@ -86,7 +87,16 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
     protected void initializeDefaultProjectPreferences() {
         ProjectPreferences projectPreferences = new ProjectPreferences(DefaultScope.INSTANCE);
         projectPreferences.setStoryLanguage("en");
-        projectPreferences.setAvailableStoryLanguages("de", "en", "fr", "fr_FR_Traditional", "it", "pt", "tr", "zh_TW");
+        try {
+        	projectPreferences
+        		.setAvailableStoryLanguages( //scan for keywords files in path 
+        				ScannerForKeywordsFiles.getAvailableLocaleNamesFromPath("i18n/"));
+        } catch (Exception ex) {
+        	Activator.logError("Can not scan languages - setup by default", ex);
+        	projectPreferences
+        		.setAvailableStoryLanguages(
+        				new String[]{"de", "en", "fr", "fr_FR_Traditional", "it", "pt", "tr", "zh_TW"});
+        }
         projectPreferences.setParameterPrefix("$");
         try {
             projectPreferences.store();
@@ -99,4 +109,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
         for(String patterns : patternsSeq)
             prefs.addEntry(patterns, applyOn, exclude);
     }
+    
+ 
 }

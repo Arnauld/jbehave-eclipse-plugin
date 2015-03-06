@@ -69,7 +69,6 @@ public class ContentWithIgnorableEmitter {
     public static List<Fragment> generateFragments(Pattern ignorablePattern, String content) {
         final List<Fragment> fragments = new ArrayList<Fragment>();
         Constants.tokenize(ignorablePattern, content, new TokenizerCallback() {
-            @Override
             public void token(int startOffset, int endOffset, String token, boolean isDelimiter) {
                 fragments.add(new Fragment(startOffset, endOffset, isDelimiter));
             }

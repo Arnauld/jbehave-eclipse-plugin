@@ -191,7 +191,6 @@ public class ConstantsTest {
     
     private static class TokenCollector implements TokenizerCallback {
         private List<String> tokens = New.arrayList();
-        @Override
         public void token(int startOffset, int endOffset, String token, boolean isDelimiter) {
             tokens.add(token);
         }

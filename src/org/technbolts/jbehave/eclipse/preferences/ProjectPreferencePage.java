@@ -72,12 +72,10 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
             enableProjectSpecific.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
             enableProjectSpecific.setText("Enable project specific settings");
             enableProjectSpecific.addSelectionListener(new SelectionListener() {
-                @Override
                 public void widgetSelected(SelectionEvent event) {
                     adjustProjectSpecificState();
                 }
                 
-                @Override
                 public void widgetDefaultSelected(SelectionEvent event) {
                     adjustProjectSpecificState();
                 }
@@ -104,11 +102,9 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         languageCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
         languageCombo.setSize(279, 22);
         languageCombo.addSelectionListener(new SelectionListener() {
-            @Override
             public void widgetDefaultSelected(SelectionEvent event) {
                 widgetSelected(event);
             }
-            @Override
             public void widgetSelected(SelectionEvent event) {
                 int selectionIndex = languageCombo.getSelectionIndex();
                 setLanguage(languageCombo.getItem(selectionIndex));
@@ -273,7 +269,6 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         /* (non-Javadoc)
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnImage(java.lang.Object, int)
          */
-        @Override
         public Image getColumnImage(Object element, int columnIndex) {
             if(columnIndex==0) {
                 return keywordImageRegistry.getImageFor((JBKeyword)element);
@@ -284,7 +279,6 @@ public class ProjectPreferencePage extends PropertyPage implements org.eclipse.u
         /* (non-Javadoc)
          * @see org.eclipse.jface.viewers.ITableLabelProvider#getColumnText(java.lang.Object, int)
          */
-        @Override
         public String getColumnText(Object element, int columnIndex) {
             return ((JBKeyword)element).asString(keywordsFor(columnIndex));
         }

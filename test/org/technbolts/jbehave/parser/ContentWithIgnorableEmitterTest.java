@@ -127,7 +127,6 @@ public class ContentWithIgnorableEmitterTest {
     
     private static class Collector implements ContentWithIgnorableEmitter.Callback<String> {
         public final List<Emitted> emittedList = new ArrayList<Emitted>();
-        @Override
         public void emit(String what, int offset, int length) {
             emittedList.add(new Emitted(offset, length, what));
         }
@@ -144,7 +143,6 @@ public class ContentWithIgnorableEmitterTest {
             }
             return builder.toString();
         }
-        @Override
         public void emitIgnorable(int offset, int length) {
             emit("C", offset, length);
         }

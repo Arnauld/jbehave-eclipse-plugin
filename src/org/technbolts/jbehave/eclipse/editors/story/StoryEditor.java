@@ -190,7 +190,7 @@ public class StoryEditor extends TextEditor {
     private void invalidateTextPresentation() {
         // make sure to invalidate in the Display thread.
         getSourceViewer().getTextWidget().getDisplay().asyncExec(new Runnable() {
-            @Override
+            
             public void run() {
                 getSourceViewer().invalidateTextPresentation();
             }
