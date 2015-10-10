@@ -75,7 +75,7 @@ public class JBehaveProject {
     protected void initializeClassScannerPreferencesAndListener(IProject project) {
         this.classScannerPreferences = new ClassScannerPreferences(project);
         this.classScannerPreferences.addListener(new IPreferenceChangeListener() {
-            @Override
+            
             public void preferenceChange(PreferenceChangeEvent changeEvent) {
                 log.info("Class scanner preference changed [{}]: <{}> -> <{}>",
                         o(changeEvent.getKey(), changeEvent.getOldValue(), changeEvent.getNewValue()));
@@ -88,7 +88,7 @@ public class JBehaveProject {
     protected void initializeProjectPreferencesAndListener(IProject project) {
         this.projectPreferences = new ProjectPreferences(project);
         this.projectPreferences.addListener(new IPreferenceChangeListener() {
-            @Override
+            
             public void preferenceChange(PreferenceChangeEvent changeEvent) {
                 log.info("Project preference changed [{}]: <{}> -> <{}>",
                         o(changeEvent.getKey(), changeEvent.getOldValue(), changeEvent.getNewValue()));

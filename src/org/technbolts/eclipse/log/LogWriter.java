@@ -57,7 +57,6 @@ public class LogWriter {
     
     private static Callback callbackFor(final ByteArrayOutputStream out) {
         return new Callback() {
-            @Override
             public void op(LogData data) throws IOException {
                 out.write(data.formattedMessage().getBytes());
                 out.write(LF);
@@ -96,7 +95,6 @@ public class LogWriter {
     
     public void start() {
         Executors.newFixedThreadPool(1).submit(new Runnable() {
-            @Override
             public void run() {
                 processQueue();
             }

@@ -97,7 +97,7 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
         return null;
     }
     
-    @Override
+   
     public IInformationControlCreator getHoverControlCreator() {
         return new IInformationControlCreator() {
             public IInformationControl createInformationControl(
@@ -111,19 +111,19 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
         };
     }
     
-    @Override
+    
     public boolean canHandleMouseCursor() {
         return false;
     }
     
-    @Override
+    
     public Object getHoverInfo(ISourceViewer sourceViewer,
             ILineRange lineRange,
             int visibleNumberOfLines) {
         return getHoverInfo(sourceViewer, lineRange.getStartLine());
     }
     
-    @Override
+    
     public ILineRange getHoverLineRange(ISourceViewer viewer,
             int lineNumber) {
         return new LineRange(lineNumber, 1);
@@ -292,7 +292,7 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
             }
         };
         iControl.addLocationListener(new LocationListener() {
-            @Override
+            
             public void changing(LocationEvent event) {
                 boolean initial = "about:blank".equals(event.location);
                 if(!initial) {
@@ -312,7 +312,7 @@ public class StoryAnnotationHover implements IAnnotationHover, IAnnotationHoverE
                 return storyEditor.getJBehaveProject();
             }
             
-            @Override
+           
             public void changed(LocationEvent event) {
             }
         });

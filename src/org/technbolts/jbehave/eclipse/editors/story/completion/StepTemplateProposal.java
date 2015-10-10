@@ -33,12 +33,10 @@ public class StepTemplateProposal extends TemplateProposal implements
         this.weightedCandidateStep = weightedCandidateStep;
     }
     
-    @Override
     public LocalizedStepSupport getJBehaveProject() {
         return jbehaveProject;
     }
     
-    @Override
     public boolean isAutoInsertable() {
         return false;
     }
@@ -52,7 +50,6 @@ public class StepTemplateProposal extends TemplateProposal implements
     /* (non-Javadoc)
      * @see org.technbolts.jbehave.eclipse.editors.story.completion.StepCompletionProposalMixin.Trait#getWeightedCandidateStep()
      */
-    @Override
     public WeightedCandidateStep getWeightedCandidateStep() {
         return weightedCandidateStep;
     }
@@ -60,12 +57,10 @@ public class StepTemplateProposal extends TemplateProposal implements
     /* (non-Javadoc)
      * @see org.technbolts.jbehave.eclipse.editors.story.completion.StepCompletionProposalMixin.Trait#getComplete()
      */
-    @Override
     public String getComplete() {
         return complete;
     }
     
-    @Override
     public String getLabel() {
         return label;
     }
@@ -73,7 +68,6 @@ public class StepTemplateProposal extends TemplateProposal implements
     /* (non-Javadoc)
      * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension6#getStyledDisplayString()
      */
-    @Override
     public StyledString getStyledDisplayString() {
         return StepCompletionProposalMixin.createStyledString(this);
     }
@@ -86,7 +80,6 @@ public class StepTemplateProposal extends TemplateProposal implements
     /* (non-Javadoc)
      * @see org.eclipse.jface.text.contentassist.ICompletionProposalExtension5#getAdditionalProposalInfo(org.eclipse.core.runtime.IProgressMonitor)
      */
-    @Override
     public Object getAdditionalProposalInfo(IProgressMonitor monitor) {
         return StepCompletionProposalMixin.getAdditionalHTML(this);
     }

@@ -72,7 +72,6 @@ public class MiscScanner extends AbstractStoryPartBasedScanner {
 
     private Chain metaChain() {
         return new Chain() {
-            @Override
             public void next(int offset, String content) {
                 parseMetaProperties(offset, content);
             }
@@ -83,7 +82,6 @@ public class MiscScanner extends AbstractStoryPartBasedScanner {
 
     protected void parseMetaProperties(final int offset, String content) {
         Constants.splitLine(content, new TokenizerCallback() {
-            @Override
             public void token(int startOffset, int endOffset, String line, boolean isDelimiter) {
                 if(isDelimiter) {
                     emit(getDefaultToken(), offset + startOffset, line.length());

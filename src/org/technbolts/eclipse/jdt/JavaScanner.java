@@ -76,7 +76,7 @@ public class JavaScanner<T> {
 
     private Callable<Void> traverseAsCallable(final IPackageFragmentRoot packageFragmentRoot, final T argument) {
         return new Callable<Void>() {
-            @Override
+           
             public Void call() throws Exception {
                 if(packageRootNameFilter.f(packageFragmentRoot.getElementName())
                     && visitor.visit(packageFragmentRoot, argument)) {
@@ -100,7 +100,6 @@ public class JavaScanner<T> {
 
     private Callable<Void> traverseAsCallable(final IPackageFragment packageFragment, final T arg) {
         return new Callable<Void>() {
-            @Override
             public Void call() throws Exception {
                 if(packageNameFilter.f(packageFragment.getElementName())
                    && visitor.visit(packageFragment, arg)) {
@@ -140,7 +139,6 @@ public class JavaScanner<T> {
 
     private Callable<Void> traverseAsCallable(final IClassFile classFile, final T arg) {
         return new Callable<Void>() {
-            @Override
             public Void call() throws Exception {
                 if(classNameFilter.f(classFile.getElementName())
                    && visitor.visit(classFile, arg)) {
@@ -153,7 +151,7 @@ public class JavaScanner<T> {
 
     private Callable<Void> traverseAsCallable(final ICompilationUnit cunit, final T arg) {
         return new Callable<Void>() {
-            @Override
+         
             public Void call() throws Exception {
                 if(classNameFilter.f(cunit.getElementName())
                    && visitor.visit(cunit, arg)) {

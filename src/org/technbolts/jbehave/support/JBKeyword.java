@@ -161,7 +161,6 @@ public enum JBKeyword {
     
     public static Filter<JBKeyword> stepFilter() {
         return new Filter<JBKeyword>() {
-            @Override
             public boolean isAccepted(JBKeyword keyword) {
                 return isStep(keyword);
             }
